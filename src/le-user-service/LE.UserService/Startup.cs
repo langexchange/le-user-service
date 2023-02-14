@@ -1,3 +1,4 @@
+using LE.UserService.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -49,6 +50,9 @@ namespace LE.UserService
             app.UseRouting();
 
             app.UseAuthorization();
+
+            //add middleware
+            app.UseMiddleware<ErrorHandlerMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
