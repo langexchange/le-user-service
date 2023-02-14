@@ -30,5 +30,13 @@ namespace LE.UserService.Controllers
             _authService.Register(model);
             return Ok(new { message = "Registration successful" });
         }
+
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate(AuthRequest model)
+        {
+            var response = _authService.Authenticate(model);
+            return Ok(response);
+        }
     }
 }

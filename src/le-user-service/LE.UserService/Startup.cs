@@ -1,5 +1,6 @@
 using AutoMapper;
 using LE.UserService.AutoMappers;
+using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
 using LE.UserService.Middlewares;
 using LE.UserService.Services;
@@ -87,7 +88,7 @@ namespace LE.UserService
 
         private void AddDbContext(IServiceCollection services)
         {
-            services.AddDbContext<langgeneralContext>(options =>options.UseNpgsql(Env.DB_CONNECTION_STRING));
+            services.AddDbContext<LanggeneralDbContext>(options =>options.UseNpgsql(Env.DB_CONNECTION_STRING));
         }
         
     }

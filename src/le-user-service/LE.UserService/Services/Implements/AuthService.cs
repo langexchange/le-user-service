@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LE.UserService.Dtos;
 using LE.UserService.Exceptions;
+using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
 using LE.UserService.Models.Requests;
 using LE.UserService.Models.Responses;
@@ -10,11 +11,11 @@ namespace LE.UserService.Services.Implements
 {
     public class AuthService : IAuthService
     {
-        private langgeneralContext _context;
+        private LanggeneralDbContext _context;
         private IJwtUtils _jwtUtils;
         private readonly IMapper _mapper;
 
-        public AuthService(langgeneralContext context, IJwtUtils jwtUtils, IMapper mapper)
+        public AuthService(LanggeneralDbContext context, IJwtUtils jwtUtils, IMapper mapper)
         {
             _context = context;
             _jwtUtils = jwtUtils;
@@ -23,7 +24,16 @@ namespace LE.UserService.Services.Implements
 
         public AuthResponse Authenticate(AuthRequest model)
         {
-            throw new System.NotImplementedException();
+            var user = _context.Users.SingleOrDefault(x => x.Email.Equals(model.Email));
+
+            // validate
+            if (user == null)
+                throw new AppException("Username or password is incorrect");
+
+            // authentication successful
+            var response = _mapper.Map<AuthResponse>(user);
+            response.Token = _jwtUtils.GenerateToken(user);
+            return response;
         }
 
         public void Delete(int id)
