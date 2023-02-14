@@ -10,7 +10,7 @@ WORKDIR /src
 COPY ["LE.UserService/NuGet.config", "LE.UserService/"]
 COPY ["LE.UserService/LE.UserService.csproj", "LE.UserService/"]
 COPY ["LE.UserService.Infrastructure/LE.UserService.Infrastructure/*.csproj", "LE.UserService.Infrastructure/"]
-RUN dotnet restore "LE.UserService/LE.UserService.csproj" --configfile ./LE.UserService/NuGet.config
+RUN dotnet restore --no-cache "LE.UserService/LE.UserService.csproj" --configfile ./LE.UserService/NuGet.config
 COPY ./ ./
 WORKDIR "/src/LE.UserService"
 RUN dotnet build "LE.UserService.csproj" -c Release -o /app/build
