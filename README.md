@@ -5,5 +5,5 @@
 
 3. Run command to gen entities:
 
-    dotnet ef dbcontext scaffold "Host=database-1.cvisbvujuezh.ap-southeast-1.rds.amazonaws.com;Port=5432;Database=langgeneral;Username=postgres;Password=t0ps3cr3tt0ps3cr3t" Npgsql.EntityFrameworkCore.PostgreSQL -o Infrastructure/Entities
+    dotnet ef dbcontext scaffold "Host=database-1.cvisbvujuezh.ap-southeast-1.rds.amazonaws.com;Port=5432;Database=langgeneral;Username=postgres;Password=t0ps3cr3tt0ps3cr3t" Npgsql.EntityFrameworkCore.PostgreSQL -o Infrastructure/Entities -f --context-dir Infrastructure -c LanggeneralDbContext
 
