@@ -1,4 +1,5 @@
-﻿using LE.UserService.Models.Requests;
+﻿using LE.UserService.Dtos;
+using LE.UserService.Models.Requests;
 using LE.UserService.Models.Responses;
 using System.Collections.Generic;
 
@@ -8,8 +9,8 @@ namespace LE.UserService.Services
     {
         AuthResponse Authenticate(AuthRequest model);
         //IEnumerable<User> GetAll();
-        //User GetById(int id);
-        //void Register(RegisterRequest model);
+        UserDto GetById(int id);
+        void Register(RegisterRequest model);
         //void Update(int id, UpdateRequest model);
         void Delete(int id);
     }
