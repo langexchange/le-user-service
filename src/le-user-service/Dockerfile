@@ -9,9 +9,8 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["LE.UserService/NuGet.config", "LE.UserService/"]
 COPY ["LE.UserService/LE.UserService.csproj", "LE.UserService/"]
-COPY ["LE.UserService.Infrastructure/LE.UserService.Infrastructure.csproj", "LE.UserService.Infrastructure/"]
+COPY ["LE.UserService.Infrastructure/LE.UserService.Infrastructure/*.csproj", "LE.UserService.Infrastructure/"]
 RUN dotnet restore "LE.UserService/LE.UserService.csproj" --configfile ./LE.UserService/NuGet.config
-RUN dotnet restore "LE.UserService.Infrastructure/LE.UserService.Infrastructure.csproj" --configfile ./LE.UserService/NuGet.config
 COPY ./ ./
 WORKDIR "/src/LE.UserService"
 RUN dotnet build "LE.UserService.csproj" -c Release -o /app/build
