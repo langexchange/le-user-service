@@ -53,6 +53,7 @@ namespace LE.UserService
 
             //add middleware
             app.UseMiddleware<ErrorHandlerMiddleware>();
+            //
 
             app.UseEndpoints(endpoints =>
             {
