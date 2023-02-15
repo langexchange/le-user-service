@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["./NuGet.config", "LE.UserService/"]
+COPY ["NuGet.config", "LE.UserService/"]
 COPY ["LE.UserService/*.csproj", "LE.UserService/"]
 COPY ["LE.UserService.Infrastructure/*.csproj", "LE.UserService.Infrastructure/"]
 RUN dotnet restore "LE.UserService/LE.UserService.csproj" --configfile ./LE.UserService/NuGet.config
