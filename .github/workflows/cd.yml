@@ -7,6 +7,14 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./src/le-user-service
+
+    defaults:
+      run:
+        working-directory: ${{ env.working-directory }}
+
+      # working-directory: ${{ env.working-directory }}
     steps:
       - uses: actions/checkout@v2
       # - name: Set up QEMU
@@ -29,7 +37,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./
-          file: ./src/le-user-service/Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/le-user-service:latest
           # cache-from: type=local,src=/tmp/.buildx-cache
