@@ -22,7 +22,7 @@ namespace LE.UserService.Services.Implements
             var key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JwtSettings:Secret"));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", user.Userid.ToString()) }),
+                Subject = new ClaimsIdentity(new[] { new Claim("id", user.Userid.ToString()), new Claim("typ", "customer") }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -30,7 +30,7 @@ namespace LE.UserService.Services.Implements
             return tokenHandler.WriteToken(token);
         }
 
-        public int? ValidateToken(string token)
+        public string ValidateToken(string token)
         {
             if (token == null)
                 return null;
@@ -49,7 +49,7 @@ namespace LE.UserService.Services.Implements
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var userId = jwtToken.Claims.First(x => x.Type == "id").Value;
 
                 // return user id from JWT token if validation successful
                 return userId;

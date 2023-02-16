@@ -24,11 +24,13 @@ namespace LE.UserService.Services.Implements
 
         public AuthResponse Authenticate(AuthRequest model)
         {
-            var user = _context.Users.SingleOrDefault(x => x.Email.Equals(model.Email));
+            var user = _context.Users.SingleOrDefault(x => x.Email.Equals(model.Email) && x.Password.Equals(model.Password));
 
             // validate
             if (user == null)
+            {
                 throw new AppException("Username or password is incorrect");
+            }
 
             // authentication successful
             var response = _mapper.Map<AuthResponse>(user);

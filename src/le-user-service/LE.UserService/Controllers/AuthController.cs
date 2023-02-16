@@ -23,7 +23,6 @@ namespace LE.UserService.Controllers
             _authService = authService;
         }
 
-        [AllowAnonymous]
         [HttpPost("register")]
         public IActionResult Register(RegisterRequest model)
         {
@@ -31,7 +30,6 @@ namespace LE.UserService.Controllers
             return Ok(new { message = "Registration successful" });
         }
 
-        [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate(AuthRequest model)
         {

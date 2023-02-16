@@ -1,24 +1,16 @@
 using AutoMapper;
+using LE.ApiGateway.Extensions;
 using LE.UserService.AutoMappers;
 using LE.UserService.Infrastructure.Infrastructure;
-using LE.UserService.Infrastructure.Infrastructure.Entities;
-using LE.UserService.Middlewares;
 using LE.UserService.Services;
 using LE.UserService.Services.Implements;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LE.UserService
 {
@@ -45,6 +37,9 @@ namespace LE.UserService
             AddAutoMappers(services);
             //add db context
             AddDbContext(services);
+            //add auth
+            services.AddCustomAuthorization(Configuration);
+
 
             // configure DI for application services
             services.AddScoped<IJwtUtils, JwtUtils>();
@@ -65,10 +60,8 @@ namespace LE.UserService
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
             //add middleware
-            app.UseMiddleware<ErrorHandlerMiddleware>();
+            app.UseCustomAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
