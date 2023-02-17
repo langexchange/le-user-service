@@ -4,6 +4,7 @@ using LE.UserService.AutoMappers;
 using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Services;
 using LE.UserService.Services.Implements;
+using LE.UserService.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,7 @@ namespace LE.UserService
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "LE.UserService", Version = "v1" });
             });
 
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             //add mapper
             AddAutoMappers(services);
             //add db context
@@ -44,6 +46,7 @@ namespace LE.UserService
             // configure DI for application services
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddTransient<IMailService, MailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
