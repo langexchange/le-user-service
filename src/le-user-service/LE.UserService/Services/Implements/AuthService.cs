@@ -5,6 +5,7 @@ using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
 using LE.UserService.Models.Requests;
 using LE.UserService.Models.Responses;
+using System;
 using System.Linq;
 
 namespace LE.UserService.Services.Implements
@@ -38,14 +39,14 @@ namespace LE.UserService.Services.Implements
             return response;
         }
 
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             throw new System.NotImplementedException();
         }
 
-        public UserDto GetById(int id)
+        public User GetById(Guid id)
         {
-            throw new System.NotImplementedException();
+            return _context.Users.FirstOrDefault(x => x.Userid == id);
         }
 
         public void Register(RegisterRequest model)
@@ -63,5 +64,16 @@ namespace LE.UserService.Services.Implements
             _context.Users.Add(user);
             _context.SaveChanges();
         }
+        public void UpdatePassword(Guid id, string password)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Userid == id);
+            if (user == null)
+                throw new AppException($"Not exist user has id: {id}");
+
+            user.Password = password;
+            _context.Update(user);
+            _context.SaveChanges();
+        }
+
     }
 }
