@@ -1,12 +1,9 @@
 ﻿using LE.UserService.Helpers;
 using LE.UserService.Models.Requests;
 using LE.UserService.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace LE.UserService.Controllers
