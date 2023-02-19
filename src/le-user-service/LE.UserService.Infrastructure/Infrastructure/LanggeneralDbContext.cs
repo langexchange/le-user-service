@@ -1378,6 +1378,10 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasMaxLength(5)
                     .HasColumnName("gender");
 
+                entity.Property(e => e.IncreateId)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("increate_id");
+
                 entity.Property(e => e.Introduction)
                     .HasMaxLength(1024)
                     .HasColumnName("introduction");
