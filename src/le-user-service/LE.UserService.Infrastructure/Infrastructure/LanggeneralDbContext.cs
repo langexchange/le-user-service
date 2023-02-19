@@ -75,15 +75,6 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Vocabpackage> Vocabpackages { get; set; }
         public virtual DbSet<Vocabulary> Vocabularies { get; set; }
 
-        //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //        {
-        //            if (!optionsBuilder.IsConfigured)
-        //            {
-        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        //                optionsBuilder.UseNpgsql("Host=database-1.cvisbvujuezh.ap-southeast-1.rds.amazonaws.com;Port=5432;Database=langgeneral;Username=postgres;Password=t0ps3cr3tt0ps3cr3t");
-        //            }
-        //        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresExtension("uuid-ossp")
@@ -858,6 +849,10 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("langid")
                     .HasDefaultValueSql("uuid_generate_v4()");
 
+                entity.Property(e => e.LocaleCode)
+                    .HasMaxLength(15)
+                    .HasColumnName("locale_code");
+
                 entity.Property(e => e.Name)
                     .HasMaxLength(128)
                     .HasColumnName("name");
@@ -1285,6 +1280,10 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
                 entity.Property(e => e.Langid).HasColumnName("langid");
 
+                entity.Property(e => e.TargetLevel)
+                    .HasColumnName("target_level")
+                    .HasDefaultValueSql("1");
+
                 entity.HasOne(d => d.Lang)
                     .WithMany(p => p.Targetlangs)
                     .HasForeignKey(d => d.Langid)
@@ -1415,6 +1414,10 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("middle_name");
 
                 entity.Property(e => e.NativeLang).HasColumnName("native_lang");
+
+                entity.Property(e => e.NativeLevel)
+                    .HasColumnName("native_level")
+                    .HasDefaultValueSql("1");
 
                 entity.Property(e => e.Notibox).HasColumnName("notibox");
 
