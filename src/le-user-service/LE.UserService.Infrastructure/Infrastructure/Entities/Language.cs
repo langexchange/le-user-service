@@ -16,6 +16,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
 
         public Guid Langid { get; set; }
         public string Name { get; set; }
+        public string LocaleCode { get; set; }
 
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<Targetlang> Targetlangs { get; set; }

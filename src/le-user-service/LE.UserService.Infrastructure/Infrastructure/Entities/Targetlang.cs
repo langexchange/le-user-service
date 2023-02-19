@@ -9,6 +9,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
     {
         public Guid Userid { get; set; }
         public Guid Langid { get; set; }
+        public int? TargetLevel { get; set; }
 
         public virtual Language Lang { get; set; }
         public virtual User User { get; set; }

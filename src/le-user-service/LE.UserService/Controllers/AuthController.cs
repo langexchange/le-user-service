@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace LE.UserService.Controllers
 {
     [ApiController]
-    [Route("/auth")]
+    [Route("api/auth")]
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
@@ -37,7 +37,7 @@ namespace LE.UserService.Controllers
             return Ok(response);
         }
         
-        [HttpPost("send-mail/{id}")]
+        [HttpPost("user/{id}/send-mail")]
         public async Task<IActionResult> SendMail(Guid id)
         {
             var user = _authService.GetById(id);

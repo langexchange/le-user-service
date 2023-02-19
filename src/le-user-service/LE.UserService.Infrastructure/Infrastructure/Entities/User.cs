@@ -49,6 +49,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public BitArray IsTutor { get; set; }
         public BitArray IsRestrict { get; set; }
         public BitArray IsRemoved { get; set; }
+        public int? NativeLevel { get; set; }
 
         public virtual Language NativeLangNavigation { get; set; }
         public virtual Notibox NotiboxNavigation { get; set; }
