@@ -13,7 +13,8 @@ namespace LE.UserService.AutoMappers
             //Map for auth service
             CreateMap<RegisterRequest, User>();
             CreateMap<User, AuthResponse>()
-                .ForMember(d => d.Id, s => s.MapFrom(x => x.Userid));
+                .ForMember(d => d.Id, s => s.MapFrom(x => x.Userid))
+                .ForMember(d => d.IncId, s => s.MapFrom(x => x.IncreateId));
 
             //Map for user service
             CreateMap<User, UserDto>();

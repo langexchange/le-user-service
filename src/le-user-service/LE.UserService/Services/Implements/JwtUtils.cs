@@ -22,7 +22,12 @@ namespace LE.UserService.Services.Implements
             var key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JwtSettings:Secret"));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", user.Userid.ToString()), new Claim("typ", "customer") }),
+                Subject = new ClaimsIdentity(new[] 
+                { 
+                    new Claim("id", user.Userid.ToString()), 
+                    new Claim("typ", "customer"), 
+                    new Claim("incid", user.IncreateId.ToString()), 
+                }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
