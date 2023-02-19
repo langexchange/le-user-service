@@ -47,6 +47,8 @@ namespace LE.UserService
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddTransient<IMailService, MailService>();
+            services.AddScoped<ILangService, LangService>();
+            services.AddScoped<IUserService, Services.Implements.UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,6 +78,7 @@ namespace LE.UserService
         {
             var mapperConfig = new MapperConfiguration(mc => {
                 mc.AddProfile(new UserProfile());
+                mc.AddProfile(new LanguageProfile());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

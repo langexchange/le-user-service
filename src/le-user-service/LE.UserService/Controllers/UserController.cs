@@ -2,14 +2,13 @@
 using LE.UserService.Dtos;
 using LE.UserService.Models.Requests;
 using LE.UserService.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
 namespace LE.UserService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
     public class UserController : ControllerBase
     {

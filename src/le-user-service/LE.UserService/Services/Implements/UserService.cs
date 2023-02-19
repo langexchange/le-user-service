@@ -24,14 +24,17 @@ namespace LE.UserService.Services.Implements
         public async Task<UserDto> GetUser(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == id);
-            var dto =  _mapper.Map<UserDto>(user);
-            if(user.NativeLang != null)
+            var dto = _mapper.Map<UserDto>(user);
+            if (user.NativeLang != null)
             {
                 var nativeLangs = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == user.NativeLang);
                 dto.NativeLanguage = _mapper.Map<LanguageDto>(nativeLangs);
+                dto.NativeLanguage.Level = user.NativeLevel.Value;
             }
             var targetLangs = await _context.Targetlangs.Where(x => x.Userid == user.Userid).ToListAsync();
-            dto.TargetLanguages = _mapper.Map<List<LanguageDto>>(targetLangs);
+            var targetLangDtos = _mapper.Map<List<LanguageDto>>(targetLangs);
+            targetLangDtos.ForEach(x => { x.Name = _context.Languages.FirstOrDefault(y => y.Langid == x.Id).Name; });
+            dto.TargetLanguages = targetLangDtos;
 
             return dto;
         }
@@ -49,12 +52,13 @@ namespace LE.UserService.Services.Implements
             user.Gender = userDto.Gender ?? user.Gender;
             user.Introduction = userDto.Introduction ?? user.Introduction;
             user.NativeLang = userDto.NativeLanguage.Id == Guid.Empty ? user.NativeLang : userDto.NativeLanguage.Id;
+            user.NativeLevel = userDto.NativeLanguage.Level == 0 ? user.NativeLevel : userDto.NativeLanguage.Level;
             _context.Update(user);
 
             var oldTargetLangs = await _context.Targetlangs.Where(x => x.Userid == id).ToListAsync();
             _context.Targetlangs.RemoveRange(oldTargetLangs);
 
-            var targetLangs =  userDto.TargetLanguages.Select(x => new Targetlang { Langid = x.Id, Userid = id}).ToList();
+            var targetLangs =  userDto.TargetLanguages.Select(x => new Targetlang { Langid = x.Id, Userid = id, TargetLevel = x.Level}).ToList();
             await _context.Targetlangs.AddRangeAsync(targetLangs);
 
             await _context.SaveChangesAsync();
