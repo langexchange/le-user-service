@@ -71,6 +71,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Userpunish> Userpunishes { get; set; }
         public virtual DbSet<Userreportpst> Userreportpsts { get; set; }
         public virtual DbSet<Usrreportcmt> Usrreportcmts { get; set; }
+        public virtual DbSet<Videopost> Videoposts { get; set; }
         public virtual DbSet<Vocabgoal> Vocabgoals { get; set; }
         public virtual DbSet<Vocabpackage> Vocabpackages { get; set; }
         public virtual DbSet<Vocabulary> Vocabularies { get; set; }
@@ -1003,6 +1004,11 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("is_share")
                     .HasDefaultValueSql("'0'::\"bit\"");
 
+                entity.Property(e => e.IsVideo)
+                    .HasColumnType("bit(1)")
+                    .HasColumnName("is_video")
+                    .HasDefaultValueSql("'0'::\"bit\"");
+
                 entity.Property(e => e.Langid).HasColumnName("langid");
 
                 entity.Property(e => e.RestrictBits)
@@ -1625,6 +1631,28 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasForeignKey(d => d.Userid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("usrreportcmt_userid_fkey");
+            });
+
+            modelBuilder.Entity<Videopost>(entity =>
+            {
+                entity.HasKey(e => e.Postid)
+                    .HasName("videopost_pkey");
+
+                entity.ToTable("videopost");
+
+                entity.Property(e => e.Postid)
+                    .HasColumnName("postid")
+                    .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Url)
+                    .HasMaxLength(256)
+                    .HasColumnName("url");
+
+                entity.HasOne(d => d.Post)
+                    .WithOne(p => p.Videopost)
+                    .HasForeignKey<Videopost>(d => d.Postid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("videopost_postid_fkey");
             });
 
             modelBuilder.Entity<Vocabgoal>(entity =>

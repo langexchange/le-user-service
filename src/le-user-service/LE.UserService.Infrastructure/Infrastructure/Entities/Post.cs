@@ -29,6 +29,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public BitArray IsShare { get; set; }
         public BitArray IsPublic { get; set; }
         public BitArray IsRemoved { get; set; }
+        public BitArray IsVideo { get; set; }
 
         public virtual Language Lang { get; set; }
         public virtual User User { get; set; }
@@ -38,6 +39,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public virtual Postpunish Postpunish { get; set; }
         public virtual Roompost Roompost { get; set; }
         public virtual Sharepost SharepostPost { get; set; }
+        public virtual Videopost Videopost { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Posttopic> Posttopics { get; set; }
         public virtual ICollection<Sharepost> SharepostSharedpstNavigations { get; set; }
