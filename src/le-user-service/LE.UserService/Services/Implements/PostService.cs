@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LE.UserService.Services.Implements
 {
-    public class PostService : IPostService
+    public class PostService /*: IPostService*/
     {
         private LanggeneralDbContext _context;
         private readonly IMapper _mapper;
@@ -19,15 +19,15 @@ namespace LE.UserService.Services.Implements
             _mapper = mapper;
         }
 
-        public Task CreatePost(PostDto postDto, CancellationToken cancellationToken = default)
-        {
-            var post = new Post
-            {
-                Postid = Guid.NewGuid(),
-                Langid = postDto.LangId,
-                Userid = postDto.UserId,
-                //IsAudio = postDto.AudioPost.Count > 0 ? 1 : 0;
-            };
-        }
+        //public Task CreatePost(PostDto postDto, CancellationToken cancellationToken = default)
+        //{
+        //    var post = new Post
+        //    {
+        //        Postid = Guid.NewGuid(),
+        //        Langid = postDto.LangId,
+        //        Userid = postDto.UserId,
+        //        //IsAudio = postDto.AudioPost.Count > 0 ? 1 : 0;
+        //    };
+        //}
     }
 }
