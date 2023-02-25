@@ -30,8 +30,8 @@ namespace LE.UserService.Controllers
             return Ok(new { message = "Registration successful" });
         }
 
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate(AuthRequest model)
+        [HttpPost("login")]
+        public IActionResult Login(AuthRequest model)
         {
             var response = _authService.Authenticate(model);
             return Ok(response);

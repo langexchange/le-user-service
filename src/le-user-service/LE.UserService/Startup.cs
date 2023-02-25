@@ -1,5 +1,6 @@
 using AutoMapper;
 using LE.ApiGateway.Extensions;
+using LE.Library.LE.Consul;
 using LE.UserService.AutoMappers;
 using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Services;
@@ -49,6 +50,7 @@ namespace LE.UserService
             services.AddTransient<IMailService, MailService>();
             services.AddScoped<ILangService, LangService>();
             services.AddScoped<IUserService, Services.Implements.UserService>();
+            services.AddConsul();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,6 +66,8 @@ namespace LE.UserService
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseConsul();
 
             //add middleware
             app.UseCustomAuthorization();

@@ -6,8 +6,10 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+ARG NUGET_GITHUB_PASSWORD
 WORKDIR /src
-COPY ["./NuGet.config", "LE.UserService/"]
+COPY ["LE.UserService/NuGet.config", "LE.UserService/"]
+RUN sed -i "s|</configuration>|<packageSourceCredentials><github><add key=\\\"Username\\\" value=\\\"thuongnguyen1508\\\" /><add key=\\\"ClearTextPassword\\\" value=\\\"${NUGET_GITHUB_PASSWORD}\\\" /></github></packageSourceCredentials></configuration>|" "LE.UserService/NuGet.config"
 COPY ["LE.UserService/*.csproj", "LE.UserService/"]
 COPY ["LE.UserService.Infrastructure/*.csproj", "LE.UserService.Infrastructure/"]
 RUN dotnet restore "LE.UserService/LE.UserService.csproj" --configfile ./LE.UserService/NuGet.config
