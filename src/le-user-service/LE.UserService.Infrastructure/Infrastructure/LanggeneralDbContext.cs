@@ -75,7 +75,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Vocabgoal> Vocabgoals { get; set; }
         public virtual DbSet<Vocabpackage> Vocabpackages { get; set; }
         public virtual DbSet<Vocabulary> Vocabularies { get; set; }
-       
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresExtension("uuid-ossp")
@@ -124,9 +124,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                 entity.Property(e => e.Confid).HasColumnName("confid");
 
                 entity.Property(e => e.IsAccepted)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_accepted")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.TimeEnded)
                     .HasColumnType("timestamp with time zone")
@@ -246,9 +245,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("uuid_generate_v4()");
 
                 entity.Property(e => e.IsClosed)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_closed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Owner).HasColumnName("owner");
 
@@ -271,14 +269,12 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("uuid_generate_v4()");
 
                 entity.Property(e => e.Isblock)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("isblock")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Ismute)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("ismute")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Receiver).HasColumnName("receiver");
 
@@ -531,23 +527,20 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("introduction");
 
                 entity.Property(e => e.IsPublic)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_public")
-                    .HasDefaultValueSql("'1'::\"bit\"");
+                    .HasDefaultValueSql("true");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(128)
                     .HasColumnName("name");
 
                 entity.Property(e => e.PostCheck)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("post_check")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Requirement)
                     .HasMaxLength(1024)
@@ -566,9 +559,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                 entity.Property(e => e.Groupid).HasColumnName("groupid");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.RestrictLevel)
                     .HasColumnType("bit(2)")
@@ -608,9 +600,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("uuid_generate_v4()");
 
                 entity.Property(e => e.IsQualified)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_qualified")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Ownerid).HasColumnName("ownerid");
 
@@ -639,14 +630,12 @@ namespace LE.UserService.Infrastructure.Infrastructure
                 entity.Property(e => e.Groupid).HasColumnName("groupid");
 
                 entity.Property(e => e.IsHidden)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_hidden")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsQualified)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_qualified")
-                    .HasDefaultValueSql("'1'::\"bit\"");
+                    .HasDefaultValueSql("true");
 
                 entity.HasOne(d => d.Group)
                     .WithMany(p => p.Groupposts)
@@ -822,9 +811,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                 entity.Property(e => e.Groupid).HasColumnName("groupid");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.HasOne(d => d.Group)
                     .WithMany(p => p.Joingrpreqs)
@@ -970,44 +958,36 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("uuid_generate_v4()");
 
                 entity.Property(e => e.IsAudio)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_audio")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsGroup)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_group")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsImage)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_image")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsPublic)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_public")
-                    .HasDefaultValueSql("'1'::\"bit\"");
+                    .HasDefaultValueSql("true");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsRoom)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_room")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsShare)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_share")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsVideo)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_video")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("true");
 
                 entity.Property(e => e.Label)
                     .HasMaxLength(100)
@@ -1099,9 +1079,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                 entity.Property(e => e.Postid).HasColumnName("postid");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Posttopics)
@@ -1128,9 +1107,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("uuid_generate_v4()");
 
                 entity.Property(e => e.IsRestrict)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_restrict")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Relapse)
                     .HasColumnName("relapse")
@@ -1152,10 +1130,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
                 entity.Property(e => e.User2).HasColumnName("user_2");
 
-                entity.Property(e => e.Type)
-                    .IsRequired()
-                    .HasColumnType("bit(1)")
-                    .HasColumnName("type");
+                entity.Property(e => e.Type).HasColumnName("type");
 
                 entity.HasOne(d => d.User1Navigation)
                     .WithMany(p => p.RelationshipUser1Navigations)
@@ -1316,14 +1291,12 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("uuid_generate_v4()");
 
                 entity.Property(e => e.IsPublic)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_public")
-                    .HasDefaultValueSql("'1'::\"bit\"");
+                    .HasDefaultValueSql("true");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(128)
@@ -1350,9 +1323,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("uuid_generate_v4()");
 
                 entity.Property(e => e.IsQualified)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_qualified")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Ownerid).HasColumnName("ownerid");
 
@@ -1397,19 +1369,16 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("introduction");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsRestrict)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_restrict")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsTutor)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_tutor")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.LastName)
                     .HasMaxLength(64)
@@ -1691,19 +1660,16 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("uuid_generate_v4()");
 
                 entity.Property(e => e.IsPublic)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_public")
-                    .HasDefaultValueSql("'1'::\"bit\"");
+                    .HasDefaultValueSql("true");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsShared)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_shared")
-                    .HasDefaultValueSql("'1'::\"bit\"");
+                    .HasDefaultValueSql("true");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -1752,9 +1718,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("0");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.LastLearned)
                     .HasColumnType("timestamp with time zone")

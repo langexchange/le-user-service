@@ -14,6 +14,7 @@ namespace LE.UserService.Dtos
         public Guid UserId { get; set; }
         public Guid LangId { get; set; }
         public string Text { get; set; }
+        public string Label { get; set; }
         public List<FileOfPost> ImagePost { get; set; }
         public List<FileOfPost> AudioPost { get; set; }
         public List<FileOfPost> VideoPost { get; set; }
