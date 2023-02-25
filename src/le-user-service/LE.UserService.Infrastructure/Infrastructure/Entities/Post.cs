@@ -30,6 +30,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public BitArray IsPublic { get; set; }
         public BitArray IsRemoved { get; set; }
         public BitArray IsVideo { get; set; }
+        public string Label { get; set; }
 
         public virtual Language Lang { get; set; }
         public virtual User User { get; set; }

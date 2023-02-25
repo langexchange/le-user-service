@@ -75,7 +75,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Vocabgoal> Vocabgoals { get; set; }
         public virtual DbSet<Vocabpackage> Vocabpackages { get; set; }
         public virtual DbSet<Vocabulary> Vocabularies { get; set; }
-
+       
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresExtension("uuid-ossp")
@@ -1008,6 +1008,10 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnType("bit(1)")
                     .HasColumnName("is_video")
                     .HasDefaultValueSql("'0'::\"bit\"");
+
+                entity.Property(e => e.Label)
+                    .HasMaxLength(100)
+                    .HasColumnName("label");
 
                 entity.Property(e => e.Langid).HasColumnName("langid");
 
