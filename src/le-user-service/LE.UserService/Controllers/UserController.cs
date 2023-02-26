@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LE.UserService.Controllers
 {
-    [Route("api/user")]
+    [Route("api/users")]
     [ApiController]
     public class UserController : ControllerBase
     {

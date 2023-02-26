@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LE.UserService.Dtos;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
+using LE.UserService.Models.Requests;
 
 namespace LE.UserService.AutoMappers
 {
@@ -10,6 +11,8 @@ namespace LE.UserService.AutoMappers
         {
             CreateMap<Post, PostDto>()
                 .ReverseMap();
+            CreateMap<PostRequest, PostDto>();
+            CreateMap<FileOfPostRequest, FileOfPost>();
         }
     }
 }

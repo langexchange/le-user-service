@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
-namespace LE.UserService.Dtos
+namespace LE.UserService.Models.Responses
 {
-    public class PostDto
+    public class PostRespond
     {
-        public PostDto()
-        {
-            ImagePost = new List<FileOfPost>();
-            AudioPost = new List<FileOfPost>();
-            VideoPost = new List<FileOfPost>();
-        }
         public Guid PostId { get; set; }
-        public Guid UserId { get; set; }
         public Guid LangId { get; set; }
         public string LangName { get; set; }
         public string Text { get; set; }
@@ -21,12 +13,12 @@ namespace LE.UserService.Dtos
         public bool IsTurnOffComment { get; set; }
         public bool IsTurnOffCorrection { get; set; }
         public bool IsTurnOffShare { get; set; }
-        public List<FileOfPost> ImagePost { get; set; }
-        public List<FileOfPost> AudioPost { get; set; }
-        public List<FileOfPost> VideoPost { get; set; }
+        public List<FileOfPostRespond> ImagePost { get; set; }
+        public List<FileOfPostRespond> AudioPost { get; set; }
+        public List<FileOfPostRespond> VideoPost { get; set; }
     }
 
-    public class FileOfPost
+    public class FileOfPostRespond
     {
         public string Type { get; set; }
         public string Url { get; set; }

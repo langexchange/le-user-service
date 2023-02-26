@@ -5,6 +5,7 @@ using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -23,7 +24,7 @@ namespace LE.UserService.Services.Implements
             _mapper = mapper;
         }
 
-        public async Task CreatePost(PostDto postDto, CancellationToken cancellationToken = default)
+        public async Task<Guid> CreatePost(PostDto postDto, CancellationToken cancellationToken = default)
         {
             var post = new Post
             {
@@ -32,10 +33,18 @@ namespace LE.UserService.Services.Implements
                 Userid = postDto.UserId,
                 Label = postDto.Label,
                 Text = postDto.Text,
-                IsAudio = postDto.AudioPost.Count > 0 ? true: false,
-                IsImage = postDto.ImagePost.Count > 0 ? true: false,
-                IsVideo = postDto.VideoPost.Count > 0 ? true: false,
+                IsAudio = postDto.AudioPost.Count > 0 ? true : false,
+                IsImage = postDto.ImagePost.Count > 0 ? true : false,
+                IsVideo = postDto.VideoPost.Count > 0 ? true : false,
+                RestrictBits = new BitArray(3, true)
             };
+            if (postDto.IsTurnOffComment)
+                post.RestrictBits.Set(1, false);
+            if (postDto.IsTurnOffCorrection)
+                post.RestrictBits.Set(2, false);
+            if (postDto.IsTurnOffShare)
+                post.RestrictBits.Set(0, false);
+
             await _context.Posts.AddAsync(post);
 
             if (post.IsAudio.Value)
@@ -55,6 +64,8 @@ namespace LE.UserService.Services.Implements
             }
 
             await _context.SaveChangesAsync();
+
+            return post.Postid;
         }
 
         public async Task UpdatePost(Guid postId, PostDto postDto, CancellationToken cancellationToken = default)
@@ -70,7 +81,16 @@ namespace LE.UserService.Services.Implements
             post.IsAudio = postDto.AudioPost.Count > 0 ? true : false;
             post.IsImage = postDto.ImagePost.Count > 0 ? true : false;
             post.IsVideo = postDto.VideoPost.Count > 0 ? true : false;
+            if (postDto.IsTurnOffComment)
+                post.RestrictBits.Set(1, false);
+            if(postDto.IsTurnOffCorrection)
+                post.RestrictBits.Set(2, false);
+            if (postDto.IsTurnOffShare)
+                post.RestrictBits.Set(0, false);
 
+            _context.Update(post);
+            
+            //update reference table
             var oldAudioPosts = await _context.Audioposts.Where(x => x.Postid == postId).ToListAsync();
             var oldImagePosts = await _context.Imageposts.Where(x => x.Postid == postId).ToListAsync();
             var oldVideoPosts = await _context.Videoposts.Where(x => x.Postid == postId).ToListAsync();
@@ -115,6 +135,15 @@ namespace LE.UserService.Services.Implements
                 case PostState.Delete:
                     post.IsRemoved = true;
                     break;
+                case PostState.TurnOffComment:
+                    post.RestrictBits.Set(1, false);
+                    break;
+                case PostState.TurnOffShare:
+                    post.RestrictBits.Set(0, false);
+                    break;
+                case PostState.TurnOffCorrect:
+                    post.RestrictBits.Set(2, false);
+                    break;
                 default:
                     return;
             }
@@ -129,6 +158,9 @@ namespace LE.UserService.Services.Implements
                 return null;
 
             var postDto = _mapper.Map<PostDto>(post);
+            var language = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == post.Langid);
+            postDto.LangName = language.Name;
+
             if (post.IsAudio.Value)
             {
                 var audioPosts = _context.Audioposts.Where(x => x.Postid == postId).ToList();
@@ -148,10 +180,19 @@ namespace LE.UserService.Services.Implements
             return postDto;
         }
 
-        public async Task<List<PostDto>> GetPostsOfUser(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<List<PostDto>> GetPosts(Guid userId, Mode mode, CancellationToken cancellationToken = default)
         {
-            var posts = await _context.Posts.Where(x => x.Userid == userId).ToListAsync();
-            if (posts == null)
+            var posts = new List<Post>(); 
+            switch (mode)
+            {
+                case Mode.Get:
+                    posts = await _context.Posts.Where(x => x.Userid == userId).ToListAsync();
+                    break;
+                case Mode.Recommend:
+                    // implement
+                    break;
+            }
+            if (posts == null || posts.Count == 0)
                 return null;
 
             //need to query langguage
@@ -159,6 +200,9 @@ namespace LE.UserService.Services.Implements
             foreach(var post in posts)
             {
                 var postDto = _mapper.Map<PostDto>(post);
+                var language = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == post.Langid);
+                postDto.LangName = language.Name;
+
                 if (post.IsAudio.Value)
                 {
                     var audioPosts = _context.Audioposts.Where(x => x.Postid == post.Postid).ToList();
@@ -176,9 +220,13 @@ namespace LE.UserService.Services.Implements
                 }
                 postDtos.Add(postDto);
             }
-            
-
             return postDtos;
+        }
+
+        public async Task<bool> IsBelongToUser(Guid postId, Guid userId, CancellationToken cancellationToken = default)
+        {
+            var post = await _context.Posts.FirstOrDefaultAsync(x => x.Postid == postId);
+            return post?.Userid == userId;
         }
     }
 }
