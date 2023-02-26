@@ -36,6 +36,7 @@ namespace LE.UserService.Services.Implements
                 IsAudio = postDto.AudioPost.Count > 0 ? true : false,
                 IsImage = postDto.ImagePost.Count > 0 ? true : false,
                 IsVideo = postDto.VideoPost.Count > 0 ? true : false,
+                IsPublic = postDto.IsPublic,
                 RestrictBits = new BitArray(3, true)
             };
             if (postDto.IsTurnOffComment)
@@ -81,6 +82,8 @@ namespace LE.UserService.Services.Implements
             post.IsAudio = postDto.AudioPost.Count > 0 ? true : false;
             post.IsImage = postDto.ImagePost.Count > 0 ? true : false;
             post.IsVideo = postDto.VideoPost.Count > 0 ? true : false;
+            post.IsPublic = postDto.IsPublic;
+
             if (postDto.IsTurnOffComment)
                 post.RestrictBits.Set(1, false);
             if(postDto.IsTurnOffCorrection)
@@ -153,13 +156,16 @@ namespace LE.UserService.Services.Implements
 
         public async Task<PostDto> GetPost(Guid postId, CancellationToken cancellationToken = default)
         {
-            var post = await _context.Posts.FirstOrDefaultAsync(x => x.Postid == postId);
+            var post = await _context.Posts.FirstOrDefaultAsync(x => x.Postid == postId && x.IsRemoved.Value == false && x.IsPublic.Value == true);
             if (post == null)
                 return null;
 
             var postDto = _mapper.Map<PostDto>(post);
             var language = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == post.Langid);
             postDto.LangName = language.Name;
+            postDto.IsTurnOffCorrection = !post.RestrictBits.Get(2);
+            postDto.IsTurnOffShare = !post.RestrictBits.Get(0);
+            postDto.IsTurnOffComment = !post.RestrictBits.Get(1);
 
             if (post.IsAudio.Value)
             {
@@ -169,12 +175,12 @@ namespace LE.UserService.Services.Implements
             if (post.IsImage.Value)
             {
                 var imagePosts = _context.Imageposts.Where(x => x.Postid == postId).ToList();
-                postDto.AudioPost = imagePosts.Select(x => new FileOfPost { Type = "image", Url = x.Url }).ToList();
+                postDto.ImagePost = imagePosts.Select(x => new FileOfPost { Type = "image", Url = x.Url }).ToList();
             }
             if (post.IsVideo.Value)
             {
                 var videoPosts = _context.Imageposts.Where(x => x.Postid == postId).ToList();
-                postDto.AudioPost = videoPosts.Select(x => new FileOfPost { Type = "video", Url = x.Url }).ToList();
+                postDto.VideoPost = videoPosts.Select(x => new FileOfPost { Type = "video", Url = x.Url }).ToList();
             }
 
             return postDto;
@@ -186,7 +192,7 @@ namespace LE.UserService.Services.Implements
             switch (mode)
             {
                 case Mode.Get:
-                    posts = await _context.Posts.Where(x => x.Userid == userId).ToListAsync();
+                    posts = await _context.Posts.Where(x => x.Userid == userId && x.IsRemoved.Value == false).ToListAsync();
                     break;
                 case Mode.Recommend:
                     // implement
@@ -202,6 +208,9 @@ namespace LE.UserService.Services.Implements
                 var postDto = _mapper.Map<PostDto>(post);
                 var language = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == post.Langid);
                 postDto.LangName = language.Name;
+                postDto.IsTurnOffCorrection = !post.RestrictBits.Get(2);
+                postDto.IsTurnOffShare = !post.RestrictBits.Get(0);
+                postDto.IsTurnOffComment = !post.RestrictBits.Get(1);
 
                 if (post.IsAudio.Value)
                 {
@@ -211,12 +220,12 @@ namespace LE.UserService.Services.Implements
                 if (post.IsImage.Value)
                 {
                     var imagePosts = _context.Imageposts.Where(x => x.Postid == post.Postid).ToList();
-                    postDto.AudioPost = imagePosts.Select(x => new FileOfPost { Type = "image", Url = x.Url }).ToList();
+                    postDto.ImagePost = imagePosts.Select(x => new FileOfPost { Type = "image", Url = x.Url }).ToList();
                 }
                 if (post.IsVideo.Value)
                 {
                     var videoPosts = _context.Imageposts.Where(x => x.Postid == post.Postid).ToList();
-                    postDto.AudioPost = videoPosts.Select(x => new FileOfPost { Type = "video", Url = x.Url }).ToList();
+                    postDto.VideoPost = videoPosts.Select(x => new FileOfPost { Type = "video", Url = x.Url }).ToList();
                 }
                 postDtos.Add(postDto);
             }

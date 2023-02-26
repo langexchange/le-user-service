@@ -32,8 +32,8 @@ namespace LE.UserService.Controllers
             
             var dto = _mapper.Map<PostDto>(request);
             dto.UserId = id;
-            await _postService.CreatePost(dto, cancellationToken);
-            return Ok();
+            var postId = await _postService.CreatePost(dto, cancellationToken);
+            return Ok(postId);
         }
 
         [HttpPut("{id}/posts/{postId}/update")]
@@ -59,6 +59,13 @@ namespace LE.UserService.Controllers
             PostState state = PostHelper.GetState(mode);
             await _postService.SetPostState(postId, state, cancellationToken);
             return Ok();
+        }
+
+        [HttpGet("/api/posts/{postId}")]
+        public async Task<IActionResult> GetPost(Guid postId, CancellationToken cancellationToken = default)
+        {
+            var dto = await _postService.GetPost(postId, cancellationToken);
+            return Ok(dto);
         }
 
         [HttpGet("{id}/posts")]

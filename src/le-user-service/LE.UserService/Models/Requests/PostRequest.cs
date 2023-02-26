@@ -11,6 +11,7 @@ namespace LE.UserService.Models.Requests
         public bool IsTurnOffComment { get; set; } = false;
         public bool IsTurnOffCorrection { get; set; } = false;
         public bool IsTurnOffShare { get; set; } = false;
+        public bool IsPublic { get; set; } = true;
         public List<FileOfPostRequest> ImagePost { get; set;}
         public List<FileOfPostRequest> AudioPost { get; set;}
         public List<FileOfPostRequest> VideoPost { get; set;}

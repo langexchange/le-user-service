@@ -64,5 +64,20 @@ namespace LE.UserService.Services.Implements
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<LanguageDto>> GetUserLanguages(Guid id, CancellationToken cancellationToken = default)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == id);
+            if(user == null)
+                return null;
+            var dtos = new List<LanguageDto>();
+            var nativeLang = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == user.NativeLang);
+            dtos.Add(_mapper.Map<LanguageDto>(nativeLang));
+
+            var langIds = await _context.Targetlangs.Where(x => x.Userid == id).Select(x => x.Langid).ToListAsync();
+            var targetLangs = await _context.Languages.Where(x => langIds.Contains(x.Langid)).ToListAsync();
+            dtos.AddRange(_mapper.Map<IEnumerable<LanguageDto>>(targetLangs));
+            return dtos;
+        }
     }
 }
