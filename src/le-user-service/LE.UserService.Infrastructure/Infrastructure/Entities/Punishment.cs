@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections;
 
 #nullable disable
 
@@ -18,9 +17,9 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         }
 
         public Guid Punishid { get; set; }
-        public BitArray IsRestrict { get; set; }
         public int? Relapse { get; set; }
         public string Type { get; set; }
+        public bool? IsRestrict { get; set; }
 
         public virtual ICollection<Cmtpunish> Cmtpunishes { get; set; }
         public virtual ICollection<Grouppunish> Grouppunishes { get; set; }

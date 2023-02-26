@@ -22,14 +22,15 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public string Text { get; set; }
         public Guid? Langid { get; set; }
         public BitArray RestrictBits { get; set; }
-        public BitArray IsAudio { get; set; }
-        public BitArray IsImage { get; set; }
-        public BitArray IsGroup { get; set; }
-        public BitArray IsRoom { get; set; }
-        public BitArray IsShare { get; set; }
-        public BitArray IsPublic { get; set; }
-        public BitArray IsRemoved { get; set; }
-        public BitArray IsVideo { get; set; }
+        public string Label { get; set; }
+        public bool? IsAudio { get; set; }
+        public bool? IsImage { get; set; }
+        public bool? IsGroup { get; set; }
+        public bool? IsRoom { get; set; }
+        public bool? IsShare { get; set; }
+        public bool? IsPublic { get; set; }
+        public bool? IsVideo { get; set; }
+        public bool? IsRemoved { get; set; }
 
         public virtual Language Lang { get; set; }
         public virtual User User { get; set; }

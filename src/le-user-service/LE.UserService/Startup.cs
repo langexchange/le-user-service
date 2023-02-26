@@ -50,6 +50,7 @@ namespace LE.UserService
             services.AddTransient<IMailService, MailService>();
             services.AddScoped<ILangService, LangService>();
             services.AddScoped<IUserService, Services.Implements.UserService>();
+            services.AddScoped<IPostService, PostService>();
             services.AddConsul();
         }
 
@@ -83,6 +84,7 @@ namespace LE.UserService
             var mapperConfig = new MapperConfiguration(mc => {
                 mc.AddProfile(new UserProfile());
                 mc.AddProfile(new LanguageProfile());
+                mc.AddProfile(new PostProfile());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

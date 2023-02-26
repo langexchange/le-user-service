@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections;
 
 #nullable disable
 
@@ -46,11 +45,11 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public string LastName { get; set; }
         public string Gender { get; set; }
         public string Introduction { get; set; }
-        public BitArray IsTutor { get; set; }
-        public BitArray IsRestrict { get; set; }
-        public BitArray IsRemoved { get; set; }
         public int? NativeLevel { get; set; }
         public int IncreateId { get; set; }
+        public bool? IsTutor { get; set; }
+        public bool? IsRestrict { get; set; }
+        public bool? IsRemoved { get; set; }
 
         public virtual Language NativeLangNavigation { get; set; }
         public virtual Notibox NotiboxNavigation { get; set; }

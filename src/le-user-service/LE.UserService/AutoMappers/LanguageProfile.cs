@@ -2,6 +2,7 @@
 using LE.UserService.Dtos;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
 using LE.UserService.Models.Requests;
+using LE.UserService.Models.Responses;
 
 namespace LE.UserService.AutoMappers
 {
@@ -19,6 +20,7 @@ namespace LE.UserService.AutoMappers
                 .ReverseMap();
 
             CreateMap<LanguageRequest, LanguageDto>();
+            CreateMap<LanguageDto, LangResponse>();
         }
     }
 }

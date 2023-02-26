@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections;
 
 #nullable disable
 
@@ -19,7 +18,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public int? Repetitions { get; set; }
         public decimal? Easiness { get; set; }
         public int? Interval { get; set; }
-        public BitArray IsRemoved { get; set; }
+        public bool? IsRemoved { get; set; }
 
         public virtual Vocabpackage Package { get; set; }
     }

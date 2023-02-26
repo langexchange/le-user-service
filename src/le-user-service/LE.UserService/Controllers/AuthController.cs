@@ -37,7 +37,7 @@ namespace LE.UserService.Controllers
             return Ok(response);
         }
         
-        [HttpPost("user/{id}/send-mail")]
+        [HttpPost("users/{id}/send-mail")]
         public async Task<IActionResult> SendMail(Guid id)
         {
             var user = _authService.GetById(id);
