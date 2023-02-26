@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections;
 
 #nullable disable
 
@@ -18,10 +17,10 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public Guid Userid { get; set; }
         public Guid Postid { get; set; }
         public string Text { get; set; }
-        public BitArray IsImage { get; set; }
-        public BitArray IsCorrect { get; set; }
-        public BitArray IsAudio { get; set; }
-        public BitArray IsRemoved { get; set; }
+        public bool? IsImage { get; set; }
+        public bool? IsCorrect { get; set; }
+        public bool? IsAudio { get; set; }
+        public bool? IsRemoved { get; set; }
 
         public virtual Post Post { get; set; }
         public virtual User User { get; set; }

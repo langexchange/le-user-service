@@ -382,24 +382,20 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("uuid_generate_v4()");
 
                 entity.Property(e => e.IsAudio)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_audio")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsCorrect)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_correct")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsImage)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_image")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Postid).HasColumnName("postid");
 
@@ -1408,6 +1404,14 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .IsRequired()
                     .HasMaxLength(128)
                     .HasColumnName("password");
+
+                entity.Property(e => e.TempToken)
+                    .HasMaxLength(128)
+                    .HasColumnName("temp_token");
+
+                entity.Property(e => e.UserName)
+                    .HasMaxLength(32)
+                    .HasColumnName("user_name");
 
                 entity.HasOne(d => d.NativeLangNavigation)
                     .WithMany(p => p.Users)

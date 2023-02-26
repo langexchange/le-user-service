@@ -50,6 +50,8 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public bool? IsTutor { get; set; }
         public bool? IsRestrict { get; set; }
         public bool? IsRemoved { get; set; }
+        public string TempToken { get; set; }
+        public string UserName { get; set; }
 
         public virtual Language NativeLangNavigation { get; set; }
         public virtual Notibox NotiboxNavigation { get; set; }
