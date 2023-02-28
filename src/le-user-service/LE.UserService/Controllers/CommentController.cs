@@ -42,13 +42,15 @@ namespace LE.UserService.Controllers
                 return BadRequest("Empty request");
             if (!await _commentService.IsBelongToPost(postId, commentId, cancellationToken))
                 return BadRequest("Comment is not belong to post");
+            if (!await _commentService.IsBelongToUser(id, commentId, cancellationToken))
+                return BadRequest("Comment is not belong to user");
 
             var dto = _mapper.Map<CommentDto>(request);
             await _commentService.UpdateComment(commentId, dto, cancellationToken);
             return Ok();
         }
 
-        [HttpGet("{postId}/comments")]
+        [HttpGet("/api/posts/{postId}/comments")]
         public async Task<IActionResult> GetComments(Guid postId, CancellationToken cancellationToken = default)
         {
             var dtos = await _commentService.GetComments(postId, cancellationToken);
