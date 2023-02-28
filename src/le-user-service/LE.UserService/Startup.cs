@@ -51,6 +51,7 @@ namespace LE.UserService
             services.AddScoped<ILangService, LangService>();
             services.AddScoped<IUserService, Services.Implements.UserService>();
             services.AddScoped<IPostService, PostService>();
+            services.AddScoped<ICommentService, CommentService>();
             services.AddConsul();
         }
 

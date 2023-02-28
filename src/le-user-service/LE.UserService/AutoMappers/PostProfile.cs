@@ -13,6 +13,11 @@ namespace LE.UserService.AutoMappers
                 .ReverseMap();
             CreateMap<PostRequest, PostDto>();
             CreateMap<FileOfPostRequest, FileOfPost>();
+
+            CreateMap<Comment, CommentDto>()
+                .ReverseMap();
+            CreateMap<CommentRequest, CommentDto>();
+            CreateMap<FileOfCommentRequest, FileOfComment>();
         }
     }
 }
