@@ -43,6 +43,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
+        public string UserName { get; set; }
         public string Gender { get; set; }
         public string Introduction { get; set; }
         public int? NativeLevel { get; set; }
@@ -51,7 +52,6 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public bool? IsRestrict { get; set; }
         public bool? IsRemoved { get; set; }
         public string TempToken { get; set; }
-        public string UserName { get; set; }
 
         public virtual Language NativeLangNavigation { get; set; }
         public virtual Notibox NotiboxNavigation { get; set; }

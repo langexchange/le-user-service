@@ -9,7 +9,10 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
     {
         public Comment()
         {
+            Audiocmts = new HashSet<Audiocmt>();
             Cmtinteracts = new HashSet<Cmtinteract>();
+            Correctcmts = new HashSet<Correctcmt>();
+            Imagecmts = new HashSet<Imagecmt>();
             Usrreportcmts = new HashSet<Usrreportcmt>();
         }
 
@@ -24,11 +27,11 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
 
         public virtual Post Post { get; set; }
         public virtual User User { get; set; }
-        public virtual Audiocmt Audiocmt { get; set; }
         public virtual Cmtpunish Cmtpunish { get; set; }
-        public virtual Correctcmt Correctcmt { get; set; }
-        public virtual Imagecmt Imagecmt { get; set; }
+        public virtual ICollection<Audiocmt> Audiocmts { get; set; }
         public virtual ICollection<Cmtinteract> Cmtinteracts { get; set; }
+        public virtual ICollection<Correctcmt> Correctcmts { get; set; }
+        public virtual ICollection<Imagecmt> Imagecmts { get; set; }
         public virtual ICollection<Usrreportcmt> Usrreportcmts { get; set; }
     }
 }

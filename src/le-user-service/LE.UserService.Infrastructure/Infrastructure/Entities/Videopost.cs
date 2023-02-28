@@ -7,6 +7,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
 {
     public partial class Videopost
     {
+        public Guid Videopostid { get; set; }
         public Guid Postid { get; set; }
         public string Url { get; set; }
 
