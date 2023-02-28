@@ -144,14 +144,13 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
             modelBuilder.Entity<Audiocmt>(entity =>
             {
-                entity.HasKey(e => e.Commentid)
-                    .HasName("audiocmt_pkey");
-
                 entity.ToTable("audiocmt");
 
-                entity.Property(e => e.Commentid)
-                    .HasColumnName("commentid")
+                entity.Property(e => e.Audiocmtid)
+                    .HasColumnName("audiocmtid")
                     .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Commentid).HasColumnName("commentid");
 
                 entity.Property(e => e.Url)
                     .IsRequired()
@@ -159,8 +158,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("url");
 
                 entity.HasOne(d => d.Comment)
-                    .WithOne(p => p.Audiocmt)
-                    .HasForeignKey<Audiocmt>(d => d.Commentid)
+                    .WithMany(p => p.Audiocmts)
+                    .HasForeignKey(d => d.Commentid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("audiocmt_commentid_fkey");
             });
@@ -213,22 +212,21 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
             modelBuilder.Entity<Audiopost>(entity =>
             {
-                entity.HasKey(e => e.Postid)
-                    .HasName("audiopost_pkey");
-
                 entity.ToTable("audiopost");
 
-                entity.Property(e => e.Postid)
-                    .HasColumnName("postid")
+                entity.Property(e => e.Audiopostid)
+                    .HasColumnName("audiopostid")
                     .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Postid).HasColumnName("postid");
 
                 entity.Property(e => e.Url)
                     .HasMaxLength(256)
                     .HasColumnName("url");
 
                 entity.HasOne(d => d.Post)
-                    .WithOne(p => p.Audiopost)
-                    .HasForeignKey<Audiopost>(d => d.Postid)
+                    .WithMany(p => p.Audioposts)
+                    .HasForeignKey(d => d.Postid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("audiopost_postid_fkey");
             });
@@ -382,24 +380,20 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasDefaultValueSql("uuid_generate_v4()");
 
                 entity.Property(e => e.IsAudio)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_audio")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsCorrect)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_correct")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsImage)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_image")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.IsRemoved)
-                    .HasColumnType("bit(1)")
                     .HasColumnName("is_removed")
-                    .HasDefaultValueSql("'0'::\"bit\"");
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Postid).HasColumnName("postid");
 
@@ -424,22 +418,21 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
             modelBuilder.Entity<Correctcmt>(entity =>
             {
-                entity.HasKey(e => e.Commentid)
-                    .HasName("correctcmt_pkey");
-
                 entity.ToTable("correctcmt");
 
-                entity.Property(e => e.Commentid)
-                    .HasColumnName("commentid")
+                entity.Property(e => e.Correctcmtid)
+                    .HasColumnName("correctcmtid")
                     .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Commentid).HasColumnName("commentid");
 
                 entity.Property(e => e.CorrectText)
                     .HasMaxLength(2048)
                     .HasColumnName("correct_text");
 
                 entity.HasOne(d => d.Comment)
-                    .WithOne(p => p.Correctcmt)
-                    .HasForeignKey<Correctcmt>(d => d.Commentid)
+                    .WithMany(p => p.Correctcmts)
+                    .HasForeignKey(d => d.Commentid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("correctcmt_commentid_fkey");
             });
@@ -698,14 +691,13 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
             modelBuilder.Entity<Imagecmt>(entity =>
             {
-                entity.HasKey(e => e.Commentid)
-                    .HasName("imagecmt_pkey");
-
                 entity.ToTable("imagecmt");
 
-                entity.Property(e => e.Commentid)
-                    .HasColumnName("commentid")
+                entity.Property(e => e.Imagecmtid)
+                    .HasColumnName("imagecmtid")
                     .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Commentid).HasColumnName("commentid");
 
                 entity.Property(e => e.Url)
                     .IsRequired()
@@ -713,8 +705,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("url");
 
                 entity.HasOne(d => d.Comment)
-                    .WithOne(p => p.Imagecmt)
-                    .HasForeignKey<Imagecmt>(d => d.Commentid)
+                    .WithMany(p => p.Imagecmts)
+                    .HasForeignKey(d => d.Commentid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("imagecmt_commentid_fkey");
             });
@@ -762,22 +754,21 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
             modelBuilder.Entity<Imagepost>(entity =>
             {
-                entity.HasKey(e => e.Postid)
-                    .HasName("imagepost_pkey");
-
                 entity.ToTable("imagepost");
 
-                entity.Property(e => e.Postid)
-                    .HasColumnName("postid")
+                entity.Property(e => e.Imagepostid)
+                    .HasColumnName("imagepostid")
                     .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Postid).HasColumnName("postid");
 
                 entity.Property(e => e.Url)
                     .HasMaxLength(256)
                     .HasColumnName("url");
 
                 entity.HasOne(d => d.Post)
-                    .WithOne(p => p.Imagepost)
-                    .HasForeignKey<Imagepost>(d => d.Postid)
+                    .WithMany(p => p.Imageposts)
+                    .HasForeignKey(d => d.Postid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("imagepost_postid_fkey");
             });
@@ -1409,6 +1400,14 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasMaxLength(128)
                     .HasColumnName("password");
 
+                entity.Property(e => e.TempToken)
+                    .HasMaxLength(128)
+                    .HasColumnName("temp_token");
+
+                entity.Property(e => e.UserName)
+                    .HasMaxLength(32)
+                    .HasColumnName("user_name");
+
                 entity.HasOne(d => d.NativeLangNavigation)
                     .WithMany(p => p.Users)
                     .HasForeignKey(d => d.NativeLang)
@@ -1608,22 +1607,21 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
             modelBuilder.Entity<Videopost>(entity =>
             {
-                entity.HasKey(e => e.Postid)
-                    .HasName("videopost_pkey");
-
                 entity.ToTable("videopost");
 
-                entity.Property(e => e.Postid)
-                    .HasColumnName("postid")
+                entity.Property(e => e.Videopostid)
+                    .HasColumnName("videopostid")
                     .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Postid).HasColumnName("postid");
 
                 entity.Property(e => e.Url)
                     .HasMaxLength(256)
                     .HasColumnName("url");
 
                 entity.HasOne(d => d.Post)
-                    .WithOne(p => p.Videopost)
-                    .HasForeignKey<Videopost>(d => d.Postid)
+                    .WithMany(p => p.Videoposts)
+                    .HasForeignKey(d => d.Postid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("videopost_postid_fkey");
             });

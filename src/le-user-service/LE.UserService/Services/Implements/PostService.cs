@@ -47,6 +47,7 @@ namespace LE.UserService.Services.Implements
                 post.RestrictBits.Set(0, false);
 
             await _context.Posts.AddAsync(post);
+            await _context.SaveChangesAsync();
 
             if (post.IsAudio.Value)
             {
@@ -205,28 +206,7 @@ namespace LE.UserService.Services.Implements
             var postDtos = new List<PostDto>();
             foreach(var post in posts)
             {
-                var postDto = _mapper.Map<PostDto>(post);
-                var language = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == post.Langid);
-                postDto.LangName = language.Name;
-                postDto.IsTurnOffCorrection = !post.RestrictBits.Get(2);
-                postDto.IsTurnOffShare = !post.RestrictBits.Get(0);
-                postDto.IsTurnOffComment = !post.RestrictBits.Get(1);
-
-                if (post.IsAudio.Value)
-                {
-                    var audioPosts = _context.Audioposts.Where(x => x.Postid == post.Postid).ToList();
-                    postDto.AudioPost = audioPosts.Select(x => new FileOfPost { Type = "audio", Url = x.Url }).ToList();
-                }
-                if (post.IsImage.Value)
-                {
-                    var imagePosts = _context.Imageposts.Where(x => x.Postid == post.Postid).ToList();
-                    postDto.ImagePost = imagePosts.Select(x => new FileOfPost { Type = "image", Url = x.Url }).ToList();
-                }
-                if (post.IsVideo.Value)
-                {
-                    var videoPosts = _context.Imageposts.Where(x => x.Postid == post.Postid).ToList();
-                    postDto.VideoPost = videoPosts.Select(x => new FileOfPost { Type = "video", Url = x.Url }).ToList();
-                }
+                var postDto = await GetPost(post.Postid, cancellationToken);
                 postDtos.Add(postDto);
             }
             return postDtos;
