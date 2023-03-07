@@ -180,7 +180,7 @@ namespace LE.UserService.Services.Implements
             }
             if (post.IsVideo.Value)
             {
-                var videoPosts = _context.Imageposts.Where(x => x.Postid == postId).ToList();
+                var videoPosts = _context.Videoposts.Where(x => x.Postid == postId).ToList();
                 postDto.VideoPost = videoPosts.Select(x => new FileOfPost { Type = "video", Url = x.Url }).ToList();
             }
 
