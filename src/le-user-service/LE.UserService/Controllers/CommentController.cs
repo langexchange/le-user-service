@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LE.UserService.Dtos;
+using LE.UserService.Helpers;
 using LE.UserService.Models.Requests;
 using LE.UserService.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -65,6 +66,21 @@ namespace LE.UserService.Controllers
 
             await _commentService.DeleteComment(commentId, cancellationToken);
             return Ok();
+        }
+
+        [HttpPost("/api/users/{id}/interact/{mode}/comments/{commentId}")]
+        public async Task<IActionResult> InteractPost(Guid id, Guid commentId, int mode, CancellationToken cancellationToken = default)
+        {
+            var state = PostHelper.GetInteractMode(mode);
+            await _commentService.InteractComment(commentId, id, state, cancellationToken);
+            return Ok();
+        }
+
+        [HttpGet("/api/comments/{commentId}/interacts")]
+        public async Task<IActionResult> GetInteractComment(Guid commentId, CancellationToken cancellationToken = default)
+        {
+            var numOfInteract = await _commentService.GetCmtInteract(commentId, cancellationToken);
+            return Ok(numOfInteract);
         }
     }
 }

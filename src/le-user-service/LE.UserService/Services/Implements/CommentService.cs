@@ -62,6 +62,10 @@ namespace LE.UserService.Services.Implements
                 return null;
 
             var commentDto = _mapper.Map<CommentDto>(comment);
+
+            var numOfInteract = await _context.Cmtinteracts.Where(x => x.Commentid == commentId).CountAsync(cancellationToken);
+            commentDto.NumOfInteract = numOfInteract;
+
             if (comment.IsCorrect.Value)
             {
                 var correctCmt = await _context.Correctcmts.FirstOrDefaultAsync(x => x.Commentid == commentId);
@@ -162,6 +166,42 @@ namespace LE.UserService.Services.Implements
             comment.IsRemoved = true;
             _context.Update(comment);
             _context.SaveChanges();
+        }
+
+        public async Task InteractComment(Guid commentId, Guid userId, string mode, CancellationToken cancellationToken = default)
+        {
+            await InitInteraction();
+            var interactType = await _context.Interactions.ToListAsync();
+
+            var cmtInteract = await _context.Cmtinteracts.FirstOrDefaultAsync(x => x.Userid == userId && x.Commentid == commentId);
+            var interactTypeId = interactType.Where(x => x.Stringcode.Equals(mode)).FirstOrDefault()?.Interactid;
+            if (cmtInteract == null)
+                _context.Add(new Cmtinteract { Userid = userId, Commentid = commentId, InteractType = interactTypeId.Value });
+            else
+            {
+                cmtInteract.InteractType = interactTypeId.HasValue ? interactTypeId.Value : cmtInteract.InteractType;
+                _context.Cmtinteracts.Update(cmtInteract);
+            }
+            _context.SaveChanges();
+        }
+
+        private async Task InitInteraction()
+        {
+            var interactType = await _context.Interactions.FirstOrDefaultAsync();
+            if (interactType != null)
+                return;
+
+            _context.Interactions.AddRange(
+                new Interaction { Stringcode = "Like" },
+                new Interaction { Stringcode = "Favorite" }
+                );
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> GetCmtInteract(Guid commentId, CancellationToken cancellationToken = default)
+        {
+            var numOfInteract = await _context.Cmtinteracts.Where(x => x.Commentid == commentId).CountAsync(cancellationToken);
+            return numOfInteract;
         }
     }
 }

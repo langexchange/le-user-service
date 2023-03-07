@@ -15,6 +15,7 @@ namespace LE.UserService.Dtos
         public Guid PostId { get; set; }
         public string Text { get; set; }
         public string Correctcmt { get; set; }
+        public int NumOfInteract { get; set; }
         public List<FileOfComment> Audiocmts { get; set; }
         public List<FileOfComment> Imagecmts { get; set; }
 

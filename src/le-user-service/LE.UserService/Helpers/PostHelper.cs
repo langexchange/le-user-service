@@ -33,5 +33,22 @@ namespace LE.UserService.Helpers
             }
             return state;
         }
+
+        public static string GetInteractMode(int mode)
+        {
+            string state;
+            switch (mode)
+            {
+                case 0:
+                    state = "Like";
+                    break;
+                case 1:
+                    state = "Favorite";
+                    break;
+                default:
+                    return "Like";
+            }
+            return state;
+        }
     }
 }

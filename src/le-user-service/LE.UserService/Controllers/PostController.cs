@@ -81,5 +81,20 @@ namespace LE.UserService.Controllers
             var dtos = await _postService.GetPosts(id, Mode.Recommend, cancellationToken);
             return Ok(dtos);
         }
+
+        [HttpPost("{id}/interact/{mode}/posts/{postId}")]
+        public async Task<IActionResult> InteractPost(Guid id, Guid postId, int mode, CancellationToken cancellationToken = default)
+        {
+            var state = PostHelper.GetInteractMode(mode);
+            await _postService.InteractPost(postId, id, state, cancellationToken);
+            return Ok();
+        }
+
+        [HttpGet("/api/posts/{postId}/interacts")]
+        public async Task<IActionResult> GetInteractPost(Guid postId, CancellationToken cancellationToken = default)
+        {
+            var numOfInteract = await _postService.GetPostInteract(postId, cancellationToken);
+            return Ok(numOfInteract);
+        }
     }
 }

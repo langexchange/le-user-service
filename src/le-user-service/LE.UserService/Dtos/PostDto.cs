@@ -24,6 +24,7 @@ namespace LE.UserService.Dtos
         public bool IsTurnOffComment { get; set; }
         public bool IsTurnOffCorrection { get; set; }
         public bool IsTurnOffShare { get; set; }
+        public int NumOfInteract { get; set; }
         public List<FileOfPost> ImagePost { get; set; }
         public List<FileOfPost> AudioPost { get; set; }
         public List<FileOfPost> VideoPost { get; set; }

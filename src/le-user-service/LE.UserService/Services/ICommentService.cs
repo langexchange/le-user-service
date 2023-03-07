@@ -14,5 +14,7 @@ namespace LE.UserService.Services
         Task<bool> IsBelongToPost(Guid postId, Guid commentId, CancellationToken cancellationToken = default);
         Task<bool> IsBelongToUser(Guid useId, Guid commentId, CancellationToken cancellationToken = default);
         Task DeleteComment(Guid commentId, CancellationToken cancellationToken = default);
+        Task InteractComment(Guid commentId, Guid userId, string mode, CancellationToken cancellationToken = default);
+        Task<int> GetCmtInteract(Guid commentId, CancellationToken cancellationToken = default);
     }
 }

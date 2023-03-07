@@ -15,5 +15,7 @@ namespace LE.UserService.Services
         Task UpdatePost(Guid postId, PostDto postDto, CancellationToken cancellationToken = default);
         Task SetPostState(Guid postId, PostState state, CancellationToken cancellationToken = default);
         Task<bool> IsBelongToUser(Guid postId, Guid userId, CancellationToken cancellationToken = default);
+        Task InteractPost(Guid postId, Guid userId, string mode, CancellationToken cancellationToken = default);
+        Task<int> GetPostInteract(Guid postId, CancellationToken cancellationToken = default);
     }
 }
