@@ -168,6 +168,9 @@ namespace LE.UserService.Services.Implements
             postDto.IsTurnOffShare = !post.RestrictBits.Get(0);
             postDto.IsTurnOffComment = !post.RestrictBits.Get(1);
 
+            var numOfInteract = await _context.Userintposts.Where(x => x.Postid == postId).CountAsync(cancellationToken);
+            postDto.NumOfInteract = numOfInteract;
+
             if (post.IsAudio.Value)
             {
                 var audioPosts = _context.Audioposts.Where(x => x.Postid == postId).ToList();
@@ -183,7 +186,6 @@ namespace LE.UserService.Services.Implements
                 var videoPosts = _context.Videoposts.Where(x => x.Postid == postId).ToList();
                 postDto.VideoPost = videoPosts.Select(x => new FileOfPost { Type = "video", Url = x.Url }).ToList();
             }
-
             return postDto;
         }
 
@@ -216,6 +218,42 @@ namespace LE.UserService.Services.Implements
         {
             var post = await _context.Posts.FirstOrDefaultAsync(x => x.Postid == postId);
             return post?.Userid == userId;
+        }
+
+        public async Task InteractPost(Guid postId, Guid userId, string mode, CancellationToken cancellationToken = default)
+        {
+            await InitInteraction();
+            var interactType = await _context.Interactions.ToListAsync();
+
+            var userInteractPost = await _context.Userintposts.FirstOrDefaultAsync(x => x.Userid == userId && x.Postid == postId);
+            var interactTypeId = interactType.Where(x => x.Stringcode.Equals(mode)).FirstOrDefault()?.Interactid;
+            if (userInteractPost == null)
+                _context.Add(new Userintpost { Userid = userId, Postid = postId, InteractType = interactTypeId.Value });
+            else
+            {
+                userInteractPost.InteractType = interactTypeId.HasValue ? interactTypeId.Value : userInteractPost.InteractType;
+                _context.Userintposts.Update(userInteractPost);
+            }
+            _context.SaveChanges();
+        }
+
+        private async Task InitInteraction()
+        {
+            var interactType = await _context.Interactions.FirstOrDefaultAsync();
+            if (interactType != null)
+                return;
+            
+            _context.Interactions.AddRange(
+                new Interaction { Stringcode = "Like" },
+                new Interaction { Stringcode = "Favorite" }
+                );
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> GetPostInteract(Guid postId, CancellationToken cancellationToken = default)
+        {
+            var numOfInteract = await _context.Userintposts.Where(x => x.Postid == postId).CountAsync(cancellationToken);
+            return numOfInteract;
         }
     }
 }
