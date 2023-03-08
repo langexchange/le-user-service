@@ -32,6 +32,7 @@ namespace LE.UserService.Controllers
             
             var dto = _mapper.Map<PostDto>(request);
             dto.UserId = id;
+            dto.CreatedAt = DateTime.UtcNow;
             var postId = await _postService.CreatePost(dto, cancellationToken);
             return Ok(postId);
         }
@@ -46,6 +47,7 @@ namespace LE.UserService.Controllers
 
             var dto = _mapper.Map<PostDto>(request);
             dto.UserId = id;
+            dto.UpdatedAt = DateTime.UtcNow;
             await _postService.UpdatePost(postId, dto, cancellationToken);
             return Ok();
         }

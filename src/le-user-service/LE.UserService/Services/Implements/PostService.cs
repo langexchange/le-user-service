@@ -33,6 +33,7 @@ namespace LE.UserService.Services.Implements
                 Userid = postDto.UserId,
                 Label = postDto.Label,
                 Text = postDto.Text,
+                CreatedAt = postDto.CreatedAt,
                 IsAudio = postDto.AudioPost.Count > 0 ? true : false,
                 IsImage = postDto.ImagePost.Count > 0 ? true : false,
                 IsVideo = postDto.VideoPost.Count > 0 ? true : false,
@@ -84,6 +85,7 @@ namespace LE.UserService.Services.Implements
             post.IsImage = postDto.ImagePost.Count > 0 ? true : false;
             post.IsVideo = postDto.VideoPost.Count > 0 ? true : false;
             post.IsPublic = postDto.IsPublic;
+            post.UpdatedAt = post.UpdatedAt;
 
             if (postDto.IsTurnOffComment)
                 post.RestrictBits.Set(1, false);
@@ -170,6 +172,15 @@ namespace LE.UserService.Services.Implements
 
             var numOfInteract = await _context.Userintposts.Where(x => x.Postid == postId).CountAsync(cancellationToken);
             postDto.NumOfInteract = numOfInteract;
+
+            var numOfCmt = await _context.Comments.Where(x => x.Postid == postId && x.IsRemoved.Value == false).CountAsync(cancellationToken);
+            postDto.NumOfCmt = numOfCmt;
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == post.Userid);
+            postDto.UserInfo.Id = post.Userid.Value;
+            postDto.UserInfo.FirstName = user?.FirstName;
+            postDto.UserInfo.LastName = user?.LastName;
+            //postDto.UserInfo.Avatar = user?.LastName;
 
             if (post.IsAudio.Value)
             {

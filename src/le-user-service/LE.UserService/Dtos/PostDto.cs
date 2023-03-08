@@ -12,6 +12,7 @@ namespace LE.UserService.Dtos
             ImagePost = new List<FileOfPost>();
             AudioPost = new List<FileOfPost>();
             VideoPost = new List<FileOfPost>();
+            UserInfo = new UserInfo();
         }
         public Guid PostId { get; set; }
         public Guid UserId { get; set; }
@@ -25,6 +26,11 @@ namespace LE.UserService.Dtos
         public bool IsTurnOffCorrection { get; set; }
         public bool IsTurnOffShare { get; set; }
         public int NumOfInteract { get; set; }
+        public int NumOfCmt { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+
+        public UserInfo UserInfo { get; set; }
         public List<FileOfPost> ImagePost { get; set; }
         public List<FileOfPost> AudioPost { get; set; }
         public List<FileOfPost> VideoPost { get; set; }
