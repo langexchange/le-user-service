@@ -7,6 +7,7 @@ using LE.UserService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,9 +30,13 @@ namespace LE.UserService.Controllers
         {
             if (request == null)
                 return BadRequest("Empty request");
-            
+
             var dto = _mapper.Map<PostDto>(request);
             dto.UserId = id;
+            //dto.Label = 
+            var labels = string.Empty;
+            request.Labels.ToList().ForEach(x => { labels += $"{Env.SplitChar}{x}"; });
+            dto.Label = labels;
             dto.CreatedAt = DateTime.UtcNow;
             var postId = await _postService.CreatePost(dto, cancellationToken);
             return Ok(postId);

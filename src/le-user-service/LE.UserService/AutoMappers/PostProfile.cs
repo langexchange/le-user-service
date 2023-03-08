@@ -12,7 +12,8 @@ namespace LE.UserService.AutoMappers
         {
             CreateMap<Post, PostDto>()
                 .ReverseMap();
-            CreateMap<PostRequest, PostDto>();
+            CreateMap<PostRequest, PostDto>()
+                .ForMember(d => d.Labels, s => s.Ignore());
             CreateMap<FileOfPostRequest, FileOfPost>();
 
             CreateMap<Comment, CommentDto>()

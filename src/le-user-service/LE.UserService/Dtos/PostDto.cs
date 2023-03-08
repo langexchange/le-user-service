@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,7 +20,7 @@ namespace LE.UserService.Dtos
         public string LangName { get; set; }
         public string Text { get; set; }
         public string Label { get; set; }
-        public List<string> Labels => Label.Split(Env.SplitChar).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+        public List<string> Labels => Label?.Split(Env.SplitChar).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
         public bool IsPublic { get; set; }
         public bool IsTurnOffComment { get; set; }
         public bool IsTurnOffCorrection { get; set; }
