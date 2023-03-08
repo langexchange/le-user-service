@@ -2,6 +2,7 @@
 using LE.UserService.Dtos;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
 using LE.UserService.Models.Requests;
+using LE.UserService.Models.Responses;
 
 namespace LE.UserService.AutoMappers
 {

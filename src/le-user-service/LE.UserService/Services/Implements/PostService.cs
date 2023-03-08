@@ -176,6 +176,9 @@ namespace LE.UserService.Services.Implements
             var numOfCmt = await _context.Comments.Where(x => x.Postid == postId && x.IsRemoved.Value == false).CountAsync(cancellationToken);
             postDto.NumOfCmt = numOfCmt;
 
+            postDto.CreatedAt = post.CreatedAt?.ToLocalTime();
+            postDto.UpdatedAt = post.UpdatedAt?.ToLocalTime();
+
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == post.Userid);
             postDto.UserInfo.Id = post.Userid.Value;
             postDto.UserInfo.FirstName = user?.FirstName;

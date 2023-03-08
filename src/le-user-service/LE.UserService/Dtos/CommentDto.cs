@@ -9,6 +9,7 @@ namespace LE.UserService.Dtos
         {
             Audiocmts = new List<FileOfComment>();
             Imagecmts = new List<FileOfComment>();
+            UserInfo = new UserInfo();
         }
         public Guid CommentId { get; set; }
         public Guid UserId { get; set; }
@@ -16,6 +17,10 @@ namespace LE.UserService.Dtos
         public string Text { get; set; }
         public string Correctcmt { get; set; }
         public int NumOfInteract { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+
+        public UserInfo UserInfo { get; set; }
         public List<FileOfComment> Audiocmts { get; set; }
         public List<FileOfComment> Imagecmts { get; set; }
 
