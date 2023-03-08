@@ -34,6 +34,8 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public bool? IsPublic { get; set; }
         public bool? IsVideo { get; set; }
         public bool? IsRemoved { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual Language Lang { get; set; }
         public virtual User User { get; set; }

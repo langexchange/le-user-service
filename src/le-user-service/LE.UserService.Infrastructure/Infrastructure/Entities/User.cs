@@ -52,6 +52,9 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public bool? IsRestrict { get; set; }
         public bool? IsRemoved { get; set; }
         public string TempToken { get; set; }
+        public DateTime? TokenIat { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual Language NativeLangNavigation { get; set; }
         public virtual Notibox NotiboxNavigation { get; set; }

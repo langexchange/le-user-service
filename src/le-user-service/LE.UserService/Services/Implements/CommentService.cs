@@ -65,6 +65,14 @@ namespace LE.UserService.Services.Implements
 
             var numOfInteract = await _context.Cmtinteracts.Where(x => x.Commentid == commentId).CountAsync(cancellationToken);
             commentDto.NumOfInteract = numOfInteract;
+            commentDto.CreatedAt = comment.CreatedAt?.ToLocalTime();
+            commentDto.UpdatedAt = comment.UpdatedAt?.ToLocalTime();
+
+            var user = await _context.Users.Where(x => x.Userid == comment.Userid).FirstOrDefaultAsync();
+            commentDto.UserInfo.Id = user.Userid;
+            commentDto.UserInfo.FirstName = user?.FirstName;
+            commentDto.UserInfo.LastName = user?.LastName;
+            //commentDto.UserInfo.Id = user.Userid;
 
             if (comment.IsCorrect.Value)
             {
