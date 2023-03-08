@@ -19,6 +19,8 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public decimal? Easiness { get; set; }
         public int? Interval { get; set; }
         public bool? IsRemoved { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual Vocabpackage Package { get; set; }
     }

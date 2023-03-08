@@ -24,6 +24,8 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public bool? IsCorrect { get; set; }
         public bool? IsAudio { get; set; }
         public bool? IsRemoved { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual Post Post { get; set; }
         public virtual User User { get; set; }

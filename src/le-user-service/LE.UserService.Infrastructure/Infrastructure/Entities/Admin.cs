@@ -20,6 +20,9 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public string Password { get; set; }
         public string FirstName { get; set; }
         public string RemainName { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         public virtual ICollection<Cmtpunish> Cmtpunishes { get; set; }
         public virtual ICollection<Grouppunish> Grouppunishes { get; set; }
