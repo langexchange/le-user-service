@@ -93,9 +93,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("created_at")
                     .HasDefaultValueSql("timezone('utc'::text, now())");
 
-                entity.Property(e => e.DeletedAt)
-                    .HasColumnName("deleted_at")
-                    .HasDefaultValueSql("timezone('utc'::text, now())");
+                entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
 
                 entity.Property(e => e.Email)
                     .IsRequired()
@@ -117,9 +115,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasMaxLength(64)
                     .HasColumnName("remain_name");
 
-                entity.Property(e => e.UpdatedAt)
-                    .HasColumnName("updated_at")
-                    .HasDefaultValueSql("timezone('utc'::text, now())");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
             });
 
             modelBuilder.Entity<Arrangement>(entity =>
@@ -417,9 +413,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasMaxLength(2048)
                     .HasColumnName("text");
 
-                entity.Property(e => e.UpdatedAt)
-                    .HasColumnName("updated_at")
-                    .HasDefaultValueSql("timezone('utc'::text, now())");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 
                 entity.Property(e => e.Userid).HasColumnName("userid");
 
@@ -1019,9 +1013,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasMaxLength(4096)
                     .HasColumnName("text");
 
-                entity.Property(e => e.UpdatedAt)
-                    .HasColumnName("updated_at")
-                    .HasDefaultValueSql("timezone('utc'::text, now())");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 
                 entity.Property(e => e.Userid).HasColumnName("userid");
 
@@ -1438,9 +1430,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
                 entity.Property(e => e.TokenIat).HasColumnName("token_iat");
 
-                entity.Property(e => e.UpdatedAt)
-                    .HasColumnName("updated_at")
-                    .HasDefaultValueSql("timezone('utc'::text, now())");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 
                 entity.Property(e => e.UserName)
                     .HasMaxLength(32)
@@ -1778,9 +1768,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("type")
                     .HasDefaultValueSql("'slide'::character varying");
 
-                entity.Property(e => e.UpdatedAt)
-                    .HasColumnName("updated_at")
-                    .HasDefaultValueSql("timezone('utc'::text, now())");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 
                 entity.HasOne(d => d.Package)
                     .WithMany(p => p.Vocabularies)
