@@ -115,5 +115,17 @@ namespace LE.UserService.Services.Implements
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<UserDto>> GetUsers(CancellationToken cancellationToken = default)
+        {
+            var userIds = await _context.Users.Select(x => x.Userid).ToListAsync();
+            var dtos = new List<UserDto>();
+            foreach(var id in userIds)
+            {
+                var dto = await GetUser(id, cancellationToken);
+                dtos.Add(dto);
+            }
+            return dtos;
+        }
     }
 }

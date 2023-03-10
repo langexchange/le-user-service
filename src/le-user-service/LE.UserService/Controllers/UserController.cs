@@ -60,6 +60,13 @@ namespace LE.UserService.Controllers
             await _userService.ChangeAvatar(id, avatar, cancellationToken);
             return Ok();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsers(CancellationToken cancellationToken = default)
+        {
+            var dtos = await _userService.GetUsers(cancellationToken);
+            return Ok(dtos);
+        }
     }
 }
 
