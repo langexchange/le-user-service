@@ -55,6 +55,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public DateTime? TokenIat { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string Country { get; set; }
 
         public virtual Language NativeLangNavigation { get; set; }
         public virtual Notibox NotiboxNavigation { get; set; }
