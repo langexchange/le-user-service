@@ -19,6 +19,7 @@ namespace LE.UserService.Dtos
         public string[] Hobbies { get; set; }
         public int NumOfPosts { get; set; }
         public int NumOfPartners { get; set; }
+        public string Avatar { get; set; }
 
         public LanguageDto NativeLanguage { get; set; }
         public List<LanguageDto> TargetLanguages { get; set; }

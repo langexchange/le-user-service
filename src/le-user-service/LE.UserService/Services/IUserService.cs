@@ -11,6 +11,7 @@ namespace LE.UserService.Services
         Task<UserDto> GetUser(Guid id, CancellationToken cancellationToken = default);
         Task<bool> SetBasicInfor(Guid id, UserDto userDto, CancellationToken cancellationToken = default);
         Task<List<LanguageDto>> GetUserLanguages(Guid id, CancellationToken cancellationToken = default);
+        Task<bool> ChangeAvatar(Guid id, string avatar, CancellationToken cancellationToken = default);
 
     }
 }

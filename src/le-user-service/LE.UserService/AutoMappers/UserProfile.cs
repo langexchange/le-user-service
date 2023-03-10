@@ -17,7 +17,8 @@ namespace LE.UserService.AutoMappers
                 .ForMember(d => d.IncId, s => s.MapFrom(x => x.IncreateId));
 
             //Map for user service
-            CreateMap<User, UserDto>();
+            CreateMap<User, UserDto>()
+                .ForMember(d => d.Avatar, s => s.MapFrom(x => x.Avartar));
             CreateMap<BasicInfoRequest, UserDto>()
                 .ForMember(d => d.NativeLanguage, s => s.MapFrom(x => x.NativeLanguage))
                 .ForMember(d => d.TargetLanguages, s => s.MapFrom(x => x.TargetLanguages));

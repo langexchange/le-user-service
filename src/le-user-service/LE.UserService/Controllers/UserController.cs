@@ -53,6 +53,13 @@ namespace LE.UserService.Controllers
             var response = _mapper.Map<List<LangResponse>>(dtos);
             return Ok(response);
         }
+
+        [HttpPost("{id}/change-avatar")]
+        public async Task<IActionResult> ChangeAvatar(Guid id, string avatar, CancellationToken cancellationToken = default)
+        {
+            await _userService.ChangeAvatar(id, avatar, cancellationToken);
+            return Ok();
+        }
     }
 }
 

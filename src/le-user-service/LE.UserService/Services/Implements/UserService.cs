@@ -104,5 +104,17 @@ namespace LE.UserService.Services.Implements
             dtos.AddRange(_mapper.Map<IEnumerable<LanguageDto>>(targetLangs));
             return dtos;
         }
+
+        public async Task<bool> ChangeAvatar(Guid id, string avatar, CancellationToken cancellationToken = default)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == id);
+            if (user == null)
+                return false;
+
+            user.Avartar = avatar;
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

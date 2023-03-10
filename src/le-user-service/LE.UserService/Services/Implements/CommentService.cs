@@ -72,7 +72,7 @@ namespace LE.UserService.Services.Implements
             commentDto.UserInfo.Id = user.Userid;
             commentDto.UserInfo.FirstName = user?.FirstName;
             commentDto.UserInfo.LastName = user?.LastName;
-            //commentDto.UserInfo.Id = user.Userid;
+            commentDto.UserInfo.Avatar = user?.Avartar;
 
             if (comment.IsCorrect.Value)
             {

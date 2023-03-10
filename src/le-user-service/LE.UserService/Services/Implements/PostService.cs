@@ -183,7 +183,7 @@ namespace LE.UserService.Services.Implements
             postDto.UserInfo.Id = post.Userid.Value;
             postDto.UserInfo.FirstName = user?.FirstName;
             postDto.UserInfo.LastName = user?.LastName;
-            //postDto.UserInfo.Avatar = user?.LastName;
+            postDto.UserInfo.Avatar = user?.Avartar;
 
             if (post.IsAudio.Value)
             {
