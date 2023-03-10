@@ -32,15 +32,17 @@ namespace LE.UserService.Controllers
             userDto.MiddleName = request.UserInfo?.MiddleName;
             userDto.Introduction = request.UserInfo?.Introduction;
             userDto.Gender = request.UserInfo?.Gender;
+            userDto.Country = request.UserInfo?.Country;
+            userDto.Hobbies = request.UserInfo?.Hobbies;
 
-            await _userService.SetBasicInfor(id, userDto);
+            await _userService.SetBasicInfor(id, userDto, cancellationToken);
             return Ok();
         }
 
         [HttpGet("{id}/basic-information")]
         public async Task<IActionResult> GetBasicInfor(Guid id, CancellationToken cancellationToken = default)
         {
-            var response = await _userService.GetUser(id);
+            var response = await _userService.GetUser(id, cancellationToken);
             return Ok(response);
         }
 
@@ -50,6 +52,20 @@ namespace LE.UserService.Controllers
             var dtos = await _userService.GetUserLanguages(id, cancellationToken);
             var response = _mapper.Map<List<LangResponse>>(dtos);
             return Ok(response);
+        }
+
+        [HttpPost("{id}/change-avatar")]
+        public async Task<IActionResult> ChangeAvatar(Guid id, string avatar, CancellationToken cancellationToken = default)
+        {
+            await _userService.ChangeAvatar(id, avatar, cancellationToken);
+            return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsers(CancellationToken cancellationToken = default)
+        {
+            var dtos = await _userService.GetUsers(cancellationToken);
+            return Ok(dtos);
         }
     }
 }

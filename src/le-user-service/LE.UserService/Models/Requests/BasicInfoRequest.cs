@@ -17,6 +17,8 @@ namespace LE.UserService.Models.Requests
         public string LastName { get; set; }
         public string Gender { get; set; }
         public string Introduction { get; set; }
+        public string Country { get; set; }
+        public string[] Hobbies { get; set; }
     }
     public class LanguageRequest
     {

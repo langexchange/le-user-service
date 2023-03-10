@@ -1358,6 +1358,14 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("userid")
                     .HasDefaultValueSql("uuid_generate_v4()");
 
+                entity.Property(e => e.Avartar)
+                    .HasMaxLength(256)
+                    .HasColumnName("avartar");
+
+                entity.Property(e => e.Country)
+                    .HasMaxLength(50)
+                    .HasColumnName("country");
+
                 entity.Property(e => e.CreatedAt)
                     .HasColumnName("created_at")
                     .HasDefaultValueSql("timezone('utc'::text, now())");
