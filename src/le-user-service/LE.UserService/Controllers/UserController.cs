@@ -32,15 +32,17 @@ namespace LE.UserService.Controllers
             userDto.MiddleName = request.UserInfo?.MiddleName;
             userDto.Introduction = request.UserInfo?.Introduction;
             userDto.Gender = request.UserInfo?.Gender;
+            userDto.Country = request.UserInfo?.Country;
+            userDto.Hobbies = request.UserInfo?.Hobbies;
 
-            await _userService.SetBasicInfor(id, userDto);
+            await _userService.SetBasicInfor(id, userDto, cancellationToken);
             return Ok();
         }
 
         [HttpGet("{id}/basic-information")]
         public async Task<IActionResult> GetBasicInfor(Guid id, CancellationToken cancellationToken = default)
         {
-            var response = await _userService.GetUser(id);
+            var response = await _userService.GetUser(id, cancellationToken);
             return Ok(response);
         }
 
