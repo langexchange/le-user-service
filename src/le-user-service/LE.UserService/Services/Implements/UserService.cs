@@ -76,10 +76,9 @@ namespace LE.UserService.Services.Implements
             foreach(var userHobby in userDto.Hobbies)
             {
                 var hobby = await _context.Hobbies.Where(x => x.Name.Equals(userHobby)).FirstOrDefaultAsync();
-                var hobbyId = hobby.Hobbyid;
+                var hobbyId = hobby != null ? hobby.Hobbyid : Guid.NewGuid();
                 if (hobby == null)
                 {
-                    hobbyId = Guid.NewGuid();
                     _context.Hobbies.Add(new Hobby { Hobbyid = hobbyId, Name = userHobby });
                     await _context.SaveChangesAsync();
                 }
