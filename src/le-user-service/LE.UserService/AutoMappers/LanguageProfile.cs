@@ -3,6 +3,7 @@ using LE.UserService.Dtos;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
 using LE.UserService.Models.Requests;
 using LE.UserService.Models.Responses;
+using LE.UserService.Neo4jData.DALs.Schemas;
 
 namespace LE.UserService.AutoMappers
 {
@@ -21,6 +22,9 @@ namespace LE.UserService.AutoMappers
 
             CreateMap<LanguageRequest, LanguageDto>();
             CreateMap<LanguageDto, LangResponse>();
+
+            //Neo4j
+            CreateMap<LangSchema, Neo4jLangDto>();
         }
     }
 }
