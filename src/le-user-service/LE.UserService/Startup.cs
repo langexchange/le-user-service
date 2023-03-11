@@ -154,6 +154,8 @@ namespace LE.UserService
         {
             services.AddScoped<ICountryDAL, CountryDAL>();
             services.AddScoped<ILangDAL, LangDAL>();
+            services.AddScoped<IUserDAL, UserDAL>();
+            services.AddScoped<IPostDAL, PostDAL>();
         }
 
         private void AddNeo4jService(IServiceCollection services)

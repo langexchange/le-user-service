@@ -3,6 +3,7 @@ using LE.UserService.Dtos;
 using LE.UserService.Enums;
 using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
+using LE.UserService.Neo4jData.DALs;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections;
@@ -16,12 +17,14 @@ namespace LE.UserService.Services.Implements
     public class PostService : IPostService
     {
         private LanggeneralDbContext _context;
+        private IPostDAL _postDAL;
         private readonly IMapper _mapper;
 
-        public PostService(LanggeneralDbContext context, IMapper mapper)
+        public PostService(LanggeneralDbContext context, IMapper mapper, IPostDAL postDAL)
         {
             _context = context;
             _mapper = mapper;
+            _postDAL = postDAL;
         }
 
         public async Task<Guid> CreatePost(PostDto postDto, CancellationToken cancellationToken = default)
@@ -67,6 +70,10 @@ namespace LE.UserService.Services.Implements
             }
 
             await _context.SaveChangesAsync();
+
+            //crud neo4j db
+            postDto.PostId = post.Postid;
+            await _postDAL.CreateOrUpdatePost(postDto, cancellationToken);
 
             return post.Postid;
         }
@@ -122,6 +129,10 @@ namespace LE.UserService.Services.Implements
             }
 
             await _context.SaveChangesAsync();
+
+            //crud neo4j db
+            postDto.PostId = postId;
+            await _postDAL.CreateOrUpdatePost(postDto, cancellationToken);
         }
 
         public async Task SetPostState(Guid postId, PostState state, CancellationToken cancellationToken = default)
@@ -134,12 +145,15 @@ namespace LE.UserService.Services.Implements
             {
                 case PostState.Publish:
                     post.IsPublic = true;
+                    await _postDAL.ConfigPost(postId, true, null, cancellationToken);
                     break;
                 case PostState.Private:
                     post.IsPublic = false;
+                    await _postDAL.ConfigPost(postId, false, null, cancellationToken);
                     break;
                 case PostState.Delete:
                     post.IsRemoved = true;
+                    await _postDAL.ConfigPost(postId, null, true, cancellationToken);
                     break;
                 case PostState.TurnOffComment:
                     post.RestrictBits.Set(1, false);
