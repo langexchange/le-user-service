@@ -4,6 +4,7 @@ using LE.UserService.Neo4jData.DALs.NodeRelationConstants;
 using LE.UserService.Neo4jData.DALs.Schemas;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -89,6 +90,19 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             var userSchema = cypherResult.FirstOrDefault();
 
             return userSchema?.CreatedAt != null;
+        }
+
+        public async Task<List<Guid>> FilterPostByLanguages(List<Guid> langIds, CancellationToken cancellationToken = default)
+        {
+            var cypher = _context.Cypher.Read
+                 .Match($"(p: {PostSchema.POST_LABEL})")
+                 .Where("p.deletedAt is null")
+                 .AndWhere("p.isPublic = true")
+                 .AndWhere($"p.langId IN $ids")
+                 .WithParam("ids", langIds.ToArray())
+                 .Return<Guid>("p.id");
+            var cypherResult = await cypher.ResultsAsync;
+            return cypherResult.ToList();
         }
     }
 }
