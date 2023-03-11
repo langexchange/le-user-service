@@ -11,10 +11,12 @@ namespace LE.UserService.Neo4jData.DALs.Implements
     public abstract class BaseDAL : IBaseDAL
     {
         protected readonly Neo4jContext _context;
+        protected readonly IMapper _mapper;
 
-        public BaseDAL(Neo4jContext context)
+        public BaseDAL(Neo4jContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<T[]> GetNodesAsync<T>(string label, KeyValuePair<string, object> uniquePropertyVale, CancellationToken cancellationToken = default)

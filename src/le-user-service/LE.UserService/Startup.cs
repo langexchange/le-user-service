@@ -2,8 +2,13 @@ using AutoMapper;
 using LE.ApiGateway.Extensions;
 using LE.Library.LE.Consul;
 using LE.UserService.AutoMappers;
+using LE.UserService.AutoMappers.Neo4jMappers;
 using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Neo4jData;
+using LE.UserService.Neo4jData.DALs;
+using LE.UserService.Neo4jData.DALs.Implements;
+using LE.UserService.Neo4jData.Services;
+using LE.UserService.Neo4jData.Services.Implements;
 using LE.UserService.Services;
 using LE.UserService.Services.Implements;
 using LE.UserService.Settings;
@@ -49,8 +54,10 @@ namespace LE.UserService
             services.AddCustomAuthorization(Configuration);
             //register neo4j
             RegisterNeo4jDatabase(services);
-            //register DAL
-            AddDAL(services);
+            //register neo4j DAL
+            AddNeo4jDAL(services);
+            //register neo4j service
+            AddNeo4jService(services);
 
             // configure DI for application services
             services.AddScoped<IJwtUtils, JwtUtils>();
@@ -94,6 +101,9 @@ namespace LE.UserService
                 mc.AddProfile(new UserProfile());
                 mc.AddProfile(new LanguageProfile());
                 mc.AddProfile(new PostProfile());
+
+                //neo4j mapper
+                mc.AddProfile(new CountryProfile());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
@@ -140,9 +150,14 @@ namespace LE.UserService
             return services;
         }
 
-        private void AddDAL(IServiceCollection services)
+        private void AddNeo4jDAL(IServiceCollection services)
         {
-            //services.AddScoped<ICountryDAL, CountryDAL>();
+            services.AddScoped<ICountryDAL, CountryDAL>();
+        }
+
+        private void AddNeo4jService(IServiceCollection services)
+        {
+            services.AddScoped<ICountryService, CountryService>();
         }
 
 

@@ -23,9 +23,4 @@
   <ItemGroup>
     <ProjectReference Include="..\LE.UserService.Infrastructure\LE.UserService.Infrastructure.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Neo4jData\DALs\" />
-    <Folder Include="Neo4jData\Services\" />
-  </ItemGroup>
 </Project>
