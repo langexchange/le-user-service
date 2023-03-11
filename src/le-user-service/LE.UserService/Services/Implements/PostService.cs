@@ -223,6 +223,8 @@ namespace LE.UserService.Services.Implements
             foreach(var post in posts)
             {
                 var postDto = await GetPost(post.Postid, cancellationToken);
+                var userInteracted = await _context.Userintposts.Where(x => x.Postid == post.Postid).Select(x => x.Userid).ToListAsync();
+                postDto.IsUserInteracted = userInteracted.Any(x => x == userId);
                 postDtos.Add(postDto);
             }
             return postDtos;
@@ -237,9 +239,18 @@ namespace LE.UserService.Services.Implements
         public async Task InteractPost(Guid postId, Guid userId, string mode, CancellationToken cancellationToken = default)
         {
             await InitInteraction();
-            var interactType = await _context.Interactions.ToListAsync();
-
             var userInteractPost = await _context.Userintposts.FirstOrDefaultAsync(x => x.Userid == userId && x.Postid == postId);
+
+            if (userInteractPost == null && mode.Equals("UnLike"))
+                return;
+            if(mode.Equals("UnLike"))
+            {
+                _context.Userintposts.Remove(userInteractPost);
+                await _context.SaveChangesAsync();
+                return;
+            }
+
+            var interactType = await _context.Interactions.ToListAsync();
             var interactTypeId = interactType.Where(x => x.Stringcode.Equals(mode)).FirstOrDefault()?.Interactid;
             if (userInteractPost == null)
                 _context.Add(new Userintpost { Userid = userId, Postid = postId, InteractType = interactTypeId.Value });
