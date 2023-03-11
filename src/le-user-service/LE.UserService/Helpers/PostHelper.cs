@@ -43,6 +43,9 @@ namespace LE.UserService.Helpers
                     state = "Like";
                     break;
                 case 1:
+                    state = "UnLike";
+                    break;
+                case 2:
                     state = "Favorite";
                     break;
                 default:

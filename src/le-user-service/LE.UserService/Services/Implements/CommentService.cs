@@ -101,6 +101,8 @@ namespace LE.UserService.Services.Implements
             foreach(var comment in comments)
             {
                 var commentDto = await GetComment(comment.Commentid, cancellationToken);
+                var interacts = await _context.Cmtinteracts.Where(x => x.Commentid == comment.Commentid).Select(x => x.Userid).ToListAsync();
+                commentDto.UsersInteract = interacts;
                 commentDtos.Add(commentDto);
             }
             return commentDtos;
@@ -179,9 +181,18 @@ namespace LE.UserService.Services.Implements
         public async Task InteractComment(Guid commentId, Guid userId, string mode, CancellationToken cancellationToken = default)
         {
             await InitInteraction();
-            var interactType = await _context.Interactions.ToListAsync();
-
             var cmtInteract = await _context.Cmtinteracts.FirstOrDefaultAsync(x => x.Userid == userId && x.Commentid == commentId);
+
+            if (cmtInteract == null && mode.Equals("UnLike"))
+                return;
+            if (mode.Equals("UnLike"))
+            {
+                _context.Cmtinteracts.Remove(cmtInteract);
+                await _context.SaveChangesAsync();
+                return;
+            }
+
+            var interactType = await _context.Interactions.ToListAsync();
             var interactTypeId = interactType.Where(x => x.Stringcode.Equals(mode)).FirstOrDefault()?.Interactid;
             if (cmtInteract == null)
                 _context.Add(new Cmtinteract { Userid = userId, Commentid = commentId, InteractType = interactTypeId.Value });

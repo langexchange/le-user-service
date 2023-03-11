@@ -26,6 +26,7 @@ namespace LE.UserService.Dtos
         public bool IsTurnOffCorrection { get; set; }
         public bool IsTurnOffShare { get; set; }
         public int NumOfInteract { get; set; }
+        public bool IsUserInteracted { get; set; } = false;
         public int NumOfCmt { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
