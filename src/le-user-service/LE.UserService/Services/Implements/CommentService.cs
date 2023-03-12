@@ -91,7 +91,7 @@ namespace LE.UserService.Services.Implements
             }
             return commentDto;
         }
-        public async Task<List<CommentDto>> GetComments(Guid postId, CancellationToken cancellationToken = default)
+        public async Task<List<CommentDto>> GetComments(Guid userId, Guid postId, CancellationToken cancellationToken = default)
         {
             var comments = await _context.Comments.Where(x => x.Postid == postId && x.IsRemoved.Value == false).ToListAsync(cancellationToken);
             if (comments == null)
@@ -102,7 +102,7 @@ namespace LE.UserService.Services.Implements
             {
                 var commentDto = await GetComment(comment.Commentid, cancellationToken);
                 var interacts = await _context.Cmtinteracts.Where(x => x.Commentid == comment.Commentid).Select(x => x.Userid).ToListAsync();
-                commentDto.UsersInteract = interacts;
+                commentDto.IsUserInteracted = interacts.Any(x => x == userId);
                 commentDtos.Add(commentDto);
             }
             return commentDtos;

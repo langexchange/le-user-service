@@ -48,7 +48,7 @@ namespace LE.UserService
 
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
 
-            //services.();
+            services.AddHttpContextAccessor();
             //add mapper
             AddAutoMappers(services);
             //add db context

@@ -17,7 +17,7 @@ namespace LE.UserService.Dtos
         public string Text { get; set; }
         public string Correctcmt { get; set; }
         public int NumOfInteract { get; set; }
-        public List<Guid> UsersInteract { get; set; }
+        public bool IsUserInteracted { get; set; } = false;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
