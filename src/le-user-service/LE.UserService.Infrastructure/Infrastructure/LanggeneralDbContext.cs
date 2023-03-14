@@ -1141,7 +1141,13 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
                 entity.Property(e => e.User2).HasColumnName("user_2");
 
-                entity.Property(e => e.Type).HasColumnName("type");
+                entity.Property(e => e.Action)
+                    .HasMaxLength(15)
+                    .HasColumnName("action");
+
+                entity.Property(e => e.Type)
+                    .HasColumnName("type")
+                    .HasDefaultValueSql("false");
 
                 entity.HasOne(d => d.User1Navigation)
                     .WithMany(p => p.RelationshipUser1Navigations)
