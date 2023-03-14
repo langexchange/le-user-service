@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LE.Library.Kernel;
+using LE.UserService.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading;
@@ -10,46 +12,64 @@ namespace LE.UserService.Controllers
     [ApiController]
     public class FriendController : ControllerBase
     {
-        public FriendController()
+        private readonly IFriendService _friendService;
+        private readonly IRequestHeader _requestHeader;
+        public FriendController(IRequestHeader requestHeader, IFriendService friendService)
         {
-
+            _requestHeader = requestHeader;
+            _friendService = friendService;
         }
 
         [HttpGet("")]
         public async Task<IActionResult> GetFriendsAsync(CancellationToken cancellationToken)
         {
-            return Ok();
+            var uuid = _requestHeader.GetOwnerId();
+            var response = await _friendService.GetFriendsAsync(uuid, cancellationToken);
+            return Ok(response);
         }
 
         [HttpGet("users/{id}")]
         public async Task<IActionResult> GetFriendsByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return Ok();
+            var response = await _friendService.GetFriendsAsync(id, cancellationToken);
+            return Ok(response);
         }
 
         [HttpGet("requests")]
         public async Task<IActionResult> GetFriendRequestsAsync(CancellationToken cancellationToken)
         {
-            return Ok();
+            var uuid = _requestHeader.GetOwnerId();
+            var response = await _friendService.GetFriendRequestsAsync(uuid, cancellationToken);
+            return Ok(response);
         }
 
         [HttpGet("suggest")]
         public async Task<IActionResult> SuggestFriendsAsync(CancellationToken cancellationToken)
         {
-            return Ok();
+            var uuid = _requestHeader.GetOwnerId();
+            var response = await _friendService.SuggestFriendsAsync(uuid, cancellationToken);
+            return Ok(response);
         }
 
         [HttpPost("/api/makefriend/users/{id}")]
         public async Task<IActionResult> MakeFriendAsync(Guid id, CancellationToken cancellationToken)
         {
-            //check userId && id
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == id)
+                return BadRequest($"Can't request to user id {id}");
+
+            await _friendService.MakeFriendAsync(uuid, id, cancellationToken);
             return Ok();
         }
 
         [HttpPost("/api/follow/users/{id}")]
         public async Task<IActionResult> FollowUserAsync(Guid id, CancellationToken cancellationToken)
         {
-            //check userId && id
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == id)
+                return BadRequest($"Can't request to user id {id}");
+
+            await _friendService.FollowFriendAsync(uuid, id, cancellationToken);
             return Ok();
         }
     }

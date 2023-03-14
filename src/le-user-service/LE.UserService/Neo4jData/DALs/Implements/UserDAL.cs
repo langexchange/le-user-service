@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LE.UserService.Dtos;
+using LE.UserService.Enums;
 using LE.UserService.Neo4jData.DALs.NodeRelationConstants;
 using LE.UserService.Neo4jData.DALs.Schemas;
 using Microsoft.Extensions.Logging;
@@ -19,7 +20,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             _logger = logger;
         }
 
-        public async Task<bool> ChangeAvatar(Guid id, string avatar, CancellationToken cancellationToken = default)
+        public async Task<bool> ChangeAvatarAsync(Guid id, string avatar, CancellationToken cancellationToken = default)
         {
             var cypher = _context.Cypher.Write.Merge($"(u:{UserSchema.USER_LABEL} {{ id: $id }})")
                .WithParam("id", id)
@@ -44,12 +45,45 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             return userSchema?.CreatedAt != null;
         }
 
+        public async Task CrudFriendRelationshipAsync(Guid fromId, Guid toId, string relation, ModifiedState mode, CancellationToken cancellationToken)
+        {
+            var cypher = _context.Cypher.Write.Match($"(u1: {UserSchema.USER_LABEL} {{ id: $fromId}} )")
+                                              .WithParam("fromId", fromId)
+                                              .Match($"(u2: {UserSchema.USER_LABEL} {{ id: $toId}} )")
+                                              .WithParam("toId", toId);
+            switch (mode)
+            {
+                case ModifiedState.Create:
+                    cypher = cypher.Merge($"(u1)-[:{relation}]->(u2)");
+                    break;
+                case ModifiedState.Delete:
+                    cypher = cypher.Match($"(u1)-[r:{relation}]->(u2)")
+                                   .Delete("r");
+                    break;
+            }
+
+            await cypher.ExecuteWithoutResultsAsync();
+        }
+
         public Task<List<UserDto>> GetUsers(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<bool> SetBasicInfor(Guid id, UserDto userDto, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Dictionary<string, object>>> GetUsersAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+        {
+            var cypher = _context.Cypher.Read
+                                .Match($"(u: {UserSchema.USER_LABEL})")
+                                .AndWhere($"u.id IN $ids")
+                                .WithParam("ids", ids.ToArray())
+                                .With("{id: u.id, firstName: u.firstName, lastName: u.lastName, avatar: u.avatar} as result")
+                                .Return<Dictionary<string, object>>("result");
+               
+            var cypherResult = await cypher.ResultsAsync;
+            return cypherResult;
+        }
+
+        public async Task<bool> SetBasicInforAsync(Guid id, UserDto userDto, CancellationToken cancellationToken = default)
         {
             var cypher = _context.Cypher.Write.Merge($"(u:{UserSchema.USER_LABEL} {{ id: $id }})")
                 .WithParam("id", id)
@@ -122,6 +156,11 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             var userSchema = (await cypherResult.ResultsAsync).FirstOrDefault();
 
             return userSchema?.CreatedAt != null;
+        }
+
+        Task<IEnumerable<Dictionary<string, object>>> IUserDAL.GetUsersAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

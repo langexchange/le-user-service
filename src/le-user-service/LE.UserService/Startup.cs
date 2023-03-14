@@ -166,6 +166,7 @@ namespace LE.UserService
         {
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<ILanguageService, LanguageService>();
+            services.AddScoped<IFriendService, FriendService>();
         }
 
 

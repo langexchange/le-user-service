@@ -91,7 +91,7 @@ namespace LE.UserService.Services.Implements
             await _context.SaveChangesAsync();
 
             //crud graph db
-            await _userDAL.SetBasicInfor(id, userDto, cancellationToken);
+            await _userDAL.SetBasicInforAsync(id, userDto, cancellationToken);
 
             return true;
         }
@@ -121,7 +121,7 @@ namespace LE.UserService.Services.Implements
             _context.Update(user);
             await _context.SaveChangesAsync();
 
-            await _userDAL.ChangeAvatar(id, avatar, cancellationToken);
+            await _userDAL.ChangeAvatarAsync(id, avatar, cancellationToken);
             return true;
         }
 
