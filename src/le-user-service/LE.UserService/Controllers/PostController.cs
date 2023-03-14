@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LE.Library.Kernel;
 using LE.UserService.Dtos;
 using LE.UserService.Enums;
 using LE.UserService.Helpers;
@@ -19,10 +20,12 @@ namespace LE.UserService.Controllers
     {
         private readonly IPostService _postService;
         private readonly IMapper _mapper;
-        public PostController(IPostService postService, IMapper mapper)
+        private readonly IRequestHeader _requestHeader;
+        public PostController(IPostService postService, IMapper mapper, IRequestHeader requestHeader)
         {
             _postService = postService;
             _mapper = mapper;   
+            _requestHeader = requestHeader;
         }
 
         [HttpPost("{id}/post/create")]
@@ -82,10 +85,11 @@ namespace LE.UserService.Controllers
             return Ok(dtos);
         }
 
-        [HttpGet("{id}/posts/suggest")]
-        public async Task<IActionResult> GetPostsRecommend(Guid id, CancellationToken cancellationToken = default)
+        [HttpGet("/api/posts/suggest")]
+        public async Task<IActionResult> GetPostsRecommend(CancellationToken cancellationToken = default)
         {
-            var dtos = await _postService.GetPosts(id, Mode.Recommend, cancellationToken);
+            var uuid = _requestHeader.GetOwnerId();
+            var dtos = await _postService.GetPosts(uuid, Mode.Recommend, cancellationToken);
             return Ok(dtos);
         }
 

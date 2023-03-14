@@ -1,6 +1,7 @@
 using AutoMapper;
 using LE.ApiGateway.Extensions;
-using LE.Library.LE.Consul;
+using LE.Library.Consul;
+using LE.Library.Host;
 using LE.UserService.AutoMappers;
 using LE.UserService.AutoMappers.Neo4jMappers;
 using LE.UserService.Infrastructure.Infrastructure;
@@ -46,6 +47,8 @@ namespace LE.UserService
             });
 
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+
+            services.AddHttpContextAccessor();
             //add mapper
             AddAutoMappers(services);
             //add db context
@@ -68,6 +71,7 @@ namespace LE.UserService
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddConsul();
+            services.AddRequestHeader();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

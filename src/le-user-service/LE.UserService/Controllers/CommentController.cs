@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LE.Library.Kernel;
 using LE.UserService.Dtos;
 using LE.UserService.Helpers;
 using LE.UserService.Models.Requests;
@@ -16,11 +17,13 @@ namespace LE.UserService.Controllers
     {
         private readonly ICommentService _commentService;
         private readonly IMapper _mapper;
+        private readonly IRequestHeader _requestHeader;
 
-        public CommentController(ICommentService commentService, IMapper mapper)
+        public CommentController(ICommentService commentService, IMapper mapper, IRequestHeader requestHeader)
         {
             _commentService = commentService;
             _mapper = mapper;
+            _requestHeader = requestHeader;
         }
 
         [HttpPost("{postId}/comment/create")]
@@ -54,7 +57,8 @@ namespace LE.UserService.Controllers
         [HttpGet("/api/posts/{postId}/comments")]
         public async Task<IActionResult> GetComments(Guid postId, CancellationToken cancellationToken = default)
         {
-            var dtos = await _commentService.GetComments(postId, cancellationToken);
+            var uuid = _requestHeader.GetOwnerId();
+            var dtos = await _commentService.GetComments(uuid, postId, cancellationToken);
             return Ok(dtos);
         }
 

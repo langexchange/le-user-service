@@ -8,7 +8,7 @@ namespace LE.UserService.Services
 {
     public interface ICommentService
     {
-        Task<List<CommentDto>> GetComments(Guid postId, CancellationToken cancellationToken = default);
+        Task<List<CommentDto>> GetComments(Guid userId, Guid postId, CancellationToken cancellationToken = default);
         Task<Guid> CreateComment(Guid postId, CommentDto commentDto, CancellationToken cancellationToken = default);
         Task UpdateComment(Guid commentId, CommentDto commentDto, CancellationToken cancellationToken = default);
         Task<bool> IsBelongToPost(Guid postId, Guid commentId, CancellationToken cancellationToken = default);
