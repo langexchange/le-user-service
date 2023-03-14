@@ -203,7 +203,7 @@ namespace LE.UserService.Services.Implements
             return postDto;
         }
 
-        public async Task<List<PostDto>> GetPosts(Guid userId, Mode mode, CancellationToken cancellationToken = default)
+        public async Task<List<PostDto>> GetPosts(Guid uresquestId, Guid userId, Mode mode, CancellationToken cancellationToken = default)
         {
             var posts = new List<Post>(); 
             switch (mode)
@@ -224,7 +224,7 @@ namespace LE.UserService.Services.Implements
             {
                 var postDto = await GetPost(post.Postid, cancellationToken);
                 var userInteracted = await _context.Userintposts.Where(x => x.Postid == post.Postid).Select(x => x.Userid).ToListAsync();
-                postDto.IsUserInteracted = userInteracted.Any(x => x == userId);
+                postDto.IsUserInteracted = userInteracted.Any(x => x == uresquestId);
                 postDtos.Add(postDto);
             }
             return postDtos;

@@ -81,7 +81,8 @@ namespace LE.UserService.Controllers
         [HttpGet("{id}/posts")]
         public async Task<IActionResult> GetPosts(Guid id, CancellationToken cancellationToken = default)
         {
-            var dtos = await _postService.GetPosts(id, Mode.Get, cancellationToken);
+            var uuid = _requestHeader.GetOwnerId();
+            var dtos = await _postService.GetPosts(uuid, id, Mode.Get, cancellationToken);
             return Ok(dtos);
         }
 
@@ -89,7 +90,7 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetPostsRecommend(CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            var dtos = await _postService.GetPosts(uuid, Mode.Recommend, cancellationToken);
+            var dtos = await _postService.GetPosts(uuid, uuid, Mode.Recommend, cancellationToken);
             return Ok(dtos);
         }
 
