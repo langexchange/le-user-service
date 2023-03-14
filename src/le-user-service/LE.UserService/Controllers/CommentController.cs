@@ -57,15 +57,7 @@ namespace LE.UserService.Controllers
         [HttpGet("/api/posts/{postId}/comments")]
         public async Task<IActionResult> GetComments(Guid postId, CancellationToken cancellationToken = default)
         {
-            if (!_requestHeader.ExtraHeaders.TryGetValue(Env.XUserId, out var userId))// Request.Headers["Accept-Language"].Any())
-            {
-                return BadRequest("Required x-user-id from header");
-            }
-            Guid uuid;
-            if(!Guid.TryParse(userId, out uuid))
-            {
-                return BadRequest("Wrong x-user-id format");
-            }
+            var uuid = _requestHeader.GetOwnerId();
             var dtos = await _commentService.GetComments(uuid, postId, cancellationToken);
             return Ok(dtos);
         }
