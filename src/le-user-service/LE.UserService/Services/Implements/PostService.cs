@@ -242,7 +242,7 @@ namespace LE.UserService.Services.Implements
             {
                 var postDto = await GetPost(postId, cancellationToken);
                 var userInteracted = await _context.Userintposts.Where(x => x.Postid == postId).Select(x => x.Userid).ToListAsync();
-                postDto.IsUserInteracted = userInteracted != null && userInteracted.Any(x => x == userId);
+                postDto.IsUserInteracted = userInteracted != null && userInteracted.Any(x => x == uresquestId);
                 postDtos.Add(postDto);
             }
             return postDtos;
