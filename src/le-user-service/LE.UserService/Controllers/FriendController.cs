@@ -1,6 +1,5 @@
 ﻿using LE.Library.Kernel;
 using LE.UserService.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading;
@@ -62,6 +61,28 @@ namespace LE.UserService.Controllers
             return Ok();
         }
 
+        [HttpPost("/api/unfriend/users/{id}")]
+        public async Task<IActionResult> UnFriendAsync(Guid id, CancellationToken cancellationToken)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == id)
+                return BadRequest($"Can't request to user id {id}");
+
+            await _friendService.UnFriendAsync(uuid, id, cancellationToken);
+            return Ok();
+        }
+
+        [HttpPost("/api/accept/users/{id}")]
+        public async Task<IActionResult> AcceptFriendAsync(Guid id, CancellationToken cancellationToken)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == id)
+                return BadRequest($"Can't request to user id {id}");
+
+            await _friendService.AcceptFriendRequestAsync(uuid, id, cancellationToken);
+            return Ok();
+        }
+
         [HttpPost("/api/follow/users/{id}")]
         public async Task<IActionResult> FollowUserAsync(Guid id, CancellationToken cancellationToken)
         {
@@ -70,6 +91,17 @@ namespace LE.UserService.Controllers
                 return BadRequest($"Can't request to user id {id}");
 
             await _friendService.FollowFriendAsync(uuid, id, cancellationToken);
+            return Ok();
+        }
+
+        [HttpPost("/api/unfollow/users/{id}")]
+        public async Task<IActionResult> UnFollowUserAsync(Guid id, CancellationToken cancellationToken)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == id)
+                return BadRequest($"Can't request to user id {id}");
+
+            await _friendService.UnFollowAsync(uuid, id, cancellationToken);
             return Ok();
         }
     }

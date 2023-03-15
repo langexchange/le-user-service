@@ -74,7 +74,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
         {
             var cypher = _context.Cypher.Read
                                 .Match($"(u: {UserSchema.USER_LABEL})")
-                                .AndWhere($"u.id IN $ids")
+                                .Where($"u.id IN $ids")
                                 .WithParam("ids", ids.ToArray())
                                 .With("{id: u.id, firstName: u.firstName, lastName: u.lastName, avatar: u.avatar} as result")
                                 .Return<Dictionary<string, object>>("result");
