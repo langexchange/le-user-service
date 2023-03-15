@@ -219,7 +219,7 @@ namespace LE.UserService.Services.Implements
             return postDto;
         }
 
-        public async Task<List<PostDto>> GetPosts(Guid userId, Mode mode, CancellationToken cancellationToken = default)
+        public async Task<List<PostDto>> GetPosts(Guid uresquestId, Guid userId, Mode mode, CancellationToken cancellationToken = default)
         {
             var postIds = new List<Guid>(); 
             switch (mode)
