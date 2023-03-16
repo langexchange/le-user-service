@@ -7,6 +7,7 @@ using LE.UserService.Models.Requests;
 using LE.UserService.Models.Responses;
 using System;
 using System.Linq;
+using System.Threading;
 
 namespace LE.UserService.Services.Implements
 {
@@ -75,5 +76,9 @@ namespace LE.UserService.Services.Implements
             _context.SaveChanges();
         }
 
+        public User GetByEmail(string email)
+        {
+            return _context.Users.FirstOrDefault(x => x.Email == email);
+        }
     }
 }

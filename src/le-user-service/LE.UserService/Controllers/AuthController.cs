@@ -4,6 +4,7 @@ using LE.UserService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LE.UserService.Controllers
@@ -37,13 +38,15 @@ namespace LE.UserService.Controllers
             return Ok(response);
         }
         
-        [HttpPost("users/{id}/send-mail")]
-        public async Task<IActionResult> SendMail(Guid id)
+        [HttpPost("send-mail")]
+        public async Task<IActionResult> SendMail(string email, CancellationToken cancellationToken = default)
         {
-            var user = _authService.GetById(id);
-            if (user == null)
-                return NotFound($"No exist user has id: {id}");
+            bool validEmail = GenPasswordHelper.IsValidEmail(email);
 
+            if (!validEmail)
+                return NotFound($"Invalid email: {email}");
+
+            var user =  _authService.GetByEmail(email);
             var newPass = GenPasswordHelper.GenerateRandomPassword();
             var request = new MailRequest
             {
@@ -62,7 +65,7 @@ namespace LE.UserService.Controllers
             try
             {
                 await _mailService.SendEmailAsync(request);
-                _authService.UpdatePassword(id, newPass);
+                _authService.UpdatePassword(user.Userid, newPass);
                 return Ok();
             }
             catch (Exception)
