@@ -2,6 +2,7 @@
 using LE.UserService.Dtos;
 using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
+using LE.UserService.Neo4jData.DALs;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,14 @@ namespace LE.UserService.Services.Implements
     public class UserService : IUserService
     {
         private LanggeneralDbContext _context;
+        private IUserDAL _userDAL;
         private readonly IMapper _mapper;
 
-        public UserService(LanggeneralDbContext context, IMapper mapper)
+        public UserService(LanggeneralDbContext context, IMapper mapper, IUserDAL userDAL)
         {
             _context = context;
             _mapper = mapper;
+            _userDAL = userDAL;
         }
         public async Task<UserDto> GetUser(Guid id, CancellationToken cancellationToken = default)
         {
@@ -86,6 +89,10 @@ namespace LE.UserService.Services.Implements
             }
 
             await _context.SaveChangesAsync();
+
+            //crud graph db
+            await _userDAL.SetBasicInforAsync(id, userDto, cancellationToken);
+
             return true;
         }
 
@@ -113,6 +120,8 @@ namespace LE.UserService.Services.Implements
             user.Avartar = avatar;
             _context.Update(user);
             await _context.SaveChangesAsync();
+
+            await _userDAL.ChangeAvatarAsync(id, avatar, cancellationToken);
             return true;
         }
 

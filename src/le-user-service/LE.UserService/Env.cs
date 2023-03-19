@@ -9,5 +9,7 @@ namespace LE.UserService
         public const string NumberChars = "1234567890";
         public const string SplitChar = "#";
         public const string XUserId = "x-user-id";
+        public const string SendRequest = "send-request";
+        public const string Follow = "follow";
     }
 }

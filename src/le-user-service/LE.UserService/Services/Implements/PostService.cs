@@ -3,6 +3,7 @@ using LE.UserService.Dtos;
 using LE.UserService.Enums;
 using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
+using LE.UserService.Neo4jData.DALs;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections;
@@ -16,12 +17,16 @@ namespace LE.UserService.Services.Implements
     public class PostService : IPostService
     {
         private LanggeneralDbContext _context;
+        private IPostDAL _postDAL;
+        private IUserService _userService;
         private readonly IMapper _mapper;
 
-        public PostService(LanggeneralDbContext context, IMapper mapper)
+        public PostService(LanggeneralDbContext context, IMapper mapper, IPostDAL postDAL, IUserService userService)
         {
             _context = context;
             _mapper = mapper;
+            _postDAL = postDAL;
+            _userService = userService;
         }
 
         public async Task<Guid> CreatePost(PostDto postDto, CancellationToken cancellationToken = default)
@@ -67,6 +72,10 @@ namespace LE.UserService.Services.Implements
             }
 
             await _context.SaveChangesAsync();
+
+            //crud neo4j db
+            postDto.PostId = post.Postid;
+            await _postDAL.CreateOrUpdatePost(postDto, cancellationToken);
 
             return post.Postid;
         }
@@ -122,6 +131,10 @@ namespace LE.UserService.Services.Implements
             }
 
             await _context.SaveChangesAsync();
+
+            //crud neo4j db
+            postDto.PostId = postId;
+            await _postDAL.CreateOrUpdatePost(postDto, cancellationToken);
         }
 
         public async Task SetPostState(Guid postId, PostState state, CancellationToken cancellationToken = default)
@@ -134,12 +147,15 @@ namespace LE.UserService.Services.Implements
             {
                 case PostState.Publish:
                     post.IsPublic = true;
+                    await _postDAL.ConfigPost(postId, true, null, cancellationToken);
                     break;
                 case PostState.Private:
                     post.IsPublic = false;
+                    await _postDAL.ConfigPost(postId, false, null, cancellationToken);
                     break;
                 case PostState.Delete:
                     post.IsRemoved = true;
+                    await _postDAL.ConfigPost(postId, null, true, cancellationToken);
                     break;
                 case PostState.TurnOffComment:
                     post.RestrictBits.Set(1, false);
@@ -205,26 +221,28 @@ namespace LE.UserService.Services.Implements
 
         public async Task<List<PostDto>> GetPosts(Guid uresquestId, Guid userId, Mode mode, CancellationToken cancellationToken = default)
         {
-            var posts = new List<Post>(); 
+            var postIds = new List<Guid>(); 
             switch (mode)
             {
                 case Mode.Get:
-                    posts = await _context.Posts.Where(x => x.Userid == userId && x.IsRemoved.Value == false).ToListAsync();
+                    postIds = await _context.Posts.Where(x => x.Userid == userId && x.IsRemoved.Value == false).Select(x => x.Postid).ToListAsync();
                     break;
                 case Mode.Recommend:
-                    // implement
+                    var langs = await _userService.GetUserLanguages(userId);
+                    var langIds = langs.Select(x => x.Id).ToList();
+                    postIds = await _postDAL.FilterPostByLanguages(langIds);
                     break;
             }
-            if (posts == null || posts.Count == 0)
+            if (postIds.Count == 0)
                 return null;
 
             //need to query langguage
             var postDtos = new List<PostDto>();
-            foreach(var post in posts)
+            foreach(var postId in postIds)
             {
-                var postDto = await GetPost(post.Postid, cancellationToken);
-                var userInteracted = await _context.Userintposts.Where(x => x.Postid == post.Postid).Select(x => x.Userid).ToListAsync();
-                postDto.IsUserInteracted = userInteracted.Any(x => x == uresquestId);
+                var postDto = await GetPost(postId, cancellationToken);
+                var userInteracted = await _context.Userintposts.Where(x => x.Postid == postId).Select(x => x.Userid).ToListAsync();
+                postDto.IsUserInteracted = userInteracted != null && userInteracted.Any(x => x == uresquestId);
                 postDtos.Add(postDto);
             }
             return postDtos;
