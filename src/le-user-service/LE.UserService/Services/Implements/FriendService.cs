@@ -84,7 +84,7 @@ namespace LE.UserService.Services.Implements
 
         }
 
-        public Task<IEnumerable<Dictionary<string, object>>> SuggestFriendsAsync(Guid id, CancellationToken cancellationToken)
+        public Task<IEnumerable<Dictionary<string, object>>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken)
         {
             //suggest friend live in same country
             //suggest friend have the same nativelang(parner)

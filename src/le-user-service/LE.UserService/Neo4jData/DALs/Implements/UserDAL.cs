@@ -158,6 +158,11 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             return userSchema?.CreatedAt != null;
         }
 
+        public Task<IEnumerable<Dictionary<string, object>>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         Task<IEnumerable<Dictionary<string, object>>> IUserDAL.GetUsersAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();

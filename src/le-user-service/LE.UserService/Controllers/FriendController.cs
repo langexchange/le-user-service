@@ -1,6 +1,8 @@
 ﻿using LE.Library.Kernel;
+using LE.UserService.Dtos;
 using LE.UserService.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,11 +45,13 @@ namespace LE.UserService.Controllers
         }
 
         [HttpGet("suggest")]
-        public async Task<IActionResult> SuggestFriendsAsync(CancellationToken cancellationToken)
+        public async Task<IActionResult> SuggestFriendsAsync([FromQuery] string[] nativeLangs, [FromQuery] string[] targetLangs, [FromQuery] string[] countryCodes, CancellationToken cancellationToken)
         {
-            var uuid = _requestHeader.GetOwnerId();
-            var response = await _friendService.SuggestFriendsAsync(uuid, cancellationToken);
-            return Ok(response);
+            //var uuid = _requestHeader.GetOwnerId();
+            //System.Console.WriteLine(JsonConvert.SerializeObject(query));
+            //var response = await _friendService.SuggestFriendsAsync(uuid, cancellationToken);
+            //return Ok(response);
+            return Ok();
         }
 
         [HttpPost("/api/makefriend/users/{id}")]
