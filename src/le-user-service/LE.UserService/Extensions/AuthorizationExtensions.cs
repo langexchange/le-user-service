@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using LE.UserService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -46,7 +47,7 @@ namespace LE.ApiGateway.Extensions
                         ValidateAudience = false,
                         ValidateLifetime = false,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetValue<string>("JwtSettings:Secret")))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Env.SECRET_KEY))
                     };
                     options.Events = new JwtBearerEvents
                     {
