@@ -19,7 +19,7 @@ namespace LE.UserService.Services.Implements
         public string GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JwtSettings:Secret"));
+            var key = Encoding.ASCII.GetBytes(Env.SECRET_KEY);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] 
@@ -41,7 +41,7 @@ namespace LE.UserService.Services.Implements
                 return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JwtSettings:Secret"));
+            var key = Encoding.ASCII.GetBytes(Env.SECRET_KEY);
             try
             {
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
