@@ -6,6 +6,7 @@ namespace LE.UserService.Dtos
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public string LocaleCode { get; set; }
         public int Level { get; set; }
     }
     public class Neo4jLangDto

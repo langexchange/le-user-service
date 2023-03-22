@@ -36,9 +36,10 @@ namespace LE.UserService.Services.Implements
             var filename = "Jsonfiles/language.json";
             var text = File.ReadAllText(filename);
             var langdictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
-            var languages = langdictionary.Select(x => new Language { Langid = System.Guid.NewGuid(), LocaleCode = x.Key, Name = x.Value });
+            var languages = langdictionary.Select(x => new Language { Langid = System.Guid.NewGuid(), LocaleCode = x.Key.ToUpper(), Name = x.Value });
             await _context.AddRangeAsync(languages);
             await _context.SaveChangesAsync();
+
         }
     }
 }
