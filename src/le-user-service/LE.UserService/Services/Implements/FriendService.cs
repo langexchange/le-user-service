@@ -78,6 +78,7 @@ namespace LE.UserService.Services.Implements
 
             request.Type = true;
             _context.Relationships.Update(request);
+            await _context.SaveChangesAsync();
 
             //crud neo4j
             await _userDAL.CrudFriendRelationshipAsync(fromId, toId, RelationValues.HAS_FRIEND, ModifiedState.Create, cancellationToken);
