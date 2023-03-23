@@ -40,17 +40,17 @@ namespace LE.UserService.Services.Implements
             await _userDAL.CrudFriendRelationshipAsync(fromId, toId, RelationValues.FOLLOW, ModifiedState.Create, cancellationToken);
         }
 
-        public async Task<IEnumerable<Dictionary<string, object>>> GetFriendRequestsAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SuggestUserDto>> GetFriendRequestsAsync(Guid id, CancellationToken cancellationToken)
         {
             var friendIdRequests = await _context.Relationships
-                                        .Where(x => x.User1 == id && x.Action.Equals(Env.SendRequest) && x.Type == false)
-                                        .Select(x => x.User2).ToListAsync();
+                                        .Where(x => x.User2 == id && x.Action.Equals(Env.SendRequest) && x.Type == false)
+                                        .Select(x => x.User1).ToListAsync();
             //query graph database
             var friends = await _userDAL.GetUsersAsync(friendIdRequests, cancellationToken);
             return friends;
         }
 
-        public async Task<IEnumerable<Dictionary<string, object>>> GetFriendsAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SuggestUserDto>> GetFriendsAsync(Guid id, CancellationToken cancellationToken)
         {
             var friendIdRequests = await _context.Relationships
                                         .Where(x => (x.User1 == id || x.User2 == id) && x.Action.Equals(Env.SendRequest) && x.Type == true)
@@ -78,6 +78,7 @@ namespace LE.UserService.Services.Implements
 
             request.Type = true;
             _context.Relationships.Update(request);
+            await _context.SaveChangesAsync();
 
             //crud neo4j
             await _userDAL.CrudFriendRelationshipAsync(fromId, toId, RelationValues.HAS_FRIEND, ModifiedState.Create, cancellationToken);

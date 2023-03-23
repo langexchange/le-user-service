@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LE.UserService.Dtos;
 using LE.UserService.Enums;
+using LE.UserService.Neo4jData.DALs.Implements.CypherResults;
 using LE.UserService.Neo4jData.DALs.NodeRelationConstants;
 using LE.UserService.Neo4jData.DALs.Schemas;
 using Microsoft.Extensions.Logging;
@@ -65,22 +66,25 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             await cypher.ExecuteWithoutResultsAsync();
         }
 
-        public Task<List<UserDto>> GetUsers(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<Dictionary<string, object>>> GetUsersAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<SuggestUserDto>> GetUsersAsync(List<Guid> ids, CancellationToken cancellationToken = default)
         {
             var cypher = _context.Cypher.Read
                                 .Match($"(u: {UserSchema.USER_LABEL})")
                                 .Where($"u.id IN $ids")
                                 .WithParam("ids", ids.ToArray())
-                                .With("{id: u.id, firstName: u.firstName, lastName: u.lastName, avatar: u.avatar} as result")
-                                .Return<Dictionary<string, object>>("result");
-               
-            var cypherResult = await cypher.ResultsAsync;
-            return cypherResult;
+                                .OptionalMatch($"(u)-[nRel:{RelationValues.HAS_NATIVE_LANGUAGE}]->(ntl:{LangSchema.LANGUAGE_LABEL})")
+                                .OptionalMatch($"(u)-[tRel:{RelationValues.HAS_TARGET_LANGUAGE}]->(tgl:{LangSchema.LANGUAGE_LABEL})")
+                                .With("u, COLLECT(distinct {level: nRel.level, localeCode: ntl.localeCode, name: ntl.name}) as levelNativeLangs, COLLECT(distinct {level: nRel.level, localeCode: tgl.localeCode, name: tgl.name}) as levelTargetLangs")
+                                .With("{user: u, levelNativeLangs: levelNativeLangs, levelTargetLangs: levelTargetLangs } as result");
+
+            var value = await cypher.ReturnAsync<UserCypherResult>("result", cancellationToken);
+
+            return value.Select(c => _mapper.ToUserDto(c));
+        }
+
+        public Task<IEnumerable<UserDto>> GetUsersAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> SetBasicInforAsync(Guid id, UserDto userDto, CancellationToken cancellationToken = default)
@@ -139,7 +143,8 @@ namespace LE.UserService.Neo4jData.DALs.Implements
 
             cypher = cypher.Match($"(nl:{LangSchema.LANGUAGE_LABEL} {{name: $name}})")
                     .WithParam("name", userDto.NativeLanguage.Name)
-                    .Merge($"(u)-[:{RelationValues.HAS_NATIVE_LANGUAGE}]->(nl)")
+                    .Merge($"(u)-[:{RelationValues.HAS_NATIVE_LANGUAGE} {{level: $level}}]->(nl)")
+                    .WithParam("level", userDto.NativeLanguage.Level)
                     .With("u");
 
 
@@ -147,7 +152,8 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             {
                 cypher = cypher.Match($"(tl{index}:{LangSchema.LANGUAGE_LABEL} {{name: $name{index}}})")
                     .WithParam($"name{index}", lang.Name)
-                    .Merge($"(u)-[:{RelationValues.HAS_NATIVE_LANGUAGE}]->(tl{index})")
+                    .Merge($"(u)-[:{RelationValues.HAS_TARGET_LANGUAGE} {{level: $level{index}}}]->(tl{index})")
+                    .WithParam($"level{index}", lang.Level)
                     .With("u");
                 index++;
             }
@@ -159,11 +165,6 @@ namespace LE.UserService.Neo4jData.DALs.Implements
         }
 
         public Task<IEnumerable<Dictionary<string, object>>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<Dictionary<string, object>>> IUserDAL.GetUsersAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

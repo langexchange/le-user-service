@@ -25,6 +25,7 @@ namespace LE.UserService.AutoMappers
 
             //Neo4j
             CreateMap<LangSchema, Neo4jLangDto>();
+            CreateMap<LevelLangScheme, LevelNeo4jLangDto>();
         }
     }
 }
