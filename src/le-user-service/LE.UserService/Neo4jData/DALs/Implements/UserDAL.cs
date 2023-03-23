@@ -82,11 +82,6 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             return value.Select(c => _mapper.ToUserDto(c));
         }
 
-        public Task<IEnumerable<UserDto>> GetUsersAsync(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> SetBasicInforAsync(Guid id, UserDto userDto, CancellationToken cancellationToken = default)
         {
             var cypher = _context.Cypher.Write.Merge($"(u:{UserSchema.USER_LABEL} {{ id: $id }})")
