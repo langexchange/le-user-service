@@ -36,7 +36,6 @@ namespace LE.UserService.Controllers
 
             var dto = _mapper.Map<PostDto>(request);
             dto.UserId = id;
-            //dto.Label = 
             var labels = string.Empty;
             request.Labels.ToList().ForEach(x => { labels += $"{Env.SplitChar}{x}"; });
             dto.Label = labels;
@@ -56,6 +55,10 @@ namespace LE.UserService.Controllers
             var dto = _mapper.Map<PostDto>(request);
             dto.UserId = id;
             dto.UpdatedAt = DateTime.UtcNow;
+            var labels = string.Empty;
+            request.Labels.ToList().ForEach(x => { labels += $"{Env.SplitChar}{x}"; });
+            dto.Label = labels;
+
             await _postService.UpdatePost(postId, dto, cancellationToken);
             return Ok();
         }
