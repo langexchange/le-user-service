@@ -25,7 +25,7 @@ namespace LE.UserService.AutoMappers
                 .ForMember(d => d.NativeLanguage, s => s.MapFrom(x => x.NativeLanguage))
                 .ForMember(d => d.TargetLanguages, s => s.MapFrom(x => x.TargetLanguages));
 
-            CreateMap<UserSchema, UserDto>();
+            CreateMap<UserSchema, SuggestUserDto>();
 
         }
     }

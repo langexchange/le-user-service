@@ -40,7 +40,7 @@ namespace LE.UserService.Services.Implements
             await _userDAL.CrudFriendRelationshipAsync(fromId, toId, RelationValues.FOLLOW, ModifiedState.Create, cancellationToken);
         }
 
-        public async Task<IEnumerable<UserDto>> GetFriendRequestsAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SuggestUserDto>> GetFriendRequestsAsync(Guid id, CancellationToken cancellationToken)
         {
             var friendIdRequests = await _context.Relationships
                                         .Where(x => x.User2 == id && x.Action.Equals(Env.SendRequest) && x.Type == false)
@@ -50,7 +50,7 @@ namespace LE.UserService.Services.Implements
             return friends;
         }
 
-        public async Task<IEnumerable<UserDto>> GetFriendsAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SuggestUserDto>> GetFriendsAsync(Guid id, CancellationToken cancellationToken)
         {
             var friendIdRequests = await _context.Relationships
                                         .Where(x => (x.User1 == id || x.User2 == id) && x.Action.Equals(Env.SendRequest) && x.Type == true)

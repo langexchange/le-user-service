@@ -66,7 +66,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             await cypher.ExecuteWithoutResultsAsync();
         }
 
-        public async Task<IEnumerable<UserDto>> GetUsersAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<SuggestUserDto>> GetUsersAsync(List<Guid> ids, CancellationToken cancellationToken = default)
         {
             var cypher = _context.Cypher.Read
                                 .Match($"(u: {UserSchema.USER_LABEL})")

@@ -14,4 +14,11 @@ namespace LE.UserService.Dtos
         public string Name { get; set; }
         public string LocaleCode { get; set; }
     }
+
+    public class LevelNeo4jLangDto
+    {
+        public string Name { get; set; }
+        public string LocaleCode { get; set; }
+        public int Level { get; set; }
+    }
 }

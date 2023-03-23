@@ -21,11 +21,11 @@ namespace LE.UserService.Neo4jData.DALs.Implements.CypherResults
 
     public static class UserExtension
     {
-        public static UserDto ToUserDto(this IMapper mapper, UserCypherResult source)
+        public static SuggestUserDto ToUserDto(this IMapper mapper, UserCypherResult source)
         {
-            var result = mapper.Map<UserDto>(source.UserResult?.Data);
-            result.NativeLanguage = mapper.Map<LanguageDto>(source.NativeLangResult.FirstOrDefault());
-            result.TargetLanguages = mapper.Map<List<LanguageDto>>(source.NativeLangResult);
+            var result = mapper.Map<SuggestUserDto>(source.UserResult?.Data);
+            result.NativeLanguage = mapper.Map<LevelNeo4jLangDto>(source.NativeLangResult.FirstOrDefault());
+            result.TargetLanguages = mapper.Map<List<LevelNeo4jLangDto>>(source.NativeLangResult);
             return result;
         }
     }
