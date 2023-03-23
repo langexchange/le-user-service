@@ -25,7 +25,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
         {
             _logger.LogInformation("CreateCountry...country: {0}", JsonConvert.SerializeObject(country));
 
-            var countryCode = country.Code.ToLower();
+            var countryCode = country.Code.ToUpper();
             var cypher = _context.Cypher.Write.Merge($"(c:{CountrySchema.COUNTRY_LABEL} {{ countryCode: $code }})")
                 .WithParam("code", countryCode)
                 .OnCreate()

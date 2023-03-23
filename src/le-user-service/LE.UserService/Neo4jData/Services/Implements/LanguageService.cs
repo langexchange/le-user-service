@@ -28,7 +28,7 @@ namespace LE.UserService.Neo4jData.Services.Implements
             var filename = "Jsonfiles/language.json";
             var text = File.ReadAllText(filename);
             var langdictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
-            var languages = langdictionary.Select(x => new Neo4jLangDto { LocaleCode = x.Key, Name = x.Value }).ToList();
+            var languages = langdictionary.Select(x => new Neo4jLangDto { LocaleCode = x.Key.ToUpper(), Name = x.Value }).ToList();
 
             await _langDAL.CreateLangsAsync(languages, cancellationToken);
             return true;

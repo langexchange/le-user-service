@@ -32,7 +32,7 @@ namespace LE.UserService.Controllers
             userDto.MiddleName = request.UserInfo?.MiddleName;
             userDto.Introduction = request.UserInfo?.Introduction;
             userDto.Gender = request.UserInfo?.Gender;
-            userDto.Country = request.UserInfo?.Country;
+            userDto.Country = request.UserInfo?.Country.ToUpper();
             userDto.Hobbies = request.UserInfo?.Hobbies;
 
             await _userService.SetBasicInfor(id, userDto, cancellationToken);

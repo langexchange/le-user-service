@@ -125,8 +125,9 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             cypher = cypher.OptionalMatch($"(u)-[r:{RelationValues.LIVE_IN_COUNTRY}]->(:{CountrySchema.COUNTRY_LABEL})")
                 .DetachDelete("r")
                 .With("u");
-            cypher = cypher.Merge($"(u)-[:{RelationValues.LIVE_IN_COUNTRY}]->(:{CountrySchema.COUNTRY_LABEL} {{countryName: $countryName}})")
-                    .WithParam("countryName", userDto.Country)
+            cypher = cypher.Match($"(c:{CountrySchema.COUNTRY_LABEL} {{countryCode: $countryCode}})")
+                    .WithParam("countryCode", userDto.Country)
+                    .Merge($"(u)-[:{RelationValues.LIVE_IN_COUNTRY}]->(c)")
                     .With("u");
 
             cypher = cypher.OptionalMatch($"(u)-[rnl:{RelationValues.HAS_NATIVE_LANGUAGE}]->(:{LangSchema.LANGUAGE_LABEL})")
@@ -159,9 +160,53 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             return userSchema?.CreatedAt != null;
         }
 
-        public Task<IEnumerable<Dictionary<string, object>>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SuggestUserDto>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var userCypher = _context.Cypher.Read.Match($"(u:{UserSchema.USER_LABEL} {{ id: $id}})")
+                             .WithParam("id", id)
+                             .Return<UserSchema>("u");
+            var userSchema = (await userCypher.ResultsAsync).FirstOrDefault();
+            var ids = new List<Guid>();
+            var cypher = _context.Cypher.Read;
+            IEnumerable<SuggestUserDto> result = null;
+
+            if (naviveLangs.Count() > 0 || targetLangs.Count() > 0 || countryCodes.Count() > 0)
+            {
+                if (naviveLangs.Count() != 0)
+                {
+                    var nlangcypher = cypher.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_NATIVE_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
+                            .Where("l.localeCode in $localeCodes")
+                            .WithParam("localeCodes", naviveLangs);
+                    var cypherResult = (await nlangcypher.Return<Guid>("u.id").ResultsAsync).ToList();
+                    ids.AddRange(cypherResult);
+                }
+                if (targetLangs.Count() != 0)
+                {
+                    var tlangcypher = cypher.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_TARGET_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
+                            .Where("l.localeCode in $localeCodes")
+                            .WithParam("localeCodes", targetLangs);
+                    var cypherResult = (await tlangcypher.Return<Guid>("u.id").ResultsAsync).ToList();
+                    ids.AddRange(cypherResult);
+                }
+                if (countryCodes.Count() != 0)
+                {
+                    var ccypher = cypher.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.LIVE_IN_COUNTRY}]->(c:{CountrySchema.COUNTRY_LABEL})")
+                            .Where("c.countryCode in $countryCodes")
+                            .WithParam("countryCodes", countryCodes);
+                    var cypherResult = (await ccypher.Return<Guid>("u.id").ResultsAsync).ToList();
+                    ids.AddRange(cypherResult);
+                }
+
+            }
+            else
+            {
+                cypher = cypher.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.LIVE_IN_COUNTRY}]->(:{CountrySchema.COUNTRY_LABEL} {{countryCode: $countryCode}})")
+                        .WithParam("countryCode", userSchema.Country);
+                ids = (await cypher.Return<Guid>("u.id").ResultsAsync).ToList();
+            }
+
+            result = await GetUsersAsync(ids, cancellationToken);
+            return result;
         }
     }
 }

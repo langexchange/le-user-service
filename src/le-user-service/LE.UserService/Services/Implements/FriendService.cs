@@ -85,13 +85,14 @@ namespace LE.UserService.Services.Implements
 
         }
 
-        public Task<IEnumerable<Dictionary<string, object>>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SuggestUserDto>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken)
         {
-            //suggest friend live in same country
-            //suggest friend have the same nativelang(parner)
-            //suggest friend have the same 
-            //suggest friend learn hard
-            throw new NotImplementedException();
+            var upperNativeLangs = naviveLangs.Select(x => x.ToUpper()).ToArray();
+            var upperTargetLangs = targetLangs.Select(x => x.ToUpper()).ToArray();
+            var upperCountryCodes = countryCodes.Select(x => x.ToUpper()).ToArray();
+
+            var result = await _userDAL.SuggestFriendsAsync(id, upperNativeLangs, upperTargetLangs, upperCountryCodes, cancellationToken);
+            return result;
         }
 
         public async Task UnFriendAsync(Guid fromId, Guid toId, CancellationToken cancellationToken)

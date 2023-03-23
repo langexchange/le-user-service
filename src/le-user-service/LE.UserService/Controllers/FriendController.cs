@@ -47,11 +47,9 @@ namespace LE.UserService.Controllers
         [HttpGet("suggest")]
         public async Task<IActionResult> SuggestFriendsAsync([FromQuery] string[] nativeLangs, [FromQuery] string[] targetLangs, [FromQuery] string[] countryCodes, CancellationToken cancellationToken)
         {
-            //var uuid = _requestHeader.GetOwnerId();
-            //System.Console.WriteLine(JsonConvert.SerializeObject(query));
-            //var response = await _friendService.SuggestFriendsAsync(uuid, cancellationToken);
-            //return Ok(response);
-            return Ok();
+            var uuid = _requestHeader.GetOwnerId();
+            var response = await _friendService.SuggestFriendsAsync(uuid, nativeLangs, targetLangs, countryCodes, cancellationToken);
+            return Ok(response);
         }
 
         [HttpPost("/api/makefriend/users/{id}")]
