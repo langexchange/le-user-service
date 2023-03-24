@@ -25,6 +25,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetFriendsAsync(CancellationToken cancellationToken)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             var response = await _friendService.GetFriendsAsync(uuid, cancellationToken);
             return Ok(response);
         }
@@ -40,6 +42,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetFriendRequestsAsync(CancellationToken cancellationToken)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             var response = await _friendService.GetFriendRequestsAsync(uuid, cancellationToken);
             return Ok(response);
         }
@@ -48,6 +52,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> SuggestFriendsAsync([FromQuery] string[] nativeLangs, [FromQuery] string[] targetLangs, [FromQuery] string[] countryCodes, CancellationToken cancellationToken)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             var response = await _friendService.SuggestFriendsAsync(uuid, nativeLangs, targetLangs, countryCodes, cancellationToken);
             return Ok(response);
         }
@@ -56,6 +62,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> MakeFriendAsync(Guid id, CancellationToken cancellationToken)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             if (uuid == id)
                 return BadRequest($"Can't request to user id {id}");
 
@@ -67,6 +75,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> UnFriendAsync(Guid id, CancellationToken cancellationToken)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             if (uuid == id)
                 return BadRequest($"Can't request to user id {id}");
 
@@ -78,6 +88,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> AcceptFriendAsync(Guid id, CancellationToken cancellationToken)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             if (uuid == id)
                 return BadRequest($"Can't request to user id {id}");
 
@@ -89,6 +101,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> FollowUserAsync(Guid id, CancellationToken cancellationToken)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             if (uuid == id)
                 return BadRequest($"Can't request to user id {id}");
 
@@ -100,6 +114,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> UnFollowUserAsync(Guid id, CancellationToken cancellationToken)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             if (uuid == id)
                 return BadRequest($"Can't request to user id {id}");
 

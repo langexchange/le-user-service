@@ -10,6 +10,7 @@ namespace LE.UserService.Services
     public interface IPostService
     {
         Task<PostDto> GetPost(Guid postId, CancellationToken cancellationToken = default);
+        Task<PostDto> GetPost(Guid urequestId, Guid postId, CancellationToken cancellationToken = default);
         Task<List<PostDto>> GetPosts(Guid uresquestId, Guid userId, Mode mode, CancellationToken cancellationToken = default);
         Task<Guid> CreatePost(PostDto postDto, CancellationToken cancellationToken = default);
         Task UpdatePost(Guid postId, PostDto postDto, CancellationToken cancellationToken = default);
