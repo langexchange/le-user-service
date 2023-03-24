@@ -219,6 +219,13 @@ namespace LE.UserService.Services.Implements
             return postDto;
         }
 
+        public async Task<PostDto> GetPost(Guid urequestId, Guid postId, CancellationToken cancellationToken = default)
+        {
+            var postDto = await GetPost(postId, cancellationToken);
+            var userInteracted = await _context.Userintposts.Where(x => x.Postid == postId).Select(x => x.Userid).ToListAsync();
+            postDto.IsUserInteracted = userInteracted != null && userInteracted.Any(x => x == urequestId);
+            return postDto;
+        }
         public async Task<List<PostDto>> GetPosts(Guid uresquestId, Guid userId, Mode mode, CancellationToken cancellationToken = default)
         {
             var postIds = new List<Guid>(); 
