@@ -61,6 +61,8 @@ namespace LE.UserService.Services.Implements
 
             // map model to new user object
             var user = _mapper.Map<User>(model);
+            var name = model.Email.Substring(0, model.Email.LastIndexOf("@"));
+            user.UserName = name;
             // hash password
             //user.PasswordHash = BCryptNet.HashPassword(model.Password);
 
