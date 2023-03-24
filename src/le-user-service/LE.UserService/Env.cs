@@ -6,6 +6,7 @@ namespace LE.UserService
     {
         public readonly static string DB_CONNECTION_STRING = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
         public readonly static string SECRET_KEY = Environment.GetEnvironmentVariable("SECRET_KEY") ?? string.Empty;
+        public readonly static string CHAT_DOMAIN = Environment.GetEnvironmentVariable("CHAT_DOMAIN") ?? string.Empty;
         public const string AZNormalChars = "abcdefghijklmntuvwvz";
         public const string NumberChars = "1234567890";
         public const string SplitChar = "#";

@@ -11,5 +11,6 @@ namespace LE.UserService.Models.Responses
         public string LastName { get; set; }
         //public string Email { get; set; }
         public string Token { get; set; }
+        public string JID { get; set; }
     }
 }
