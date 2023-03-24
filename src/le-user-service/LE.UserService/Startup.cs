@@ -48,6 +48,8 @@ namespace LE.UserService
 
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
 
+            services.AddCors();
+
             services.AddHttpContextAccessor();
             //add mapper
             AddAutoMappers(services);
@@ -90,6 +92,11 @@ namespace LE.UserService
 
             app.UseConsul();
 
+            app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials()); // allow credentials
             //add middleware
             app.UseCustomAuthorization();
 
