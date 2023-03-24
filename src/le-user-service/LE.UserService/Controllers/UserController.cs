@@ -67,6 +67,13 @@ namespace LE.UserService.Controllers
             var dtos = await _userService.GetUsers(cancellationToken);
             return Ok(dtos);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUser(Guid id, CancellationToken cancellationToken = default)
+        {
+            var dto = await _userService.GetUser(id, cancellationToken);
+            return Ok(dto);
+        }
     }
 }
 

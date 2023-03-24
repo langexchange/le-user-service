@@ -58,6 +58,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetComments(Guid postId, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             var dtos = await _commentService.GetComments(uuid, postId, cancellationToken);
             return Ok(dtos);
         }

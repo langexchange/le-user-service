@@ -77,7 +77,10 @@ namespace LE.UserService.Controllers
         [HttpGet("/api/posts/{postId}")]
         public async Task<IActionResult> GetPost(Guid postId, CancellationToken cancellationToken = default)
         {
-            var dto = await _postService.GetPost(postId, cancellationToken);
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+            var dto = await _postService.GetPost(uuid, postId, cancellationToken);
             return Ok(dto);
         }
 
@@ -85,6 +88,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetPosts(Guid id, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             var dtos = await _postService.GetPosts(uuid, id, Mode.Get, cancellationToken);
             return Ok(dtos);
         }
@@ -93,6 +98,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetPostsRecommend(CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             var dtos = await _postService.GetPosts(uuid, uuid, Mode.Recommend, cancellationToken);
             return Ok(dtos);
         }
