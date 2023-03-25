@@ -19,6 +19,7 @@ namespace LE.UserService.Dtos
         public string Country { get; set; }
         public string[] Hobbies { get; set; }
         public string Avatar { get; set; }
+        public bool IsFriend { get; set; } = false;
 
         public LevelNeo4jLangDto NativeLanguage { get; set; }
         public List<LevelNeo4jLangDto> TargetLanguages { get; set; }

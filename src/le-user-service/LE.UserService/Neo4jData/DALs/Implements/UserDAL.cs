@@ -66,7 +66,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             await cypher.ExecuteWithoutResultsAsync();
         }
 
-        public async Task<IEnumerable<SuggestUserDto>> GetUsersAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+        public async Task<List<SuggestUserDto>> GetUsersAsync(List<Guid> ids, CancellationToken cancellationToken = default)
         {
             var cypher = _context.Cypher.Read
                                 .Match($"(u: {UserSchema.USER_LABEL})")
@@ -79,7 +79,34 @@ namespace LE.UserService.Neo4jData.DALs.Implements
 
             var value = await cypher.ReturnAsync<UserCypherResult>("result", cancellationToken);
 
-            return value.Select(c => _mapper.ToUserDto(c));
+            return value.Select(c => _mapper.ToUserDto(c)).ToList();
+        }
+
+        public async Task<List<SuggestUserDto>> GetUsersAsync(Guid urequestId, List<Guid> ids, CancellationToken cancellationToken = default)
+        {
+            var result = await GetUsersAsync(ids, cancellationToken);
+            result.ForEach(async x =>
+            {
+                x.IsFriend = await IsFriendAsync(urequestId, x.Id, cancellationToken);
+            });
+
+            return result;
+        }
+
+        private async Task<bool> IsFriendAsync(Guid id1, Guid id2, CancellationToken cancellationToken = default)
+        {
+            var cypher = _context.Cypher.Read
+                        .Match($"(u1: {UserSchema.USER_LABEL} {{ id: $fromId}} )")
+                        .WithParam("fromId", id1)
+                        .Match($"(u2: {UserSchema.USER_LABEL} {{ id: $toId}} )")
+                        .WithParam("toId", id2)
+                        .Return<bool>($"EXISTS ( (u1)-[:{RelationValues.HAS_FRIEND}]->(u2) )");
+
+            var result = await cypher.ResultsAsync;
+
+            if (result == null)
+                return false;
+            return result.FirstOrDefault();
         }
 
         public async Task<bool> SetBasicInforAsync(Guid id, UserDto userDto, CancellationToken cancellationToken = default)
@@ -205,7 +232,10 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                 ids = (await cypher.Return<Guid>("u.id").ResultsAsync).ToList();
             }
 
-            result = await GetUsersAsync(ids, cancellationToken);
+            ids = ids.Distinct().ToList();
+            ids.Remove(id);
+
+            result = await GetUsersAsync(id, ids, cancellationToken);
             return result;
         }
     }

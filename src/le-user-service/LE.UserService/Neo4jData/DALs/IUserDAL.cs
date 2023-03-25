@@ -11,7 +11,8 @@ namespace LE.UserService.Neo4jData.DALs
     {
         Task<bool> SetBasicInforAsync(Guid id, UserDto userDto, CancellationToken cancellationToken = default);
         Task<bool> ChangeAvatarAsync(Guid id, string avatar, CancellationToken cancellationToken = default);
-        Task<IEnumerable<SuggestUserDto>> GetUsersAsync(List<Guid> ids, CancellationToken cancellationToken = default);
+        Task<List<SuggestUserDto>> GetUsersAsync(List<Guid> ids, CancellationToken cancellationToken = default);
+        Task<List<SuggestUserDto>> GetUsersAsync(Guid urequestId, List<Guid> ids, CancellationToken cancellationToken = default);
         Task CrudFriendRelationshipAsync(Guid fromId, Guid toId, string relation, ModifiedState mode, CancellationToken cancellationToken);
         Task<IEnumerable<SuggestUserDto>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken);
     }

@@ -52,11 +52,18 @@ namespace LE.UserService.Services.Implements
 
         public async Task<IEnumerable<SuggestUserDto>> GetFriendsAsync(Guid id, CancellationToken cancellationToken)
         {
-            var friendIdRequests = await _context.Relationships
-                                        .Where(x => (x.User1 == id || x.User2 == id) && x.Action.Equals(Env.SendRequest) && x.Type == true)
+            var ids = new List<Guid>();
+            var toIds = await _context.Relationships
+                                        .Where(x => x.User1 == id && x.Action.Equals(Env.SendRequest) && x.Type == true)
                                         .Select(x => x.User2).ToListAsync();
+            var fromIds = await _context.Relationships
+                                        .Where(x => x.User2 == id && x.Action.Equals(Env.SendRequest) && x.Type == true)
+                                        .Select(x => x.User1).ToListAsync();
+            ids.AddRange(toIds);
+            ids.AddRange(fromIds);
+
             //query graph database
-            var friends = await _userDAL.GetUsersAsync(friendIdRequests, cancellationToken);
+            var friends = await _userDAL.GetUsersAsync(ids, cancellationToken);
             return friends;
         }
 
