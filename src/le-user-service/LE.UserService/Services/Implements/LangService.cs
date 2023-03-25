@@ -4,6 +4,7 @@ using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -39,7 +40,12 @@ namespace LE.UserService.Services.Implements
             var languages = langdictionary.Select(x => new Language { Langid = System.Guid.NewGuid(), LocaleCode = x.Key.ToUpper(), Name = x.Value });
             await _context.AddRangeAsync(languages);
             await _context.SaveChangesAsync();
+        }
 
+        public async Task<List<Guid>> GetLangIds(string[] filterLangs, CancellationToken cancellationToken)
+        {
+            var ids = await _context.Languages.Where(x => filterLangs.Contains(x.LocaleCode)).Select(x => x.Langid).ToListAsync();
+            return ids;
         }
     }
 }

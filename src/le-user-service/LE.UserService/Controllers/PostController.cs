@@ -95,12 +95,18 @@ namespace LE.UserService.Controllers
         }
 
         [HttpGet("/api/posts/suggest")]
-        public async Task<IActionResult> GetPostsRecommend(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetPostsRecommend([FromQuery] string[] filterLangs, [FromQuery] bool isNewest, [FromQuery] bool isOnlyFriend = false, , CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
             if (uuid == Guid.Empty)
                 return BadRequest("Require Access token");
-            var dtos = await _postService.GetPosts(uuid, uuid, Mode.Recommend, cancellationToken);
+            var dtos = await _postService.SuggestPostsAsync(uuid, filterLangs, isOnlyFriend, isNewest, cancellationToken);
+
+            if(isNewest)
+            {
+                var sortDtos = dtos.OrderByDescending(x => x.CreatedAt);
+                return Ok(sortDtos);
+            }
             return Ok(dtos);
         }
 

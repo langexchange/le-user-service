@@ -104,5 +104,32 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             var cypherResult = await cypher.ResultsAsync;
             return cypherResult.ToList();
         }
+
+        public async Task<List<Guid>> SuggestPostsAsync(Guid id, List<Guid> langIds, bool isOnlyFriend = false, bool isNewest = true, CancellationToken cancellationToken = default)
+        {
+            if (isOnlyFriend)
+            {
+                var fpcypher = _context.Cypher.Read
+                            .Match($"(:{UserSchema.USER_LABEL} {{ id: $id }})-[:{RelationValues.HAS_FRIEND}]-(:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_POST}]->(fp:{PostSchema.POST_LABEL})")
+                            .WithParam("id", id)
+                            .Where("fp.deletedAt is null")
+                            .AndWhere("fp.isPublic = true")
+                            .AndWhere($"fp.langId IN $ids")
+                            .WithParam("ids", langIds.ToArray())
+                            //.OrderBy("fp.createdAt")
+                            .Return<Guid>("fp.id");
+                return (await fpcypher.ResultsAsync).ToList();
+            }
+            var cypher = _context.Cypher.Read
+                .Match($"(p: {PostSchema.POST_LABEL})")
+                .Where("p.deletedAt is null")
+                .AndWhere("p.isPublic = true")
+                .AndWhere($"p.langId IN $ids")
+                .WithParam("ids", langIds.ToArray());
+                //.OrderByDescending("p.createdAt");
+
+            var cypherResult = await cypher.Return<Guid>("p.id").ResultsAsync;
+            return cypherResult.ToList();
+        }
     }
 }

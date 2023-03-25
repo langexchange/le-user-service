@@ -19,14 +19,16 @@ namespace LE.UserService.Services.Implements
         private LanggeneralDbContext _context;
         private IPostDAL _postDAL;
         private IUserService _userService;
+        private ILangService _langService;
         private readonly IMapper _mapper;
 
-        public PostService(LanggeneralDbContext context, IMapper mapper, IPostDAL postDAL, IUserService userService)
+        public PostService(LanggeneralDbContext context, IMapper mapper, IPostDAL postDAL, IUserService userService, ILangService langService)
         {
             _context = context;
             _mapper = mapper;
             _postDAL = postDAL;
             _userService = userService;
+            _langService = langService;
         }
 
         public async Task<Guid> CreatePost(PostDto postDto, CancellationToken cancellationToken = default)
@@ -252,6 +254,29 @@ namespace LE.UserService.Services.Implements
             //need to query langguage
             var postDtos = new List<PostDto>();
             foreach(var postId in postIds)
+            {
+                var postDto = await GetPost(postId, cancellationToken);
+                var userInteracted = await _context.Userintposts.Where(x => x.Postid == postId).Select(x => x.Userid).ToListAsync();
+                postDto.IsUserInteracted = userInteracted != null && userInteracted.Any(x => x == uresquestId);
+                postDtos.Add(postDto);
+            }
+            return postDtos;
+        }
+
+        public async Task<List<PostDto>> SuggestPostsAsync(Guid uresquestId, string[] filterLangs, bool isOnlyFriend = false, bool isNewest = true, CancellationToken cancellationToken = default)
+        {
+            var filterUpperLangs = filterLangs.Select(x => x.ToUpper()).ToArray();
+            var langIds = await _langService.GetLangIds(filterUpperLangs, cancellationToken);
+            if (filterUpperLangs.Length == 0)
+            {
+                var langs = await _userService.GetUserLanguages(uresquestId);
+                langIds = langs.Select(x => x.Id).ToList();
+            }
+
+            var postIds = await _postDAL.SuggestPostsAsync(uresquestId, langIds, isOnlyFriend, isNewest, cancellationToken);
+
+            var postDtos = new List<PostDto>();
+            foreach (var postId in postIds)
             {
                 var postDto = await GetPost(postId, cancellationToken);
                 var userInteracted = await _context.Userintposts.Where(x => x.Postid == postId).Select(x => x.Userid).ToListAsync();
