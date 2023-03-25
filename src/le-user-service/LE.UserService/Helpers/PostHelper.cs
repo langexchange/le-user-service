@@ -28,6 +28,12 @@ namespace LE.UserService.Helpers
                 case 5:
                     state = PostState.TurnOffCorrect;
                     break;
+                case 6:
+                    state = PostState.TurnOnShare;
+                    break;
+                case 7:
+                    state = PostState.TurnOnCorrect;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode));
             }

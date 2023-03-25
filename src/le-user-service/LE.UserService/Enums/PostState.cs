@@ -8,5 +8,7 @@
         TurnOffComment,
         TurnOffShare,
         TurnOffCorrect,
+        TurnOnShare,
+        TurnOnCorrect,
     }
 }

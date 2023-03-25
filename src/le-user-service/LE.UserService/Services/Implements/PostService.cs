@@ -166,6 +166,12 @@ namespace LE.UserService.Services.Implements
                 case PostState.TurnOffCorrect:
                     post.RestrictBits.Set(2, false);
                     break;
+                case PostState.TurnOnShare:
+                    post.RestrictBits.Set(0, true);
+                    break;
+                case PostState.TurnOnCorrect:
+                    post.RestrictBits.Set(2, true);
+                    break;
                 default:
                     return;
             }
