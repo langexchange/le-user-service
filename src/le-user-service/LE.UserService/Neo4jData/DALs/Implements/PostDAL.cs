@@ -28,7 +28,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                .WithParam("p1", new
                {
                    id = postId,
-                   isPublic = isPublish.Value,
+                   isPublic = isPublish,
                    createdAt = DateTime.UtcNow,
                });
             if (isDelete.HasValue)
@@ -47,7 +47,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                    .Set("p += $p2")
                    .WithParam("p2", new
                    {
-                       isPublic = isPublish.Value,
+                       isPublic = isPublish,
                        updatedAt = DateTime.UtcNow,
                    })
                    .With("p");
