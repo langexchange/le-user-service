@@ -95,7 +95,7 @@ namespace LE.UserService.Controllers
         }
 
         [HttpGet("/api/posts/suggest")]
-        public async Task<IActionResult> GetPostsRecommend([FromQuery] string[] filterLangs, [FromQuery] bool isNewest, [FromQuery] bool isOnlyFriend = false, , CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetPostsRecommend([FromQuery] string[] filterLangs, [FromQuery] bool isNewest, [FromQuery] bool isOnlyFriend = false, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
             if (uuid == Guid.Empty)

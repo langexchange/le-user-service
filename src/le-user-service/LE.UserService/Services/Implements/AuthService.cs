@@ -38,7 +38,7 @@ namespace LE.UserService.Services.Implements
             var response = _mapper.Map<AuthResponse>(user);
 
             var name = model.Email.Substring(0, model.Email.LastIndexOf("@"));
-            response.JID = $"{name}{Env.CHAT_DOMAIN}";
+            response.JID = $"{name}@{Env.CHAT_DOMAIN}";
             response.Token = _jwtUtils.GenerateToken(user);
             return response;
         }
