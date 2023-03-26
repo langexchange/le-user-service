@@ -183,7 +183,7 @@ namespace LE.UserService.Services.Implements
 
         public async Task<PostDto> GetPost(Guid postId, CancellationToken cancellationToken = default)
         {
-            var post = await _context.Posts.FirstOrDefaultAsync(x => x.Postid == postId && x.IsRemoved.Value == false && x.IsPublic.Value == true);
+            var post = await _context.Posts.FirstOrDefaultAsync(x => x.Postid == postId && x.IsRemoved.Value == false);
             if (post == null)
                 return null;
 
@@ -230,6 +230,8 @@ namespace LE.UserService.Services.Implements
         public async Task<PostDto> GetPost(Guid urequestId, Guid postId, CancellationToken cancellationToken = default)
         {
             var postDto = await GetPost(postId, cancellationToken);
+            if (postDto == null || (postDto.IsPublic == false && postDto.UserId != urequestId))
+                return null;
             var userInteracted = await _context.Userintposts.Where(x => x.Postid == postId).Select(x => x.Userid).ToListAsync();
             postDto.IsUserInteracted = userInteracted != null && userInteracted.Any(x => x == urequestId);
             return postDto;
@@ -240,7 +242,9 @@ namespace LE.UserService.Services.Implements
             switch (mode)
             {
                 case Mode.Get:
-                    postIds = await _context.Posts.Where(x => x.Userid == userId && x.IsRemoved.Value == false).Select(x => x.Postid).ToListAsync();
+                    if(uresquestId == userId)
+                        postIds = await _context.Posts.Where(x => x.Userid == userId && x.IsRemoved.Value == false).Select(x => x.Postid).ToListAsync();
+                    else postIds = await _context.Posts.Where(x => x.Userid == userId && x.IsRemoved.Value == false && x.IsPublic == true).Select(x => x.Postid).ToListAsync();
                     break;
                 case Mode.Recommend:
                     var langs = await _userService.GetUserLanguages(userId);
@@ -256,6 +260,8 @@ namespace LE.UserService.Services.Implements
             foreach(var postId in postIds)
             {
                 var postDto = await GetPost(postId, cancellationToken);
+                if (postDto == null)
+                    continue;
                 var userInteracted = await _context.Userintposts.Where(x => x.Postid == postId).Select(x => x.Userid).ToListAsync();
                 postDto.IsUserInteracted = userInteracted != null && userInteracted.Any(x => x == uresquestId);
                 postDtos.Add(postDto);
@@ -279,6 +285,8 @@ namespace LE.UserService.Services.Implements
             foreach (var postId in postIds)
             {
                 var postDto = await GetPost(postId, cancellationToken);
+                if (postDto == null)
+                    continue;
                 var userInteracted = await _context.Userintposts.Where(x => x.Postid == postId).Select(x => x.Userid).ToListAsync();
                 postDto.IsUserInteracted = userInteracted != null && userInteracted.Any(x => x == uresquestId);
                 postDtos.Add(postDto);
@@ -315,7 +323,7 @@ namespace LE.UserService.Services.Implements
                 userInteractPost.InteractType = interactTypeId.HasValue ? interactTypeId.Value : userInteractPost.InteractType;
                 _context.Userintposts.Update(userInteractPost);
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         private async Task InitInteraction()
