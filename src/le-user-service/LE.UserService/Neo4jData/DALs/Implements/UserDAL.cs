@@ -190,9 +190,15 @@ namespace LE.UserService.Neo4jData.DALs.Implements
         public async Task<IEnumerable<SuggestUserDto>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken)
         {
             var userCypher = _context.Cypher.Read.Match($"(u:{UserSchema.USER_LABEL} {{ id: $id}})")
-                             .WithParam("id", id)
-                             .Return<UserSchema>("u");
-            var userSchema = (await userCypher.ResultsAsync).FirstOrDefault();
+                             .WithParam("id", id);
+                             
+            var userSchema = (await userCypher.Return<UserSchema>("u").ResultsAsync).FirstOrDefault();
+
+            userCypher = userCypher.Match($"(u)-[:{RelationValues.HAS_TARGET_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
+                                   .With($"collect(l.localeCode) as targetLangs");
+            
+            var userTargetLangs = (await userCypher.ReturnDistinct<string[]>("targetLangs").ResultsAsync)?.FirstOrDefault();
+
             var ids = new List<Guid>();
             var cypher = _context.Cypher.Read;
             IEnumerable<SuggestUserDto> result = null;
@@ -229,7 +235,17 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             {
                 cypher = cypher.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.LIVE_IN_COUNTRY}]->(:{CountrySchema.COUNTRY_LABEL} {{countryCode: $countryCode}})")
                         .WithParam("countryCode", userSchema.Country);
-                ids = (await cypher.Return<Guid>("u.id").ResultsAsync).ToList();
+                var cypherResult = (await cypher.Return<Guid>("u.id").ResultsAsync).ToList();
+                ids.AddRange(cypherResult);
+
+                if(userTargetLangs.Length != 0)
+                {
+                    cypher = cypher.Match($"(u)-[:{RelationValues.HAS_TARGET_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
+                            .Where("l.localeCode in $localeCodes")
+                            .WithParam("localeCodes", userTargetLangs);
+                    var tlCypherResult = (await cypher.Return<Guid>("u.id").ResultsAsync).ToList();
+                    ids.AddRange(tlCypherResult);
+                }
             }
 
             ids = ids.Distinct().ToList();
