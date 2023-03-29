@@ -20,6 +20,7 @@ namespace LE.UserService.Dtos
         public int NumOfPosts { get; set; }
         public int NumOfPartners { get; set; }
         public string Avatar { get; set; }
+        public bool IsFriend { get; set; } = false;
 
         public LanguageDto NativeLanguage { get; set; }
         public List<LanguageDto> TargetLanguages { get; set; }
