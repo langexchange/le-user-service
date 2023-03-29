@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using LE.Library.Kernel;
+using LE.UserService.Dtos;
 using LE.UserService.Models.Requests;
+using LE.UserService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,10 +17,12 @@ namespace LE.UserService.Controllers
     {
         private readonly IRequestHeader _requestHeader;
         private readonly IMapper _mapper;
-        public VocabController(IMapper mapper, IRequestHeader requestHeader)
+        private readonly IVocabService _vocabService;
+        public VocabController(IMapper mapper, IRequestHeader requestHeader, IVocabService vocabService)
         {
             _mapper = mapper;
             _requestHeader = requestHeader;
+            _vocabService = vocabService;
         }
 
         [HttpGet("")]
@@ -41,7 +45,14 @@ namespace LE.UserService.Controllers
             if (request == null)
                 return BadRequest();
 
-            return Ok();
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+
+            var dto = _mapper.Map<VocabularyPackageDto>(request);
+            dto.UserId = uuid;
+            var id = await _vocabService.CreateOrUpdateVocabularyPackageAsync(dto, cancellationToken);
+            return Ok(id);
         }
 
         [HttpPut("{vocabularyId}/update")]
@@ -50,6 +61,12 @@ namespace LE.UserService.Controllers
             if (request == null)
                 return BadRequest();
 
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+
+            var dto = _mapper.Map<VocabularyPackageDto>(request);
+            dto.UserId = uuid;
             return Ok();
         }
 

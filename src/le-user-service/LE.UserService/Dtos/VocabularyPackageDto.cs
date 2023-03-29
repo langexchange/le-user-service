@@ -5,7 +5,7 @@ namespace LE.UserService.Dtos
 {
     public class VocabularyPackageDto
     {
-        public Guid PackageId { get; set; }
+        public Guid PackageId { get; set; } = Guid.NewGuid();
         public Guid UserId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
