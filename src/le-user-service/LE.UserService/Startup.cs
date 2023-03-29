@@ -72,6 +72,7 @@ namespace LE.UserService
             services.AddScoped<IUserService, Services.Implements.UserService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IVocabService, VocabService>();
             services.AddConsul();
             services.AddRequestHeader();
         }
