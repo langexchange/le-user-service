@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LE.Library.Kernel;
 using LE.UserService.Dtos;
 using LE.UserService.Models.Requests;
 using LE.UserService.Models.Responses;
@@ -17,10 +18,12 @@ namespace LE.UserService.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
-        public UserController(IUserService userService, IMapper mapper)
+        private readonly IRequestHeader _requestHeader;
+        public UserController(IUserService userService, IMapper mapper, IRequestHeader requestHeader)
         {
             _userService = userService;
             _mapper = mapper;
+            _requestHeader = requestHeader;
         }
 
         [HttpPost("{id}/fill-basic-information")]
@@ -42,7 +45,8 @@ namespace LE.UserService.Controllers
         [HttpGet("{id}/basic-information")]
         public async Task<IActionResult> GetBasicInfor(Guid id, CancellationToken cancellationToken = default)
         {
-            var response = await _userService.GetUser(id, cancellationToken);
+            var uuid = _requestHeader.GetOwnerId();
+            var response = await _userService.GetUser(uuid, id, cancellationToken);
             return Ok(response);
         }
 
@@ -64,14 +68,16 @@ namespace LE.UserService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken = default)
         {
-            var dtos = await _userService.GetUsers(cancellationToken);
+            var uuid = _requestHeader.GetOwnerId();
+            var dtos = await _userService.GetUsers(uuid, cancellationToken);
             return Ok(dtos);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(Guid id, CancellationToken cancellationToken = default)
         {
-            var dto = await _userService.GetUser(id, cancellationToken);
+            var uuid = _requestHeader.GetOwnerId();
+            var dto = await _userService.GetUser(uuid, id, cancellationToken);
             return Ok(dto);
         }
     }

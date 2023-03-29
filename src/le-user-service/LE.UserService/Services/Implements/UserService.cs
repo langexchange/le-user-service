@@ -24,9 +24,12 @@ namespace LE.UserService.Services.Implements
             _mapper = mapper;
             _userDAL = userDAL;
         }
-        public async Task<UserDto> GetUser(Guid id, CancellationToken cancellationToken = default)
+        public async Task<UserDto> GetUser(Guid urequestId, Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == id);
+            if (user == null)
+                return null;
+
             var dto = _mapper.Map<UserDto>(user);
             if (user.NativeLang != null)
             {
@@ -45,6 +48,17 @@ namespace LE.UserService.Services.Implements
 
             var numOfPosts = await _context.Posts.Where(x => x.Userid == id && x.IsPublic == true && x.IsPublic == true).CountAsync();
             dto.NumOfPosts = numOfPosts;
+
+            var toId = await _context.Relationships
+                                        .Where(x => x.User1 == id && x.Action.Equals(Env.SendRequest) && x.Type == true && x.User2 == urequestId)
+                                        .FirstOrDefaultAsync();
+           
+            var fromId = await _context.Relationships
+                                    .Where(x => x.User2 == id && x.Action.Equals(Env.SendRequest) && x.Type == true && x.User1 == urequestId)
+                                    .FirstOrDefaultAsync();
+            if (toId != null || fromId != null)
+                dto.IsFriend = true;
+
 
             //numofPartners => will be assigned when complete friend feature
             return dto;
@@ -125,13 +139,13 @@ namespace LE.UserService.Services.Implements
             return true;
         }
 
-        public async Task<List<UserDto>> GetUsers(CancellationToken cancellationToken = default)
+        public async Task<List<UserDto>> GetUsers(Guid urequestId, CancellationToken cancellationToken = default)
         {
             var userIds = await _context.Users.Select(x => x.Userid).ToListAsync();
             var dtos = new List<UserDto>();
             foreach(var id in userIds)
             {
-                var dto = await GetUser(id, cancellationToken);
+                var dto = await GetUser(urequestId, id, cancellationToken);
                 dtos.Add(dto);
             }
             return dtos;
