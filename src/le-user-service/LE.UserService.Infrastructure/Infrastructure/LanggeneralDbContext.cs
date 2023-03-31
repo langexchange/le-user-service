@@ -1703,6 +1703,10 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("created_at")
                     .HasDefaultValueSql("timezone('utc'::text, now())");
 
+                entity.Property(e => e.Define)
+                    .HasMaxLength(15)
+                    .HasColumnName("define");
+
                 entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
 
                 entity.Property(e => e.Description)
@@ -1725,6 +1729,10 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .IsRequired()
                     .HasMaxLength(128)
                     .HasColumnName("name");
+
+                entity.Property(e => e.Term)
+                    .HasMaxLength(15)
+                    .HasColumnName("term");
 
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 
