@@ -3,7 +3,6 @@ using LE.Library.Kernel;
 using LE.UserService.Dtos;
 using LE.UserService.Models.Requests;
 using LE.UserService.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading;
@@ -91,7 +90,26 @@ namespace LE.UserService.Controllers
 
 
         [HttpGet("api/practice-list")]
-        public async Task<IActionResult> GetPracticeAsync(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetPracticesAsync(CancellationToken cancellationToken = default)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+            return Ok();
+        }
+
+
+        [HttpGet("api/practice-list/vocabularies/{vocabularyId}")]
+        public async Task<IActionResult> GetPracticeAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+            return Ok();
+        }
+
+        [HttpPut("api/practice-list/vocabularies/{vocabularyId}/tracking")]
+        public async Task<IActionResult> TrackingPracticeAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
             if (uuid == Guid.Empty)
