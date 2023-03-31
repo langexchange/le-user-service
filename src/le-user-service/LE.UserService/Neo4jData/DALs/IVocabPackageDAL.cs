@@ -10,7 +10,9 @@ namespace LE.UserService.Neo4jData.DALs
     {
         Task<bool> CreateOrUpdateVocabPackageAsync(VocabularyPackageDto vocabPackageDto, CancellationToken cancellationToken = default);
         Task<bool> ConfigVocabPackageAsync(Guid vocabPackageId, bool? isPublish, bool? isDelete, CancellationToken cancellationToken = default);
-        Task<List<VocabularyPackageDto>> FilterVocabByLocaleAsync(string termLocale, string defineLocale, CancellationToken cancellationToken = default);
-        Task<List<VocabularyPackageDto>> SuggestVocabAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<List<UserVocabPackageDto>> FilterVocabByLocaleAsync(string termLocale, string defineLocale, CancellationToken cancellationToken = default);
+        Task<List<UserVocabPackageDto>> SuggestVocabAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default);
+        Task<UserVocabPackageDto> GetVocabularyPackageByUserAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }

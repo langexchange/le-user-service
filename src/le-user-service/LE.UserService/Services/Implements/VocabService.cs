@@ -3,6 +3,7 @@ using LE.UserService.Dtos;
 using LE.UserService.Enums;
 using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
+using LE.UserService.Neo4jData.DALs;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,13 @@ namespace LE.UserService.Services.Implements
     {
         private LanggeneralDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IVocabPackageDAL _vocabPackageDAL;
 
-        public VocabService(LanggeneralDbContext context, IMapper mapper)
+        public VocabService(LanggeneralDbContext context, IMapper mapper, IVocabPackageDAL vocabPackageDAL)
         {
             _context = context;
             _mapper = mapper;
+            _vocabPackageDAL = vocabPackageDAL;
         }
 
         public async Task<Guid> CloneVocabularyPackageAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default)
@@ -40,36 +43,44 @@ namespace LE.UserService.Services.Implements
             _context.Vocabpackages.Add(newVocabPackage);
             await _context.SaveChangesAsync();
 
+            var vocabDto = _mapper.Map<VocabularyPackageDto>(newVocabPackage);
+            await _vocabPackageDAL.CreateOrUpdateVocabPackageAsync(vocabDto, cancellationToken);
+
             return newVocabPackage.Packageid;
         }
 
         public async Task<Guid> CreateOrUpdateVocabularyPackageAsync(VocabularyPackageDto dto, CancellationToken cancellationToken = default)
         {
+            dto.PackageId = Guid.NewGuid();
             var vocabPackage = _mapper.Map<Vocabpackage>(dto);
-            vocabPackage.Packageid = Guid.NewGuid();
 
             _context.Vocabpackages.Add(vocabPackage);
             await _context.SaveChangesAsync();
 
             //save in neo4j
+            await _vocabPackageDAL.CreateOrUpdateVocabPackageAsync(dto, cancellationToken);
 
             return vocabPackage.Packageid;
         }
 
-        public async Task<VocabularyPackageDto> GetVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default)
+        public async Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default)
         {
-            var vocabPackage = await _context.Vocabpackages.FirstOrDefaultAsync(x => x.Packageid == packageId && x.IsRemoved == false);
-            if(vocabPackage == null)
-                return null;
-            return _mapper.Map<VocabularyPackageDto>(vocabPackage);
+            //var vocabPackage = await _context.Vocabpackages.FirstOrDefaultAsync(x => x.Packageid == packageId && x.IsRemoved == false);
+            //if(vocabPackage == null)
+            //    return null;
+            //return _mapper.Map<VocabularyPackageDto>(vocabPackage);
+            var dto = await _vocabPackageDAL.GetVocabularyPackageAsync(packageId, cancellationToken);
+            return dto;
         }
 
-        public async Task<List<VocabularyPackageDto>> GetVocabularyPackagesAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<UserVocabPackageDto> GetVocabularyPackagesAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            var vocabPackages = await _context.Vocabpackages.Where(x => x.Userid == userId && x.IsRemoved == false).ToListAsync();
-            if (vocabPackages == null)
-                return null;
-            return _mapper.Map<List<VocabularyPackageDto>>(vocabPackages);
+            //var vocabPackages = await _context.Vocabpackages.Where(x => x.Userid == userId && x.IsRemoved == false).ToListAsync();
+            //if (vocabPackages == null)
+            //    return null;
+            //return _mapper.Map<List<UserVocabPackageDto>>(vocabPackages);
+            var dto = await _vocabPackageDAL.GetVocabularyPackageByUserAsync(userId, cancellationToken);
+            return dto;
         }
 
         public async Task<bool> IsBelongToUser(Guid packageId, Guid userId, CancellationToken cancellationToken = default)
@@ -105,7 +116,7 @@ namespace LE.UserService.Services.Implements
             _context.SaveChanges();
         }
 
-        public async Task<List<VocabularyPackageDto>> SuggestVocabularyPackagesAsync(Guid userId, string termLocale, string defineLocale, CancellationToken cancellationToken = default)
+        public async Task<UserVocabPackageDto> SuggestVocabularyPackagesAsync(Guid userId, string termLocale, string defineLocale, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

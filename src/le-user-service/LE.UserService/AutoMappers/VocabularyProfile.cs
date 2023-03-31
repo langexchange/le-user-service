@@ -2,6 +2,7 @@
 using LE.UserService.Dtos;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
 using LE.UserService.Models.Requests;
+using LE.UserService.Neo4jData.DALs.Schemas;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
@@ -27,6 +28,9 @@ namespace LE.UserService.AutoMappers
                 .ForMember(d => d.TermLocale, s => s.MapFrom(x => x.Term))
                 .ForMember(d => d.DefineLocale, s => s.MapFrom(x => x.Define))
                 .ForMember(d => d.VocabularyDtos, s => s.MapFrom(x => JsonConvert.DeserializeObject<List<VocabularyDto>>(x.VocabularyPairs)));
+
+            CreateMap<VocabPackageSchema, VocabularyPackageDto>()
+                 .ForMember(d => d.VocabularyDtos, s => s.MapFrom(x => JsonConvert.DeserializeObject<List<VocabularyDto>>(x.Vocabularies)));
         }
     }
 }
