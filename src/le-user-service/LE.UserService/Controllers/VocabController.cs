@@ -77,5 +77,48 @@ namespace LE.UserService.Controllers
             dto.UserId = uuid;
             return Ok();
         }
+
+        [HttpPost("{vocabularyId}/clone")]
+        public async Task<IActionResult> CloneVocabularyAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+
+            var id = await _vocabService.CloneVocabularyPackageAsync(vocabularyId, uuid, cancellationToken);
+            return Ok(id);
+        }
+
+
+        [HttpGet("api/practice-list")]
+        public async Task<IActionResult> GetPracticeAsync(CancellationToken cancellationToken = default)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+            return Ok();
+        }
+
+        [HttpPost("{vocabularyId}/put-in-practice-list")]
+        public async Task<IActionResult> PutInPracticeAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+
+            var id = await _vocabService.CloneVocabularyPackageAsync(vocabularyId, uuid, cancellationToken);
+            return Ok(id);
+        }
+
+        [HttpPost("{vocabularyId}/put-out-practice-list")]
+        public async Task<IActionResult> PutOutPracticeAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+
+            var id = await _vocabService.CloneVocabularyPackageAsync(vocabularyId, uuid, cancellationToken);
+            return Ok(id);
+        }
     }
 }
