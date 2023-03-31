@@ -5,7 +5,7 @@ namespace LE.UserService.Dtos
 {
     public class VocabularyPackageDto
     {
-        public Guid PackageId { get; set; } = Guid.NewGuid();
+        public Guid PackageId { get; set; }
         public Guid UserId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -13,7 +13,7 @@ namespace LE.UserService.Dtos
         public string TermLocale { get; set; }
         public string DefineLocale { get; set; }
 
-        public List<VocabularyDto> vocabularies { get; set; }
+        public List<VocabularyDto> VocabularyDtos { get; set; }
     }
 
     public class VocabularyDto

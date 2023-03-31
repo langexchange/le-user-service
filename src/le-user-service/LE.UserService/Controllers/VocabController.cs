@@ -32,6 +32,13 @@ namespace LE.UserService.Controllers
             return Ok();
         }
 
+        [HttpGet("{vocabularyId}")]
+        public async Task<IActionResult> GetVocabularyAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
+        {
+            var vocab = await _vocabService.GetVocabularyPackageAsync(vocabularyId, cancellationToken);
+            return Ok(vocab);
+        }
+
         [HttpGet("explore")]
         public async Task<IActionResult> GetVocabulariesExploreAsync(string term, string define, CancellationToken cancellationToken = default)
         {

@@ -74,7 +74,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                   isPublic = vocabPackageDto.IsPublic,
                   termLocale = vocabPackageDto.TermLocale,
                   defineLocale = vocabPackageDto.DefineLocale,
-                  vocabularies = JsonConvert.SerializeObject(vocabPackageDto.vocabularies),
+                  vocabularies = JsonConvert.SerializeObject(vocabPackageDto.VocabularyDtos),
                   createdAt = DateTime.UtcNow,
               })
               .OnMatch()
@@ -86,7 +86,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                   isPublic = vocabPackageDto.IsPublic,
                   termLocale = vocabPackageDto.TermLocale,
                   defineLocale = vocabPackageDto.DefineLocale,
-                  vocabularies = JsonConvert.SerializeObject(vocabPackageDto.vocabularies),
+                  vocabularies = JsonConvert.SerializeObject(vocabPackageDto.VocabularyDtos),
                   updatedAt = DateTime.UtcNow,
               })
               .With("p");
