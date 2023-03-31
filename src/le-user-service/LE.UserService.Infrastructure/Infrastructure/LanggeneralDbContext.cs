@@ -1699,6 +1699,16 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("packageid")
                     .HasDefaultValueSql("uuid_generate_v4()");
 
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(512)
+                    .HasColumnName("description");
+
                 entity.Property(e => e.IsPublic)
                     .HasColumnName("is_public")
                     .HasDefaultValueSql("true");
@@ -1715,6 +1725,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .IsRequired()
                     .HasMaxLength(128)
                     .HasColumnName("name");
+
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 
                 entity.Property(e => e.Userid).HasColumnName("userid");
 
