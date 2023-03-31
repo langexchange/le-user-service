@@ -29,7 +29,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetVocabulariesAsync(CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            return Ok();
+            var vocabs = await _vocabService.GetVocabularyPackagesAsync(uuid, cancellationToken);
+            return Ok(vocabs);
         }
 
         [HttpGet("{vocabularyId}")]
@@ -76,7 +77,5 @@ namespace LE.UserService.Controllers
             dto.UserId = uuid;
             return Ok();
         }
-
-
     }
 }
