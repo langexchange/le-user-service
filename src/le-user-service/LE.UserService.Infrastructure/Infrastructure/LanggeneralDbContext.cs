@@ -1730,6 +1730,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
                 entity.Property(e => e.Userid).HasColumnName("userid");
 
+                entity.Property(e => e.VocabularyPairs).HasColumnName("vocabulary_pairs");
+
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Vocabpackages)
                     .HasForeignKey(d => d.Userid)

@@ -22,6 +22,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public string VocabularyPairs { get; set; }
 
         public virtual User User { get; set; }
         public virtual ICollection<Vocabulary> Vocabularies { get; set; }
