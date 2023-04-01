@@ -116,7 +116,9 @@ namespace LE.UserService.Controllers
             if (uuid == Guid.Empty)
                 return BadRequest("Require Access token");
             if (!request.IsValid())
-                return BadRequest("DifficultyLevel must be 'Medium', 'Hard' or 'Known'");
+                return BadRequest("Quality must be in range 0-5");
+
+            await _vocabService.TrackingPracticeAsync(vocabularyId, request.VocabTrackings, cancellationToken);
             return Ok();
         }
 
@@ -127,8 +129,8 @@ namespace LE.UserService.Controllers
             if (uuid == Guid.Empty)
                 return BadRequest("Require Access token");
 
-            var id = await _vocabService.CloneVocabularyPackageAsync(vocabularyId, uuid, cancellationToken);
-            return Ok(id);
+            await _vocabService.PutInPracticeListAsync(vocabularyId, uuid, cancellationToken);
+            return Ok();
         }
 
         [HttpPost("{vocabularyId}/put-out-practice-list")]
@@ -138,8 +140,8 @@ namespace LE.UserService.Controllers
             if (uuid == Guid.Empty)
                 return BadRequest("Require Access token");
 
-            var id = await _vocabService.CloneVocabularyPackageAsync(vocabularyId, uuid, cancellationToken);
-            return Ok(id);
+            await _vocabService.PutOutPracticeListAsync(vocabularyId, uuid, cancellationToken);
+            return Ok();
         }
     }
 }

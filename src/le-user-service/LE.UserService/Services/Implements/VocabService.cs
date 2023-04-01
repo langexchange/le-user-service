@@ -3,6 +3,7 @@ using LE.UserService.Dtos;
 using LE.UserService.Enums;
 using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
+using LE.UserService.Models.Requests;
 using LE.UserService.Neo4jData.DALs;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -129,12 +130,82 @@ namespace LE.UserService.Services.Implements
                 return;
 
             var vocabularies = JsonConvert.DeserializeObject<List<VocabularyDto>>(vocabPackage.VocabularyPairs);
-            throw new NotImplementedException();
+
+            var vocabEntities = new List<Vocabulary>();
+            foreach(var vocabularyPair in vocabularies)
+            {
+                var vocabEntity = new Vocabulary { 
+                    Packageid = packageId, 
+                    Vocabid = Guid.NewGuid(), 
+                    Front = vocabularyPair.Term, 
+                    Back = vocabularyPair.Define, 
+                    Imageurl = vocabularyPair.ImageUrl
+                };
+                vocabEntities.Add(vocabEntity);
+            }
+            await _context.Vocabularies.AddRangeAsync(vocabEntities);
+            _context.SaveChanges();
         }
 
-        public Task PutOutPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default)
+        public async Task PutOutPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var vocabularies = await _context.Vocabularies.Where(x => x.Packageid == packageId).ToListAsync();
+            if (vocabularies == null || vocabularies.Count == 0)
+                return;
+            _context.Vocabularies.RemoveRange(vocabularies);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task TrackingPracticeAsync(Guid packageId, List<PracticeVocabTracking> vocabTrackings, CancellationToken cancellationToken = default)
+        {
+            var tasks = new List<Task>();
+            foreach(var vocabularyPair in vocabTrackings)
+            {
+                tasks.Add(EstimateVocabPracticeAsync(packageId, vocabularyPair.VocabularyId, vocabularyPair.Quality, cancellationToken));
+            }
+            
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task EstimateVocabPracticeAsync(Guid packageId, Guid vocabId, int quality, CancellationToken cancellationToken)
+        {
+            var vocab = await _context.Vocabularies.FirstOrDefaultAsync(x => x.Vocabid == vocabId && x.Packageid == packageId);
+            if (vocab == null)
+                return;
+
+            //super memo 2
+            if(quality >= 3)
+            {
+                if (vocab.Repetitions == 0)
+                    vocab.Interval = 1;
+                else if (vocab.Repetitions == 1)
+                    vocab.Interval = 6;
+                else if (vocab.Repetitions > 1)
+                {
+                    var newInterval = Convert.ToDecimal(vocab.Interval) * vocab.Easiness;
+                    vocab.Interval = (int)Math.Ceiling(newInterval.Value);
+                }
+
+                vocab.Repetitions += 1;
+                var newEasiness = vocab.Easiness + Convert.ToDecimal((0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
+                vocab.Easiness = newEasiness;
+            }
+            else
+            {
+                vocab.Interval = 1;
+                vocab.Repetitions = 0;
+            }
+
+            if(vocab.Easiness < 1.3M)
+            {
+                vocab.Easiness = 1.3M;
+            }
+
+            //update lastlearn and nextlearn
+            vocab.LastLearned = DateTime.UtcNow;
+            vocab.NextLearned = DateTime.UtcNow.AddDays(Convert.ToDouble(vocab.Interval));
+            _context.Update(vocab);
+            await _context.SaveChangesAsync();
         }
     }
 }

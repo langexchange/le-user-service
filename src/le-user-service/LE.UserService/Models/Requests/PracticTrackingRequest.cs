@@ -9,7 +9,7 @@ namespace LE.UserService.Models.Requests
         public List<PracticeVocabTracking> VocabTrackings { get; set; }
         public bool IsValid()
         {
-            if (VocabTrackings == null || VocabTrackings.Any(x => Env.DifficultyLevels.Contains(x.DifficultyLevel)))
+            if (VocabTrackings == null || VocabTrackings.Any(x => (x.Quality < 0 || x.Quality > 5) ))
                 return false;
             return true;
         }
@@ -18,6 +18,6 @@ namespace LE.UserService.Models.Requests
     public class PracticeVocabTracking
     {
         public Guid VocabularyId { get; set; }
-        public string DifficultyLevel { get; set; }
+        public int Quality { get; set; }
     }
 }

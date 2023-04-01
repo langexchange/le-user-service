@@ -16,6 +16,5 @@ namespace LE.UserService
         public const string XUserId = "x-user-id";
         public const string SendRequest = "send-request";
         public const string Follow = "follow";
-        public readonly static string[] DifficultyLevels = { "Medium", "Hard", "Known" };
     }
 }

@@ -1,5 +1,7 @@
 ﻿using LE.UserService.Dtos;
 using LE.UserService.Enums;
+using LE.UserService.Infrastructure.Infrastructure.Entities;
+using LE.UserService.Models.Requests;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -18,5 +20,6 @@ namespace LE.UserService.Services
         Task<UserVocabPackageDto> SuggestVocabularyPackagesAsync(Guid userId, string termLocale, string defineLocale, CancellationToken cancellationToken = default);
         Task PutInPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default);
         Task PutOutPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default);
+        Task TrackingPracticeAsync(Guid packageId, List<PracticeVocabTracking> vocabTrackings, CancellationToken cancellationToken = default);
     }
 }
