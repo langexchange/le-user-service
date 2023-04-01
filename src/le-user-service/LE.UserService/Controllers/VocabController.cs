@@ -74,6 +74,7 @@ namespace LE.UserService.Controllers
 
             var dto = _mapper.Map<VocabularyPackageDto>(request);
             dto.UserId = uuid;
+            await _vocabService.CreateOrUpdateVocabularyPackageAsync(dto, cancellationToken);
             return Ok();
         }
 
@@ -109,11 +110,13 @@ namespace LE.UserService.Controllers
         }
 
         [HttpPut("api/practice-list/vocabularies/{vocabularyId}/tracking")]
-        public async Task<IActionResult> TrackingPracticeAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> TrackingPracticeAsync(Guid vocabularyId, PracticeTrackingRequest request, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
             if (uuid == Guid.Empty)
                 return BadRequest("Require Access token");
+            if (!request.IsValid())
+                return BadRequest("DifficultyLevel must be 'Medium', 'Hard' or 'Known'");
             return Ok();
         }
 

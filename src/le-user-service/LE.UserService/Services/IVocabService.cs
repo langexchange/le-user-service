@@ -16,5 +16,7 @@ namespace LE.UserService.Services
         Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default);
         Task<UserVocabPackageDto> GetVocabularyPackagesAsync(Guid userId, CancellationToken cancellationToken = default);
         Task<UserVocabPackageDto> SuggestVocabularyPackagesAsync(Guid userId, string termLocale, string defineLocale, CancellationToken cancellationToken = default);
+        Task PutInPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default);
+        Task PutOutPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default);
     }
 }

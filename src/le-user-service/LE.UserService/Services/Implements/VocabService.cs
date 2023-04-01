@@ -5,6 +5,7 @@ using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
 using LE.UserService.Neo4jData.DALs;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -117,6 +118,21 @@ namespace LE.UserService.Services.Implements
         }
 
         public async Task<UserVocabPackageDto> SuggestVocabularyPackagesAsync(Guid userId, string termLocale, string defineLocale, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task PutInPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default)
+        {
+            var vocabPackage = await _context.Vocabpackages.FirstOrDefaultAsync(x => x.IsRemoved == false && x.Userid == userId && x.Packageid == packageId);
+            if (vocabPackage == null)
+                return;
+
+            var vocabularies = JsonConvert.DeserializeObject<List<VocabularyDto>>(vocabPackage.VocabularyPairs);
+            throw new NotImplementedException();
+        }
+
+        public Task PutOutPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
