@@ -1787,13 +1787,9 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("is_removed")
                     .HasDefaultValueSql("false");
 
-                entity.Property(e => e.LastLearned)
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("last_learned");
+                entity.Property(e => e.LastLearned).HasColumnName("last_learned");
 
-                entity.Property(e => e.NextLearned)
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("next_learned");
+                entity.Property(e => e.NextLearned).HasColumnName("next_learned");
 
                 entity.Property(e => e.Repetitions)
                     .HasColumnName("repetitions")
