@@ -72,6 +72,7 @@ namespace LE.UserService.Services.Implements
             //    return null;
             //return _mapper.Map<VocabularyPackageDto>(vocabPackage);
             var dto = await _vocabPackageDAL.GetVocabularyPackageAsync(packageId, cancellationToken);
+            await CalculateProcessPracticeAsync(dto, cancellationToken);
             return dto;
         }
 
@@ -82,7 +83,25 @@ namespace LE.UserService.Services.Implements
             //    return null;
             //return _mapper.Map<List<UserVocabPackageDto>>(vocabPackages);
             var dto = await _vocabPackageDAL.GetVocabularyPackageByUserAsync(userId, cancellationToken);
+            await CalculateProcessPracticeAsync(dto, cancellationToken);
             return dto;
+        }
+
+        private async Task CalculateProcessPracticeAsync(UserVocabPackageDto dto, CancellationToken cancellationToken)
+        {
+            var vocabularyPackageDtos = new List<VocabularyPackageDto>();
+            foreach (var vocabularyPackageDto in dto.vocabularyPackageDtos)
+            {
+                var practiceResult = await GetPracticeResultAsync(vocabularyPackageDto.PackageId, cancellationToken);
+                if(practiceResult != null)
+                {
+                    vocabularyPackageDto.PracticeResultDto.IsPracticed = true;
+                    vocabularyPackageDto.PracticeResultDto.TotalVocabs = practiceResult.TotalVocabs;
+                    vocabularyPackageDto.PracticeResultDto.CurrentNumOfVocab = practiceResult.CurrentNumOfVocab;
+                }
+                vocabularyPackageDtos.Add(vocabularyPackageDto);
+            }
+            dto.vocabularyPackageDtos = vocabularyPackageDtos;
         }
 
         public async Task<bool> IsBelongToUser(Guid packageId, Guid userId, CancellationToken cancellationToken = default)

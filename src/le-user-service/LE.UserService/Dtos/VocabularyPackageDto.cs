@@ -8,6 +8,7 @@ namespace LE.UserService.Dtos
         public VocabularyPackageDto()
         {
             VocabularyDtos = new List<VocabularyDto>();
+            PracticeResultDto = new PracticeResult();
         }
         public Guid PackageId { get; set; }
         public Guid UserId { get; set; }
@@ -20,6 +21,15 @@ namespace LE.UserService.Dtos
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public List<VocabularyDto> VocabularyDtos { get; set; }
+        public PracticeResult PracticeResultDto { get; set; }
+
+    }
+
+    public class PracticeResult
+    {
+        public bool IsPracticed { get; set; } = false;
+        public int TotalVocabs { get; set; }
+        public int CurrentNumOfVocab { get; set; }
     }
 
     public class VocabularyDto
@@ -46,6 +56,6 @@ namespace LE.UserService.Dtos
     public class UserVocabPackageDto
     {
         public UserInfo UserInfo { get; set; }
-        public IEnumerable<VocabularyPackageDto> vocabularyPackageDtos { get; set; }
+        public List<VocabularyPackageDto> vocabularyPackageDtos { get; set; }
     }
 }

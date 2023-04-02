@@ -20,7 +20,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements.CypherResults
     {
         public static UserVocabPackageDto ToVocabPackageDto(this IMapper mapper, VocabPackagesCypherResult source)
         {
-            var vocabularyPackageDtos = mapper.Map<IEnumerable<VocabularyPackageDto>>(source.VocabPackageResult);
+            var vocabularyPackageDtos = mapper.Map<List<VocabularyPackageDto>>(source.VocabPackageResult);
             UserInfo userInfo = null;
             var userData = source.UserInfo?.Data;
             if (userData != null)
