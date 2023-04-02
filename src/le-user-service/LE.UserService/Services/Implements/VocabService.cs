@@ -99,7 +99,6 @@ namespace LE.UserService.Services.Implements
                     vocabularyPackageDto.PracticeResultDto.TotalVocabs = practiceResult.TotalVocabs;
                     vocabularyPackageDto.PracticeResultDto.CurrentNumOfVocab = practiceResult.CurrentNumOfVocab;
                 }
-                else vocabularyPackageDto.PracticeResultDto.IsPracticed = false;
                 vocabularyPackageDtos.Add(vocabularyPackageDto);
             }
             dto.vocabularyPackageDtos = dto.vocabularyPackageDtos.Count != 0? vocabularyPackageDtos : dto.vocabularyPackageDtos;
