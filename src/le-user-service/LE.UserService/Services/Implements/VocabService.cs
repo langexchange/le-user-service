@@ -143,6 +143,10 @@ namespace LE.UserService.Services.Implements
                 };
                 vocabEntities.Add(vocabEntity);
             }
+
+            vocabPackage.IsPracticed = true;
+            _context.Update(vocabPackage);
+
             await _context.Vocabularies.AddRangeAsync(vocabEntities);
             _context.SaveChanges();
         }
@@ -150,8 +154,14 @@ namespace LE.UserService.Services.Implements
         public async Task PutOutPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default)
         {
             var vocabularies = await _context.Vocabularies.Where(x => x.Packageid == packageId).ToListAsync();
-            if (vocabularies == null || vocabularies.Count == 0)
+            var vocabPackage = await _context.Vocabpackages.FirstOrDefaultAsync(x => x.IsRemoved == false && x.Userid == userId && x.Packageid == packageId);
+            
+            if (vocabularies == null || vocabularies.Count == 0 || vocabPackage == null)
                 return;
+
+            vocabPackage.IsPracticed = false;
+            _context.Update(vocabPackage);
+
             _context.Vocabularies.RemoveRange(vocabularies);
             await _context.SaveChangesAsync();
         }
@@ -206,6 +216,59 @@ namespace LE.UserService.Services.Implements
             vocab.NextLearned = DateTime.UtcNow.AddDays(Convert.ToDouble(vocab.Interval));
             _context.Update(vocab);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<PracticeResultDto>> GetPracticeResultsAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var vocabPackageIds = await _context.Vocabpackages.Where(x => x.Userid == userId && x.IsPracticed == true)
+                                .Select(x => x.Packageid).ToListAsync();
+
+            var result = new List<PracticeResultDto>(); 
+
+            foreach (var packageId in vocabPackageIds)
+            {
+                var dto = await GetPracticeResultAsync(packageId, cancellationToken);
+                result.Add(dto);
+            }
+
+            return result;
+        }
+
+        private async Task<PracticeResultDto> GetPracticeResultAsync(Guid packageId, CancellationToken cancellationToken)
+        {
+            var vocabPackage = await _context.Vocabpackages.FirstOrDefaultAsync(x => x.Packageid == packageId);
+            var vocabs = await _context.Vocabularies.Where(x => x.Packageid == packageId).ToListAsync();
+            if (vocabPackage == null || vocabs == null)
+                return null;
+
+            var onPracticeVocabs = vocabs.Where(x => x.LastLearned == null || x.NextLearned == null || x.NextLearned <= DateTime.UtcNow).ToList();
+
+            var result = new PracticeResultDto
+            {
+                PackageId = packageId,
+                Title = vocabPackage.Name,
+                Description = vocabPackage.Description,
+                TotalVocabs = vocabs.Count(),
+                CurrentNumOfVocab = onPracticeVocabs.Count()
+            };
+            return result;
+        }
+
+        public async Task<PracticeVocabulariesDto> GetPracticeVocabulariesAsync(Guid packageId, CancellationToken cancellationToken = default)
+        {
+            var vocabs = await _context.Vocabularies
+                        .Where(x => x.Packageid == packageId && (x.LastLearned == null || x.NextLearned == null || x.NextLearned <= DateTime.UtcNow))
+                        .ToListAsync();
+
+            if (vocabs == null)
+                return null;
+            var practiceVocabularies = vocabs.Select(x => new PracticeVocabularyDto { VocabId = x.Vocabid, Term = x.Front, Define = x.Back, ImageUrl = x.Imageurl });
+            var result = new PracticeVocabulariesDto
+            {
+                PackageId = packageId,
+                PracticeVocabularies = practiceVocabularies
+            };
+            return result;
         }
     }
 }

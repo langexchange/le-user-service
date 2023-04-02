@@ -29,6 +29,20 @@ namespace LE.UserService.Dtos
         public string ImageUrl { get; set; }
     }
 
+    public class PracticeVocabularyDto
+    {
+        public Guid VocabId { get; set; }
+        public string Term { get; set; }
+        public string Define { get; set; }
+        public string ImageUrl { get; set; }
+    }
+
+    public class PracticeVocabulariesDto
+    {
+        public Guid PackageId { get; set; }
+        public IEnumerable<PracticeVocabularyDto> PracticeVocabularies { get; set; }
+    }
+
     public class UserVocabPackageDto
     {
         public UserInfo UserInfo { get; set; }

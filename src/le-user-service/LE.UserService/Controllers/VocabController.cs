@@ -90,26 +90,30 @@ namespace LE.UserService.Controllers
         }
 
 
-        [HttpGet("api/practice-list")]
+        [HttpGet("/api/practice-list/overview")]
         public async Task<IActionResult> GetPracticesAsync(CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
             if (uuid == Guid.Empty)
                 return BadRequest("Require Access token");
-            return Ok();
+
+            var response = await _vocabService.GetPracticeResultsAsync(uuid, cancellationToken);
+            return Ok(response);
         }
 
 
-        [HttpGet("api/practice-list/vocabularies/{vocabularyId}")]
+        [HttpGet("/api/practice-list/vocabularies/{vocabularyId}")]
         public async Task<IActionResult> GetPracticeAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
             if (uuid == Guid.Empty)
                 return BadRequest("Require Access token");
-            return Ok();
+
+            var response = await _vocabService.GetPracticeVocabulariesAsync(vocabularyId, cancellationToken);
+            return Ok(response);
         }
 
-        [HttpPut("api/practice-list/vocabularies/{vocabularyId}/tracking")]
+        [HttpPut("/api/practice-list/vocabularies/{vocabularyId}/tracking")]
         public async Task<IActionResult> TrackingPracticeAsync(Guid vocabularyId, PracticeTrackingRequest request, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
