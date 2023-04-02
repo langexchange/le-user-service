@@ -72,6 +72,7 @@ namespace LE.UserService
             services.AddScoped<IUserService, Services.Implements.UserService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IVocabService, VocabService>();
             services.AddConsul();
             services.AddRequestHeader();
         }
@@ -112,6 +113,7 @@ namespace LE.UserService
                 mc.AddProfile(new UserProfile());
                 mc.AddProfile(new LanguageProfile());
                 mc.AddProfile(new PostProfile());
+                mc.AddProfile(new VocabularyProfile());
 
                 //neo4j mapper
                 mc.AddProfile(new CountryProfile());
@@ -167,6 +169,7 @@ namespace LE.UserService
             services.AddScoped<ILangDAL, LangDAL>();
             services.AddScoped<IUserDAL, UserDAL>();
             services.AddScoped<IPostDAL, PostDAL>();
+            services.AddScoped<IVocabPackageDAL, VocabPackageDAL>();
         }
 
         private void AddNeo4jService(IServiceCollection services)

@@ -1699,6 +1699,24 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("packageid")
                     .HasDefaultValueSql("uuid_generate_v4()");
 
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.Define)
+                    .HasMaxLength(15)
+                    .HasColumnName("define");
+
+                entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(512)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.IsPracticed)
+                    .HasColumnName("is_practiced")
+                    .HasDefaultValueSql("false");
+
                 entity.Property(e => e.IsPublic)
                     .HasColumnName("is_public")
                     .HasDefaultValueSql("true");
@@ -1716,7 +1734,15 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasMaxLength(128)
                     .HasColumnName("name");
 
+                entity.Property(e => e.Term)
+                    .HasMaxLength(15)
+                    .HasColumnName("term");
+
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+
                 entity.Property(e => e.Userid).HasColumnName("userid");
+
+                entity.Property(e => e.VocabularyPairs).HasColumnName("vocabulary_pairs");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Vocabpackages)
@@ -1765,13 +1791,9 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("is_removed")
                     .HasDefaultValueSql("false");
 
-                entity.Property(e => e.LastLearned)
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("last_learned");
+                entity.Property(e => e.LastLearned).HasColumnName("last_learned");
 
-                entity.Property(e => e.NextLearned)
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("next_learned");
+                entity.Property(e => e.NextLearned).HasColumnName("next_learned");
 
                 entity.Property(e => e.Repetitions)
                     .HasColumnName("repetitions")
