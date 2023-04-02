@@ -25,6 +25,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public string VocabularyPairs { get; set; }
         public string Term { get; set; }
         public string Define { get; set; }
+        public bool? IsPracticed { get; set; }
 
         public virtual User User { get; set; }
         public virtual ICollection<Vocabulary> Vocabularies { get; set; }

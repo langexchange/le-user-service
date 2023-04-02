@@ -1713,6 +1713,10 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasMaxLength(512)
                     .HasColumnName("description");
 
+                entity.Property(e => e.IsPracticed)
+                    .HasColumnName("is_practiced")
+                    .HasDefaultValueSql("false");
+
                 entity.Property(e => e.IsPublic)
                     .HasColumnName("is_public")
                     .HasDefaultValueSql("true");
