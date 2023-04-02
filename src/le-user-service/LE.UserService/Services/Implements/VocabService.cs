@@ -93,15 +93,16 @@ namespace LE.UserService.Services.Implements
             foreach (var vocabularyPackageDto in dto.vocabularyPackageDtos)
             {
                 var practiceResult = await GetPracticeResultAsync(vocabularyPackageDto.PackageId, cancellationToken);
-                if(practiceResult != null)
+                if (practiceResult != null)
                 {
                     vocabularyPackageDto.PracticeResultDto.IsPracticed = true;
                     vocabularyPackageDto.PracticeResultDto.TotalVocabs = practiceResult.TotalVocabs;
                     vocabularyPackageDto.PracticeResultDto.CurrentNumOfVocab = practiceResult.CurrentNumOfVocab;
                 }
+                else vocabularyPackageDto.PracticeResultDto.IsPracticed = false;
                 vocabularyPackageDtos.Add(vocabularyPackageDto);
             }
-            dto.vocabularyPackageDtos = vocabularyPackageDtos;
+            dto.vocabularyPackageDtos = dto.vocabularyPackageDtos.Count != 0? vocabularyPackageDtos : dto.vocabularyPackageDtos;
         }
 
         public async Task<bool> IsBelongToUser(Guid packageId, Guid userId, CancellationToken cancellationToken = default)
@@ -255,7 +256,7 @@ namespace LE.UserService.Services.Implements
 
         private async Task<PracticeResultDto> GetPracticeResultAsync(Guid packageId, CancellationToken cancellationToken)
         {
-            var vocabPackage = await _context.Vocabpackages.FirstOrDefaultAsync(x => x.Packageid == packageId);
+            var vocabPackage = await _context.Vocabpackages.FirstOrDefaultAsync(x => x.Packageid == packageId && x.IsPracticed == true);
             var vocabs = await _context.Vocabularies.Where(x => x.Packageid == packageId).ToListAsync();
             if (vocabPackage == null || vocabs == null)
                 return null;
