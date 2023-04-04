@@ -46,6 +46,8 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetBasicInfor(Guid id, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
             var response = await _userService.GetUser(uuid, id, cancellationToken);
             return Ok(response);
         }
