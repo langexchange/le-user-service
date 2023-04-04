@@ -74,6 +74,7 @@ namespace LE.UserService.Controllers
 
             var dto = _mapper.Map<VocabularyPackageDto>(request);
             dto.UserId = uuid;
+            dto.PackageId = vocabularyId;
             await _vocabService.CreateOrUpdateVocabularyPackageAsync(dto, cancellationToken);
             return Ok();
         }

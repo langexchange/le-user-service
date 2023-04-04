@@ -53,16 +53,31 @@ namespace LE.UserService.Services.Implements
 
         public async Task<Guid> CreateOrUpdateVocabularyPackageAsync(VocabularyPackageDto dto, CancellationToken cancellationToken = default)
         {
-            dto.PackageId = Guid.NewGuid();
-            var vocabPackage = _mapper.Map<Vocabpackage>(dto);
+            var vocabPackageEntity = await _context.Vocabpackages.FirstOrDefaultAsync(x => x.Packageid == dto.PackageId);
+            if(vocabPackageEntity == null)
+            {
+                dto.PackageId = Guid.NewGuid();
+                var vocabPackage = _mapper.Map<Vocabpackage>(dto);
 
-            _context.Vocabpackages.Add(vocabPackage);
+                _context.Vocabpackages.Add(vocabPackage);
+            }
+            else
+            {
+                vocabPackageEntity.Name = dto.Title;
+                vocabPackageEntity.Description = dto.Description;
+                vocabPackageEntity.Term = dto.TermLocale;
+                vocabPackageEntity.Define = dto.DefineLocale;
+                vocabPackageEntity.IsPublic = dto.IsPublic;
+                vocabPackageEntity.VocabularyPairs = JsonConvert.SerializeObject(dto.VocabularyDtos);
+                vocabPackageEntity.UpdatedAt = DateTime.UtcNow;
+                _context.Update(vocabPackageEntity);
+            }
             await _context.SaveChangesAsync();
 
             //save in neo4j
             await _vocabPackageDAL.CreateOrUpdateVocabPackageAsync(dto, cancellationToken);
 
-            return vocabPackage.Packageid;
+            return dto.PackageId == Guid.Empty ? dto.PackageId : vocabPackageEntity.Packageid;
         }
 
         public async Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default)
@@ -137,7 +152,7 @@ namespace LE.UserService.Services.Implements
             _context.SaveChanges();
         }
 
-        public async Task<UserVocabPackageDto> SuggestVocabularyPackagesAsync(Guid userId, string termLocale, string defineLocale, CancellationToken cancellationToken = default)
+        public async Task<List<UserVocabPackageDto>> SuggestVocabularyPackagesAsync(Guid userId, string termLocale, string defineLocale, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
