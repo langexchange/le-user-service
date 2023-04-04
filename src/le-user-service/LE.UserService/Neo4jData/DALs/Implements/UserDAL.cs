@@ -85,10 +85,14 @@ namespace LE.UserService.Neo4jData.DALs.Implements
         public async Task<List<SuggestUserDto>> GetUsersAsync(Guid urequestId, List<Guid> ids, CancellationToken cancellationToken = default)
         {
             var result = await GetUsersAsync(ids, cancellationToken);
-            result.ForEach(async x =>
+            //result.ForEach(async x =>
+            //{
+            //    x.IsFriend = await IsFriendAsync(urequestId, x.Id, cancellationToken);
+            //});
+            foreach(var user in result)
             {
-                x.IsFriend = await IsFriendAsync(urequestId, x.Id, cancellationToken);
-            });
+                user.IsFriend = await IsFriendAsync(urequestId, user.Id, cancellationToken);
+            }
 
             return result;
         }
@@ -100,7 +104,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                         .WithParam("fromId", id1)
                         .Match($"(u2: {UserSchema.USER_LABEL} {{ id: $toId}} )")
                         .WithParam("toId", id2)
-                        .Return<bool>($"EXISTS ( (u1)-[:{RelationValues.HAS_FRIEND}]->(u2) )");
+                        .Return<bool>($"EXISTS ( (u1)-[:{RelationValues.HAS_FRIEND}]-(u2) )");
 
             var result = await cypher.ResultsAsync;
 

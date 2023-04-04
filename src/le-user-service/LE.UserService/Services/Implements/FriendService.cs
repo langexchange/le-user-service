@@ -63,7 +63,7 @@ namespace LE.UserService.Services.Implements
             ids.AddRange(fromIds);
 
             //query graph database
-            var friends = await _userDAL.GetUsersAsync(ids, cancellationToken);
+            var friends = await _userDAL.GetUsersAsync(id, ids, cancellationToken);
             return friends;
         }
 
