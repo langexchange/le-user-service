@@ -77,7 +77,7 @@ namespace LE.UserService.Services.Implements
             //save in neo4j
             await _vocabPackageDAL.CreateOrUpdateVocabPackageAsync(dto, cancellationToken);
 
-            return dto.PackageId == Guid.Empty ? dto.PackageId : vocabPackageEntity.Packageid;
+            return vocabPackageEntity == null ? dto.PackageId : vocabPackageEntity.Packageid;
         }
 
         public async Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default)
@@ -152,9 +152,10 @@ namespace LE.UserService.Services.Implements
             _context.SaveChanges();
         }
 
-        public async Task<List<UserVocabPackageDto>> SuggestVocabularyPackagesAsync(Guid userId, string termLocale, string defineLocale, CancellationToken cancellationToken = default)
+        public async Task<List<UserVocabPackageDto>> SuggestVocabularyPackagesAsync(Guid userId, string[] termLocale, string[] defineLocale, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var result = await _vocabPackageDAL.SuggestVocabAsync(userId, termLocale, defineLocale, cancellationToken);
+            return result;
         }
 
         public async Task PutInPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default)

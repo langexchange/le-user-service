@@ -5,6 +5,7 @@ using LE.UserService.Models.Requests;
 using LE.UserService.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,10 +41,14 @@ namespace LE.UserService.Controllers
         }
 
         [HttpGet("explore")]
-        public async Task<IActionResult> GetVocabulariesExploreAsync(string term, string define, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetVocabulariesExploreAsync([FromQuery] string[] terms, [FromQuery] string[] defines, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            return Ok();
+            var termLocales = terms.Select(x => x.ToUpper()).ToArray();
+            var defineLocales = defines.Select(x => x.ToUpper()).ToArray();
+
+            var response = await _vocabService.SuggestVocabularyPackagesAsync(uuid, termLocales, defineLocales, cancellationToken);
+            return Ok(response);
         }
          
         [HttpPost("/api/vocabulary/create")]
@@ -58,6 +63,8 @@ namespace LE.UserService.Controllers
 
             var dto = _mapper.Map<VocabularyPackageDto>(request);
             dto.UserId = uuid;
+            dto.TermLocale = dto.TermLocale?.ToUpper();
+            dto.DefineLocale = dto.DefineLocale?.ToUpper();
             var id = await _vocabService.CreateOrUpdateVocabularyPackageAsync(dto, cancellationToken);
             return Ok(id);
         }
@@ -75,6 +82,8 @@ namespace LE.UserService.Controllers
             var dto = _mapper.Map<VocabularyPackageDto>(request);
             dto.UserId = uuid;
             dto.PackageId = vocabularyId;
+            dto.TermLocale = dto.TermLocale?.ToUpper();
+            dto.DefineLocale = dto.DefineLocale?.ToUpper();
             await _vocabService.CreateOrUpdateVocabularyPackageAsync(dto, cancellationToken);
             return Ok();
         }

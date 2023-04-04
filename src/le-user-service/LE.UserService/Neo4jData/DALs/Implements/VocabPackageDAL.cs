@@ -101,14 +101,9 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             return vocabPackageSchema?.CreatedAt != null;
         }
 
-        public Task<List<UserVocabPackageDto>> FilterVocabByLocaleAsync(string termLocale, string defineLocale, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default)
         {
-            var cypher = _context.Cypher.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_VOCAB_PACKAGE}]->(vp:{VocabPackageSchema.VOCAB_PACKAGE_LABEL})")
+            var cypher = _context.Cypher.Read.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_VOCAB_PACKAGE}]->(vp:{VocabPackageSchema.VOCAB_PACKAGE_LABEL})")
                         .Where("vp.id = $id")
                         .AndWhere("vp.deletedAt is null")
                         .AndWhere("vp.isPublic = true")
@@ -122,7 +117,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
 
         public async Task<UserVocabPackageDto> GetVocabularyPackageByUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            var cypher = _context.Cypher.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_VOCAB_PACKAGE}]->(vp:{VocabPackageSchema.VOCAB_PACKAGE_LABEL})")
+            var cypher = _context.Cypher.Read.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_VOCAB_PACKAGE}]->(vp:{VocabPackageSchema.VOCAB_PACKAGE_LABEL})")
                        .Where("u.id = $id")
                        .AndWhere("vp.deletedAt is null")
                        .AndWhere("vp.isPublic = true")
@@ -134,9 +129,53 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             return value.Select(x => _mapper.ToVocabPackageDto(x)).FirstOrDefault();
         }
 
-        public Task<List<UserVocabPackageDto>> SuggestVocabAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<List<UserVocabPackageDto>> SuggestVocabAsync(Guid id, string[] termLocale, string[] defineLocale, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var cypher = _context.Cypher.Read;
+            if(!termLocale.Any() && !defineLocale.Any())
+            {
+                var userCypher = _context.Cypher.Read.Match($"(u:{UserSchema.USER_LABEL} {{ id: $id}})")
+                                .WithParam("id", id);
+
+                var targetLangsCypher = userCypher.Match($"(u)-[:{RelationValues.HAS_TARGET_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
+                                       .With($"collect(l.localeCode) as targetLangs");
+                var nativeLangsCypher = userCypher.Match($"(u)-[:{RelationValues.HAS_NATIVE_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
+                                       .With($"collect(l.localeCode) as nativeLangs");
+
+                var userTargetLangs = (await targetLangsCypher.ReturnDistinct<string[]>("targetLangs").ResultsAsync);
+                var userNativeLangs = (await nativeLangsCypher.ReturnDistinct<string[]>("nativeLangs").ResultsAsync);
+
+                if (!userNativeLangs.Any() || !userTargetLangs.Any())
+                    return null;
+
+                cypher = cypher.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_VOCAB_PACKAGE}]->(vp:{VocabPackageSchema.VOCAB_PACKAGE_LABEL})")
+                       .Where("u.id <> $id")
+                       .WithParam("id", id)
+                       .AndWhere("vp.deletedAt is null")
+                       .AndWhere("vp.isPublic = true")
+                       .AndWhere($"vp.termLocale IN $tlangs")
+                       .WithParam("tlangs", userTargetLangs.ToArray())
+                       .AndWhere($"vp.defineLocale IN $nlangs")
+                       .WithParam("nlangs", userNativeLangs.ToArray())
+                       .With("u, COLLECT(vp) as vocabularyPackages")
+                       .With("{userInfo: u, vocabularyPackages: vocabularyPackages} as result");
+            }
+            else
+            {
+                cypher = cypher.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_VOCAB_PACKAGE}]->(vp:{VocabPackageSchema.VOCAB_PACKAGE_LABEL})")
+                       .Where("u.id <> $id")
+                       .WithParam("id", id)
+                       .AndWhere("vp.deletedAt is null")
+                       .AndWhere("vp.isPublic = true")
+                       .AndWhere($"vp.termLocale IN $tlangs")
+                       .WithParam("tlangs", termLocale)
+                       .AndWhere($"vp.defineLocale IN $nlangs")
+                       .WithParam("nlangs", defineLocale)
+                       .With("u, COLLECT(vp) as vocabularyPackages")
+                       .With("{userInfo: u, vocabularyPackages: vocabularyPackages} as result");
+            }
+            var value = (await cypher.ReturnAsync<VocabPackagesCypherResult>("result", cancellationToken));
+            return value.Select(x => _mapper.ToVocabPackageDto(x)).ToList();
         }
     }
 }
