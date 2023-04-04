@@ -1386,7 +1386,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("first_name");
 
                 entity.Property(e => e.Gender)
-                    .HasMaxLength(5)
+                    .HasMaxLength(7)
                     .HasColumnName("gender");
 
                 entity.Property(e => e.IncreateId)
