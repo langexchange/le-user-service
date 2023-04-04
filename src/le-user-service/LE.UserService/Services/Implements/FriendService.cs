@@ -63,7 +63,7 @@ namespace LE.UserService.Services.Implements
             ids.AddRange(fromIds);
 
             //query graph database
-            var friends = await _userDAL.GetUsersAsync(ids, cancellationToken);
+            var friends = await _userDAL.GetUsersAsync(id, ids, cancellationToken);
             return friends;
         }
 
@@ -126,6 +126,15 @@ namespace LE.UserService.Services.Implements
 
             //crud neo4j
             await _userDAL.CrudFriendRelationshipAsync(fromId, toId, RelationValues.FOLLOW, ModifiedState.Delete, cancellationToken);
+        }
+
+        public async Task DeleteFriendRequest(Guid requestId, Guid uId, CancellationToken cancellationToken)
+        {
+            var request = await _context.Relationships.FirstOrDefaultAsync(x => x.User1 == requestId && x.User2 == uId && x.Action.Equals(Env.SendRequest) && x.Type == false);
+            if (request == null)
+                return;
+            _context.Relationships.Remove(request);
+            await _context.SaveChangesAsync();
         }
     }
 }

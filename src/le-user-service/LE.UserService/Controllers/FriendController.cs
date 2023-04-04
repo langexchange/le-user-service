@@ -48,6 +48,16 @@ namespace LE.UserService.Controllers
             return Ok(response);
         }
 
+        [HttpDelete("/api/friends/{id}/request")]
+        public async Task<IActionResult> DeleteFriendRequestsAsync(Guid id, CancellationToken cancellationToken)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+            await _friendService.DeleteFriendRequest(id, uuid, cancellationToken);
+            return Ok();
+        }
+
         [HttpGet("suggest")]
         public async Task<IActionResult> SuggestFriendsAsync([FromQuery] string[] nativeLangs, [FromQuery] string[] targetLangs, [FromQuery] string[] countryCodes, CancellationToken cancellationToken)
         {

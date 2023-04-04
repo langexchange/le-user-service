@@ -59,8 +59,10 @@ namespace LE.UserService.Services.Implements
             if (toId != null || fromId != null)
                 dto.IsFriend = true;
 
-
-            //numofPartners => will be assigned when complete friend feature
+            var friendIds = await _context.Relationships
+                                       .Where(x => (x.User1 == id || x.User2 == id) && x.Action.Equals(Env.SendRequest) && x.Type == true)
+                                       .ToListAsync();
+            dto.NumOfPartners = friendIds.Count;
             return dto;
         }
 
