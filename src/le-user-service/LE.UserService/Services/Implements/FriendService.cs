@@ -127,5 +127,14 @@ namespace LE.UserService.Services.Implements
             //crud neo4j
             await _userDAL.CrudFriendRelationshipAsync(fromId, toId, RelationValues.FOLLOW, ModifiedState.Delete, cancellationToken);
         }
+
+        public async Task DeleteFriendRequest(Guid requestId, Guid uId, CancellationToken cancellationToken)
+        {
+            var request = await _context.Relationships.FirstOrDefaultAsync(x => x.User1 == requestId && x.User2 == uId && x.Action.Equals(Env.SendRequest) && x.Type == false);
+            if (request == null)
+                return;
+            _context.Relationships.Remove(request);
+            await _context.SaveChangesAsync();
+        }
     }
 }
