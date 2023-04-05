@@ -242,7 +242,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                 var cypherResult = (await cypher.Return<Guid>("u.id").ResultsAsync).ToList();
                 ids.AddRange(cypherResult);
 
-                if(userTargetLangs.Length != 0)
+                if(userTargetLangs != null && userTargetLangs.Length != 0)
                 {
                     cypher = cypher.Match($"(u)-[:{RelationValues.HAS_TARGET_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
                             .Where("l.localeCode in $localeCodes")
