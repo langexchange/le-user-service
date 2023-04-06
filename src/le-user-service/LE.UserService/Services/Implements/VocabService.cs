@@ -68,6 +68,7 @@ namespace LE.UserService.Services.Implements
                 vocabPackageEntity.Term = dto.TermLocale;
                 vocabPackageEntity.Define = dto.DefineLocale;
                 vocabPackageEntity.IsPublic = dto.IsPublic;
+                vocabPackageEntity.Imageurl = dto.ImageUrl;
                 vocabPackageEntity.VocabularyPairs = JsonConvert.SerializeObject(dto.VocabularyDtos);
                 vocabPackageEntity.UpdatedAt = DateTime.UtcNow;
                 _context.Update(vocabPackageEntity);

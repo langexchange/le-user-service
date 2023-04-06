@@ -17,6 +17,7 @@ namespace LE.UserService.Dtos
         public bool IsPublic { get; set; }
         public string TermLocale { get; set; }
         public string DefineLocale { get; set; }
+        public string ImageUrl { get; set; }
 
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

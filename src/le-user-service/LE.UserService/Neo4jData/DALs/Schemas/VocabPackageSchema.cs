@@ -25,6 +25,10 @@ namespace LE.UserService.Neo4jData.DALs.Schemas
         [JsonProperty("defineLocale")]
         public string DefineLocale { get; set; }
 
+        [JsonProperty("imageUrl")]
+        public string ImageUrl { get; set; }
+
+
         [JsonProperty("vocabularies")]
         public string Vocabularies { get; set; }
 
