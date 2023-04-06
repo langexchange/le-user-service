@@ -48,6 +48,7 @@ namespace LE.UserService
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionConfig = services.ConfigMessageBusConnection(Configuration);
+            AssemblyManager.Load();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

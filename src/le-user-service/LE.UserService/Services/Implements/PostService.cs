@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using LE.Library.Kernel;
+using LE.Library.MessageBus;
+using LE.UserService.Application.Events;
 using LE.UserService.Dtos;
 using LE.UserService.Enums;
 using LE.UserService.Infrastructure.Infrastructure;
@@ -21,14 +24,19 @@ namespace LE.UserService.Services.Implements
         private IUserService _userService;
         private ILangService _langService;
         private readonly IMapper _mapper;
+        private readonly IMessageBus _messageBus;
+        private readonly IRequestHeader _requestHeader;
 
-        public PostService(LanggeneralDbContext context, IMapper mapper, IPostDAL postDAL, IUserService userService, ILangService langService)
+        public PostService(LanggeneralDbContext context, IMapper mapper, IPostDAL postDAL, IUserService userService, ILangService langService
+            , IMessageBus messageBus, IRequestHeader requestHeader)
         {
             _context = context;
             _mapper = mapper;
             _postDAL = postDAL;
             _userService = userService;
             _langService = langService;
+            _messageBus = messageBus;
+            _requestHeader = requestHeader;
         }
 
         public async Task<Guid> CreatePost(PostDto postDto, CancellationToken cancellationToken = default)
@@ -324,6 +332,14 @@ namespace LE.UserService.Services.Implements
                 _context.Userintposts.Update(userInteractPost);
             }
             await _context.SaveChangesAsync();
+
+            var @event = new InteractPostEvent
+            {
+                UserId = userId,
+                PostId = postId,
+                InteractType = mode
+            };
+            await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
         }
 
         private async Task InitInteraction()

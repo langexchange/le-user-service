@@ -1,8 +1,8 @@
 {
   "MessageChannels": [
     {
-      "channel": "create-driver-channel",
-      "topic": "create-driver-command-route"
+      "channel": "interacted-post-event-channel",
+      "topic": "interacted-post-event-route"
     }
   ]
 }
