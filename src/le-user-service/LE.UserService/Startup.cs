@@ -2,6 +2,9 @@ using AutoMapper;
 using LE.ApiGateway.Extensions;
 using LE.Library.Consul;
 using LE.Library.Host;
+using LE.Library.Kernel;
+using LE.Library.MessageBus.Extensions;
+using LE.Library.MessageBus.Kafka;
 using LE.UserService.AutoMappers;
 using LE.UserService.AutoMappers.Neo4jMappers;
 using LE.UserService.Infrastructure.Infrastructure;
@@ -23,6 +26,9 @@ using Microsoft.OpenApi.Models;
 using Neo4j.Driver;
 using Neo4jClient;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace LE.UserService
 {
@@ -34,11 +40,14 @@ namespace LE.UserService
         }
 
         public readonly string DatabaseName = Environment.GetEnvironmentVariable("NEO4J_DATABASE") ?? "neo4j";
+
+        protected virtual Assembly GetMessageChannelProviderAssembly() => AssemblyManager.GetAssemblies(a => a.GetName().Name == "LE.Library.MessageBus.Kafka").FirstOrDefault();
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionConfig = services.ConfigMessageBusConnection(Configuration);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -75,6 +84,9 @@ namespace LE.UserService
             services.AddScoped<IVocabService, VocabService>();
             services.AddConsul();
             services.AddRequestHeader();
+            services.AddMessageBus(Configuration, new Dictionary<Type, string>
+            {
+            }, GetMessageChannelProviderAssembly(), connectionConfig);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

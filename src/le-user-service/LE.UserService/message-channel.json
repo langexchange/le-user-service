@@ -1,0 +1,8 @@
+{
+  "MessageChannels": [
+    {
+      "channel": "create-driver-channel",
+      "topic": "create-driver-command-route"
+    }
+  ]
+}
