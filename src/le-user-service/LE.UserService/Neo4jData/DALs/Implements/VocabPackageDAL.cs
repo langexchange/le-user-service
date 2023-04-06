@@ -75,6 +75,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                   isPublic = vocabPackageDto.IsPublic,
                   termLocale = vocabPackageDto.TermLocale,
                   defineLocale = vocabPackageDto.DefineLocale,
+                  imageUrl = vocabPackageDto.ImageUrl,
                   vocabularies = JsonConvert.SerializeObject(vocabPackageDto.VocabularyDtos),
                   createdAt = DateTime.UtcNow,
               })
@@ -87,6 +88,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                   isPublic = vocabPackageDto.IsPublic,
                   termLocale = vocabPackageDto.TermLocale,
                   defineLocale = vocabPackageDto.DefineLocale,
+                  imageUrl = vocabPackageDto.ImageUrl,
                   vocabularies = JsonConvert.SerializeObject(vocabPackageDto.VocabularyDtos),
                   updatedAt = DateTime.UtcNow,
               })
@@ -139,10 +141,11 @@ namespace LE.UserService.Neo4jData.DALs.Implements
 
                 var targetLangsCypher = userCypher.Match($"(u)-[:{RelationValues.HAS_TARGET_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
                                        .With($"collect(l.localeCode) as targetLangs");
+                                       
                 var nativeLangsCypher = userCypher.Match($"(u)-[:{RelationValues.HAS_NATIVE_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
                                        .With($"collect(l.localeCode) as nativeLangs");
 
-                var userTargetLangs = (await targetLangsCypher.ReturnDistinct<string[]>("targetLangs").ResultsAsync);
+                var userTargetLangs = (await targetLangsCypher.Return<string[]>("targetLangs").ResultsAsync);
                 var userNativeLangs = (await nativeLangsCypher.ReturnDistinct<string[]>("nativeLangs").ResultsAsync);
 
                 if (!userNativeLangs.Any() || !userTargetLangs.Any())
