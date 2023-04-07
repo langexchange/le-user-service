@@ -167,11 +167,11 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                        .Where("u.id <> $id")
                        .WithParam("id", id)
                        .AndWhere("vp.deletedAt is null")
-                       .AndWhere("vp.isPublic = true")
-                       .AndWhere($"(vp.termLocale IN $tlangs AND vp.defineLocale IN $nlangs)")
-                       .WithParam("tlangs", userTargetLangs.ToArray())
-                       //.AndWhere($"vp.defineLocale IN $nlangs")
-                       .WithParam("nlangs", userNativeLangs.ToArray())
+                       //.AndWhere("vp.isPublic = true")
+                       //.AndWhere($"(vp.termLocale IN $tlangs AND vp.defineLocale IN $nlangs)")
+                       //.WithParam("tlangs", userTargetLangs.ToArray())
+                       ////.AndWhere($"vp.defineLocale IN $nlangs")
+                       //.WithParam("nlangs", userNativeLangs.ToArray())
                        .With("u, COLLECT(vp) as vocabularyPackages")
                        .With("{userInfo: u, vocabularyPackages: vocabularyPackages} as result");
             }
@@ -181,11 +181,11 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                        .Where("u.id <> $id")
                        .WithParam("id", id)
                        .AndWhere("vp.deletedAt is null")
-                       .AndWhere("vp.isPublic = true")
-                       .AndWhere($"vp.termLocale IN $tlangs AND vp.defineLocale IN $nlangs")
-                       .WithParam("tlangs", termLocale)
-                       //.AndWhere($"vp.defineLocale IN $nlangs")
-                       .WithParam("nlangs", defineLocale)
+                       //.AndWhere("vp.isPublic = true")
+                       //.AndWhere($"vp.termLocale IN $tlangs AND vp.defineLocale IN $nlangs")
+                       //.WithParam("tlangs", termLocale)
+                       ////.AndWhere($"vp.defineLocale IN $nlangs")
+                       //.WithParam("nlangs", defineLocale)
                        .With("u, COLLECT(vp) as vocabularyPackages")
                        .With("{userInfo: u, vocabularyPackages: vocabularyPackages} as result");
             }
