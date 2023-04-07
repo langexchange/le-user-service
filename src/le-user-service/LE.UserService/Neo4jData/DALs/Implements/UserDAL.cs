@@ -168,8 +168,8 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                .DetachDelete("rtl")
                .With("u");
 
-            cypher = cypher.Match($"(nl:{LangSchema.LANGUAGE_LABEL} {{name: $name}})")
-                    .WithParam("name", userDto.NativeLanguage.Name)
+            cypher = cypher.Match($"(nl:{LangSchema.LANGUAGE_LABEL} {{id: $nlId}})")
+                    .WithParam("nlId", userDto.NativeLanguage.Id)
                     .Merge($"(u)-[:{RelationValues.HAS_NATIVE_LANGUAGE} {{level: $level}}]->(nl)")
                     .WithParam("level", userDto.NativeLanguage.Level)
                     .With("u");
@@ -177,8 +177,8 @@ namespace LE.UserService.Neo4jData.DALs.Implements
 
             foreach (var lang in targetLangs)
             {
-                cypher = cypher.Match($"(tl{index}:{LangSchema.LANGUAGE_LABEL} {{name: $name{index}}})")
-                    .WithParam($"name{index}", lang.Name)
+                cypher = cypher.Match($"(tl{index}:{LangSchema.LANGUAGE_LABEL} {{id: $tlId{index}}})")
+                    .WithParam($"tlId{index}", lang.Id)
                     .Merge($"(u)-[:{RelationValues.HAS_TARGET_LANGUAGE} {{level: $level{index}}}]->(tl{index})")
                     .WithParam($"level{index}", lang.Level)
                     .With("u");

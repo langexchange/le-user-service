@@ -11,6 +11,7 @@ namespace LE.UserService.Services
     public interface IVocabService
     {
         Task<Guid> CreateOrUpdateVocabularyPackageAsync(VocabularyPackageDto dto, CancellationToken cancellationToken = default);
+        Task DeleteVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default);
         Task SetVocabularyPackageState(Guid packageId, VocabPackageState state, CancellationToken cancellationToken = default);
         Task<bool> IsBelongToUser(Guid packageId, Guid userId, CancellationToken cancellationToken = default);
         Task<Guid> CloneVocabularyPackageAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default);

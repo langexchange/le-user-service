@@ -112,6 +112,8 @@ namespace LE.UserService.Services.Implements
 
             await _context.SaveChangesAsync();
 
+
+            var nativeLang = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == userDto.NativeLanguage.Id);
             //crud graph db
             await _userDAL.SetBasicInforAsync(id, userDto, cancellationToken);
 
@@ -156,6 +158,12 @@ namespace LE.UserService.Services.Implements
                 var dto = await GetUser(urequestId, id, cancellationToken);
                 dtos.Add(dto);
             }
+            return dtos;
+        }
+
+        public async Task<List<SuggestUserDto>> GetUsersNeo4jAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+        {
+            var dtos = await _userDAL.GetUsersAsync(ids, cancellationToken);
             return dtos;
         }
     }

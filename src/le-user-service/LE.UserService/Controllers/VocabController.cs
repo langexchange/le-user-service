@@ -88,6 +88,20 @@ namespace LE.UserService.Controllers
             return Ok();
         }
 
+        [HttpDelete("{vocabularyId}")]
+        public async Task<IActionResult> DeleteVocabularyAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+
+            if (!await _vocabService.IsBelongToUser(vocabularyId, uuid, cancellationToken))
+                return BadRequest("Vocab package is not belong to user");
+
+            await _vocabService.DeleteVocabularyPackageAsync(vocabularyId, cancellationToken);
+            return Ok();
+        }
+
         [HttpPost("{vocabularyId}/clone")]
         public async Task<IActionResult> CloneVocabularyAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
         {
