@@ -256,7 +256,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             ids.Remove(id);
             foreach(var uid in ids.ToList())
             {
-                if(await IsFriendAsync(id, uid, cancellationToken))
+                if (await IsFriendAsync(id, uid, cancellationToken))
                     ids.Remove(uid);
             }
 
