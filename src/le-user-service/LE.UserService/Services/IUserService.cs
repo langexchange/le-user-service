@@ -14,5 +14,8 @@ namespace LE.UserService.Services
         Task<List<LanguageDto>> GetUserLanguages(Guid id, CancellationToken cancellationToken = default);
         Task<bool> ChangeAvatar(Guid id, string avatar, CancellationToken cancellationToken = default);
 
+        //
+        Task<List<SuggestUserDto>> GetUsersNeo4jAsync(List<Guid> ids, CancellationToken cancellationToken = default);
+
     }
 }

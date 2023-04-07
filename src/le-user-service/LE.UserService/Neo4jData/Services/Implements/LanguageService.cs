@@ -1,5 +1,8 @@
-﻿using LE.UserService.Dtos;
+﻿using AutoMapper;
+using LE.UserService.Dtos;
+using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Neo4jData.DALs;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
@@ -12,9 +15,13 @@ namespace LE.UserService.Neo4jData.Services.Implements
     public class LanguageService : ILanguageService
     {
         private readonly ILangDAL _langDAL;
-        public LanguageService(ILangDAL langDAL)
+        private readonly LanggeneralDbContext _context;
+        private readonly IMapper _mapper;
+        public LanguageService(ILangDAL langDAL, LanggeneralDbContext context, IMapper mapper)
         {
             _langDAL = langDAL;
+            _context = context;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<Neo4jLangDto>> GetLangsAsync(CancellationToken cancellationToken = default)
@@ -25,10 +32,19 @@ namespace LE.UserService.Neo4jData.Services.Implements
 
         public async Task<bool> SeedDataAsync(CancellationToken cancellationToken = default)
         {
-            var filename = "Jsonfiles/language.json";
-            var text = File.ReadAllText(filename);
-            var langdictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
-            var languages = langdictionary.Select(x => new Neo4jLangDto { LocaleCode = x.Key.ToUpper(), Name = x.Value }).ToList();
+            var languages = new List<Neo4jLangDto>();
+            var langEntites = await _context.Languages.ToListAsync();
+            if (!langEntites.Any())
+            {
+                var filename = "Jsonfiles/language.json";
+                var text = File.ReadAllText(filename);
+                var langdictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
+                languages = langdictionary.Select(x => new Neo4jLangDto { Id =  System.Guid.NewGuid(), LocaleCode = x.Key.ToUpper(), Name = x.Value }).ToList();
+            }
+            else
+            {
+                languages = _mapper.Map<List<Neo4jLangDto>>(langEntites);
+            }
 
             await _langDAL.CreateLangsAsync(languages, cancellationToken);
             return true;

@@ -8,6 +8,12 @@ namespace LE.UserService.Models.Requests
         public LanguageRequest NativeLanguage { get; set; }
         public List<LanguageRequest> TargetLanguages { get; set; }
         public UserInfo UserInfo { get; set; }
+        public bool IsValid()
+        {
+            if (NativeLanguage == null || TargetLanguages == null || TargetLanguages.Count == 0)
+                return false;
+            return true;
+        }
     }
 
     public class UserInfo
