@@ -332,12 +332,22 @@ namespace LE.UserService.Services.Implements
                 _context.Userintposts.Update(userInteractPost);
             }
             await _context.SaveChangesAsync();
+            //publish event
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == userId);
+            var currentInteract = await _context.Userintposts.Where(x => x.Postid == postId).CountAsync();
+            var post = await _context.Posts.FirstOrDefaultAsync(x => x.Postid == postId);
+            var notifyIds = new List<Guid>();
+            notifyIds.Add(post.Userid.Value);
 
             var @event = new InteractPostEvent
             {
                 UserId = userId,
+                UserName = $"{user.FirstName} {user.LastName}",
+                CurrentInteract = currentInteract,
                 PostId = postId,
-                InteractType = mode
+                InteractType = mode,
+                NotifyIds = notifyIds
             };
             await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
         }

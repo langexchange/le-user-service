@@ -5,6 +5,7 @@ using LE.Library.Host;
 using LE.Library.Kernel;
 using LE.Library.MessageBus.Extensions;
 using LE.Library.MessageBus.Kafka;
+using LE.UserService.Application.Events;
 using LE.UserService.AutoMappers;
 using LE.UserService.AutoMappers.Neo4jMappers;
 using LE.UserService.Infrastructure.Infrastructure;

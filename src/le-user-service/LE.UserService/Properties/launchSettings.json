@@ -33,7 +33,7 @@
         "NEO4J_USER": "neo4j",
         "CONSUL_URL": "localhost:8500",
         "MESSAGE_BUS_HOST": "localhost:9093",
-        "HOST_PREFIX": "dev"
+        "HOST_PREFIX": ""
       },
       "applicationUrl": "http://localhost:5003",
       "dotnetRunMessages": "true"
