@@ -9,13 +9,21 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
     {
         public Notibox()
         {
-            Notifications = new HashSet<Notification>();
+            Commentnotifications = new HashSet<Commentnotification>();
+            Notiboxsharings = new HashSet<Notiboxsharing>();
+            Postnotifications = new HashSet<Postnotification>();
             Users = new HashSet<User>();
+            Vocabpackagenotifications = new HashSet<Vocabpackagenotification>();
         }
 
         public Guid Boxid { get; set; }
+        public Guid? Userid { get; set; }
 
-        public virtual ICollection<Notification> Notifications { get; set; }
+        public virtual User User { get; set; }
+        public virtual ICollection<Commentnotification> Commentnotifications { get; set; }
+        public virtual ICollection<Notiboxsharing> Notiboxsharings { get; set; }
+        public virtual ICollection<Postnotification> Postnotifications { get; set; }
         public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<Vocabpackagenotification> Vocabpackagenotifications { get; set; }
     }
 }

@@ -19,6 +19,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
             Joingrpreqs = new HashSet<Joingrpreq>();
             MessageReceiverNavigations = new HashSet<Message>();
             MessageSenderNavigations = new HashSet<Message>();
+            Notiboxes = new HashSet<Notibox>();
             Posts = new HashSet<Post>();
             RelationshipUser1Navigations = new HashSet<Relationship>();
             RelationshipUser2Navigations = new HashSet<Relationship>();
@@ -71,6 +72,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public virtual ICollection<Joingrpreq> Joingrpreqs { get; set; }
         public virtual ICollection<Message> MessageReceiverNavigations { get; set; }
         public virtual ICollection<Message> MessageSenderNavigations { get; set; }
+        public virtual ICollection<Notibox> Notiboxes { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<Relationship> RelationshipUser1Navigations { get; set; }
         public virtual ICollection<Relationship> RelationshipUser2Navigations { get; set; }
