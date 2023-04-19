@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LE.UserService.Application.Events
 {
@@ -26,6 +28,17 @@ namespace LE.UserService.Application.Events
         public List<Guid> NotifyIds { get; set; }
 
         public InteractPostEvent(): base(MessageValue.INTERACTED_POST_EVENT)
+        {
+        }
+    }
+
+    public class InteractPostEventHandler : IAsyncHandler<InteractPostEvent>
+    {
+        public InteractPostEventHandler()
+        {
+        }
+
+        public async Task HandleAsync(IHandlerContext<InteractPostEvent> Context, CancellationToken Token = default)
         {
         }
     }

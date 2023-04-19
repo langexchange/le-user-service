@@ -5,6 +5,7 @@ using LE.Library.Host;
 using LE.Library.Kernel;
 using LE.Library.MessageBus.Extensions;
 using LE.Library.MessageBus.Kafka;
+using LE.Library.Warmup;
 using LE.UserService.Application.Events;
 using LE.UserService.AutoMappers;
 using LE.UserService.AutoMappers.Neo4jMappers;
@@ -50,6 +51,7 @@ namespace LE.UserService
         {
             var connectionConfig = services.ConfigMessageBusConnection(Configuration);
             AssemblyManager.Load();
+            services.WarmupServiceStartup();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -88,6 +90,7 @@ namespace LE.UserService
             services.AddRequestHeader();
             services.AddMessageBus(Configuration, new Dictionary<Type, string>
             {
+                [typeof(InteractPostEvent)] = MessageValue.INTERACTED_POST_EVENT,
             }, GetMessageChannelProviderAssembly(), connectionConfig);
         }
 
