@@ -10,6 +10,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public Notibox()
         {
             Commentnotifications = new HashSet<Commentnotification>();
+            Friendnotifications = new HashSet<Friendnotification>();
             Notiboxsharings = new HashSet<Notiboxsharing>();
             Postnotifications = new HashSet<Postnotification>();
             Users = new HashSet<User>();
@@ -21,6 +22,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
 
         public virtual User User { get; set; }
         public virtual ICollection<Commentnotification> Commentnotifications { get; set; }
+        public virtual ICollection<Friendnotification> Friendnotifications { get; set; }
         public virtual ICollection<Notiboxsharing> Notiboxsharings { get; set; }
         public virtual ICollection<Postnotification> Postnotifications { get; set; }
         public virtual ICollection<User> Users { get; set; }

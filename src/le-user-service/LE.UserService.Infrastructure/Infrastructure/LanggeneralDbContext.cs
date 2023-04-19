@@ -34,6 +34,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Correctcmt> Correctcmts { get; set; }
         public virtual DbSet<Correctmsg> Correctmsgs { get; set; }
         public virtual DbSet<FlywaySchemaHistory> FlywaySchemaHistories { get; set; }
+        public virtual DbSet<Friendnotification> Friendnotifications { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<Groupmember> Groupmembers { get; set; }
         public virtual DbSet<Groupopreq> Groupopreqs { get; set; }
@@ -61,6 +62,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Restrictpunish> Restrictpunishes { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Roompost> Roomposts { get; set; }
+        public virtual DbSet<Setting> Settings { get; set; }
         public virtual DbSet<Sharepost> Shareposts { get; set; }
         public virtual DbSet<Sharingnotification> Sharingnotifications { get; set; }
         public virtual DbSet<Targetlang> Targetlangs { get; set; }
@@ -556,6 +558,38 @@ namespace LE.UserService.Infrastructure.Infrastructure
                 entity.Property(e => e.Version)
                     .HasMaxLength(50)
                     .HasColumnName("version");
+            });
+
+            modelBuilder.Entity<Friendnotification>(entity =>
+            {
+                entity.HasKey(e => e.Notiid)
+                    .HasName("friendnotifications_pkey");
+
+                entity.ToTable("friendnotifications");
+
+                entity.Property(e => e.Notiid)
+                    .HasColumnName("notiid")
+                    .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Boxid).HasColumnName("boxid");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.NotifiKey).HasColumnName("notifi_key");
+
+                entity.Property(e => e.NotifyData).HasColumnName("notify_data");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.HasOne(d => d.Box)
+                    .WithMany(p => p.Friendnotifications)
+                    .HasForeignKey(d => d.Boxid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("friendnotifications_boxid_fkey");
             });
 
             modelBuilder.Entity<Group>(entity =>
@@ -1289,6 +1323,29 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasForeignKey(d => d.Roomid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("roompost_roomid_fkey");
+            });
+
+            modelBuilder.Entity<Setting>(entity =>
+            {
+                entity.ToTable("setting");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.ServiceName)
+                    .HasColumnName("service_name")
+                    .HasDefaultValueSql("'system'::text");
+
+                entity.Property(e => e.SettingKey).HasColumnName("setting_key");
+
+                entity.Property(e => e.SettingValue).HasColumnName("setting_value");
+
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
             });
 
             modelBuilder.Entity<Sharepost>(entity =>
