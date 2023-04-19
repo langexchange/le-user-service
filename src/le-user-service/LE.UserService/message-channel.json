@@ -3,6 +3,22 @@
     {
       "channel": "interacted-post-event-channel",
       "topic": "interacted-post-event-route"
+    },
+    {
+      "channel": "post-created-event-channel",
+      "topic": "post-created-event-route"
+    },
+    {
+      "channel": "interacted-comment-event-channel",
+      "topic": "interacted-comment-event-route"
+    },
+    {
+      "channel": "friend-request-sent-event-channel",
+      "topic": "friend-request-sent-event-route"
+    },
+    {
+      "channel": "friend-request-accepted-event-channel",
+      "topic": "friend-request-accepted-event-route"
     }
   ]
 }

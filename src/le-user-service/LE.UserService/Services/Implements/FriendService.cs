@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using LE.Library.Kernel;
+using LE.Library.MessageBus;
+using LE.UserService.Application.Events;
 using LE.UserService.Dtos;
 using LE.UserService.Enums;
 using LE.UserService.Infrastructure.Infrastructure;
@@ -19,12 +22,16 @@ namespace LE.UserService.Services.Implements
         private LanggeneralDbContext _context;
         private readonly IMapper _mapper;
         private readonly IUserDAL _userDAL;
+        private readonly IMessageBus _messageBus;
+        private readonly IRequestHeader _requestHeader;
 
-        public FriendService(LanggeneralDbContext context, IMapper mapper, IUserDAL userDAL)
+        public FriendService(LanggeneralDbContext context, IMapper mapper, IUserDAL userDAL, IMessageBus messageBus, IRequestHeader requestHeader)
         {
             _context = context;
             _mapper = mapper;
             _userDAL = userDAL;
+            _messageBus = messageBus;
+            _requestHeader = requestHeader;
         }
 
         public async Task FollowFriendAsync(Guid fromId, Guid toId, CancellationToken cancellationToken)
@@ -73,7 +80,20 @@ namespace LE.UserService.Services.Implements
             if (request == null)
             {
                 _context.Relationships.Add(new Relationship { User1 = fromId, User2 = toId, Type = false, Action = Env.SendRequest });
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
+
+                //publish event
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == fromId);
+                if (user == null)
+                    return;
+                var @event = new FriendRequestSentEvent
+                {
+                    FromId = fromId,
+                    ToId = toId,
+                    UserName = user.UserName,
+                    NotifyIds = new List<Guid> { toId }
+                };
+                await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
             }
         }
 
@@ -90,6 +110,18 @@ namespace LE.UserService.Services.Implements
             //crud neo4j
             await _userDAL.CrudFriendRelationshipAsync(fromId, toId, RelationValues.HAS_FRIEND, ModifiedState.Create, cancellationToken);
 
+            //publish event
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == fromId);
+            if (user == null)
+                return;
+            var @event = new FriendRequestAcceptedEvent
+            {
+                FromId = fromId,
+                ToId = toId,
+                UserName = user.UserName,
+                NotifyIds = new List<Guid> { toId }
+            };
+            await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
         }
 
         public async Task<IEnumerable<SuggestUserDto>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken)

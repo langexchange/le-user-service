@@ -87,6 +87,28 @@ namespace LE.UserService.Services.Implements
             postDto.PostId = post.Postid;
             await _postDAL.CreateOrUpdatePost(postDto, cancellationToken);
 
+            //collect data to notifi
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == postDto.UserId);
+            var ids = new List<Guid>();
+            var toIds = await _context.Relationships
+                                        .Where(x => x.User1 == postDto.UserId && x.Action.Equals(Env.SendRequest) && x.Type == true)
+                                        .Select(x => x.User2).ToListAsync();
+            var fromIds = await _context.Relationships
+                                        .Where(x => x.User2 == postDto.UserId && x.Action.Equals(Env.SendRequest) && x.Type == true)
+                                        .Select(x => x.User1).ToListAsync();
+            ids.AddRange(toIds);
+            ids.AddRange(fromIds);
+
+            var @event = new PostCreatedEvent
+            {
+                PostId = post.Postid,
+                UserId = postDto.UserId,
+                UserName = user == null ? "": $"{user.FirstName} {user.LastName}",
+                NotifyIds = ids
+            };
+
+            await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
+
             return post.Postid;
         }
 
