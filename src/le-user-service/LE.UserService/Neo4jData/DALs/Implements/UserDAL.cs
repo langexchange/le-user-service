@@ -74,7 +74,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                                 .WithParam("ids", ids.ToArray())
                                 .OptionalMatch($"(u)-[nRel:{RelationValues.HAS_NATIVE_LANGUAGE}]->(ntl:{LangSchema.LANGUAGE_LABEL})")
                                 .OptionalMatch($"(u)-[tRel:{RelationValues.HAS_TARGET_LANGUAGE}]->(tgl:{LangSchema.LANGUAGE_LABEL})")
-                                .With("u, COLLECT(distinct {level: nRel.level, localeCode: ntl.localeCode, name: ntl.name}) as levelNativeLangs, COLLECT(distinct {level: nRel.level, localeCode: tgl.localeCode, name: tgl.name}) as levelTargetLangs")
+                                .With("u, COLLECT(distinct {level: nRel.level, localeCode: ntl.localeCode, name: ntl.name}) as levelNativeLangs, COLLECT(distinct {level: tRel.level, localeCode: tgl.localeCode, name: tgl.name}) as levelTargetLangs")
                                 .With("{user: u, levelNativeLangs: levelNativeLangs, levelTargetLangs: levelTargetLangs } as result");
 
             var value = await cypher.ReturnAsync<UserCypherResult>("result", cancellationToken);

@@ -25,7 +25,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements.CypherResults
         {
             var result = mapper.Map<SuggestUserDto>(source.UserResult?.Data);
             result.NativeLanguage = mapper.Map<LevelNeo4jLangDto>(source.NativeLangResult.FirstOrDefault());
-            result.TargetLanguages = mapper.Map<List<LevelNeo4jLangDto>>(source.NativeLangResult);
+            result.TargetLanguages = mapper.Map<List<LevelNeo4jLangDto>>(source.TargetLangsResult);
             return result;
         }
     }
