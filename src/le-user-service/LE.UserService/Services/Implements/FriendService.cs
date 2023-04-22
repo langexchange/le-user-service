@@ -118,7 +118,7 @@ namespace LE.UserService.Services.Implements
             {
                 FromId = fromId,
                 ToId = toId,
-                UserName = user.UserName,
+                UserName = $"{user.FirstName} {user.LastName}",
                 NotifyIds = new List<Guid> { toId }
             };
             await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);

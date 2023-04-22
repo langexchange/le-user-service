@@ -60,6 +60,30 @@ namespace LE.UserService.Services.Implements
 
             await _context.SaveChangesAsync();
 
+            //publish event
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == commentDto.UserId);
+            var currentComment = await _context.Comments.Where(x => x.Commentid == comment.Commentid).CountAsync();
+            var notifyIds = new List<Guid>();
+            var userCommented = await _context.Comments.Where(x => x.Postid == commentDto.PostId)
+                                                       .Select(x => x.Userid).ToListAsync();
+            var ownerOfPost = await _context.Posts.Where(x => x.Postid == commentDto.PostId).Select(x => x.Userid).FirstOrDefaultAsync();
+
+            notifyIds.Add(ownerOfPost.Value);
+            notifyIds.AddRange(userCommented);
+
+            var @event = new CommentPostEvent
+            {
+                UserId = commentDto.UserId,
+                UserName = $"{user.FirstName} {user.LastName}",
+                CurrentComment = currentComment,
+                PostId = commentDto.PostId,
+                CommentId = comment.Commentid,
+                NotifyIds = notifyIds.Distinct().ToList(),
+            };
+            await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
+
+
             return comment.Commentid;
         }
         private async Task<CommentDto> GetComment(Guid commentId, CancellationToken cancellationToken = default)

@@ -19,6 +19,10 @@
     {
       "channel": "friend-request-accepted-event-channel",
       "topic": "friend-request-accepted-event-route"
+    },
+    {
+      "channel": "commented-post-event-channel",
+      "topic": "commented-post-event-route"
     }
   ]
 }
