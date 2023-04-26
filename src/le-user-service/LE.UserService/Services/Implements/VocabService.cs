@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using LE.Library.Kernel;
+using LE.Library.MessageBus;
+using LE.UserService.Application.Events;
 using LE.UserService.Dtos;
 using LE.UserService.Enums;
 using LE.UserService.Infrastructure.Infrastructure;
@@ -20,12 +23,16 @@ namespace LE.UserService.Services.Implements
         private LanggeneralDbContext _context;
         private readonly IMapper _mapper;
         private readonly IVocabPackageDAL _vocabPackageDAL;
+        private readonly IMessageBus _messageBus;
+        private readonly IRequestHeader _requestHeader;
 
-        public VocabService(LanggeneralDbContext context, IMapper mapper, IVocabPackageDAL vocabPackageDAL)
+        public VocabService(LanggeneralDbContext context, IMapper mapper, IVocabPackageDAL vocabPackageDAL, IMessageBus messageBus, IRequestHeader requestHeader)
         {
             _context = context;
             _mapper = mapper;
             _vocabPackageDAL = vocabPackageDAL;
+            _messageBus = messageBus;
+            _requestHeader = requestHeader;
         }
 
         public async Task<Guid> CloneVocabularyPackageAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default)
@@ -309,6 +316,32 @@ namespace LE.UserService.Services.Implements
                 PracticeVocabularies = practiceVocabularies
             };
             return result;
+        }
+
+        private async Task WorkAroundNotifyProcess(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var vocabPackageIds = await _context.Vocabpackages.Where(x => x.Userid == userId && x.IsPracticed == true)
+                                .Select(x => x.Packageid).ToListAsync();
+            if (vocabPackageIds == null || !vocabPackageIds.Any())
+                return;
+            var practiceResult = await GetPracticeResultsAsync(userId, cancellationToken);
+            var @event = new LearningVocabProcessCalculatedEvent
+            {
+                UserId = userId,
+                Result = practiceResult
+            };
+
+            await _messageBus.PublishAsync(@event, _requestHeader);
+        }
+        
+        public async Task StatisticVocabLearningProcessAsync(CancellationToken cancellationToken = default)
+        {
+            var ids = await _context.Users.Select(x => x.Userid).ToListAsync();
+            foreach(var id in ids.ToList())
+            {
+                await WorkAroundNotifyProcess(id, cancellationToken);
+                await Task.Delay(1000);
+            }
         }
 
         public async Task DeleteVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default)

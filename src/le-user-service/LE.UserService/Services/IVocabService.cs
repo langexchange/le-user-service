@@ -23,5 +23,7 @@ namespace LE.UserService.Services
         Task TrackingPracticeAsync(Guid packageId, List<PracticeVocabTracking> vocabTrackings, CancellationToken cancellationToken = default);
         Task<List<PracticeResultDto>> GetPracticeResultsAsync(Guid userId, CancellationToken cancellationToken = default);
         Task<PracticeVocabulariesDto> GetPracticeVocabulariesAsync(Guid packageId, CancellationToken cancellationToken = default);
+
+        Task StatisticVocabLearningProcessAsync(CancellationToken cancellationToken = default);
     }
 }

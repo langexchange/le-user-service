@@ -30,9 +30,11 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Cmtpunish> Cmtpunishes { get; set; }
         public virtual DbSet<Cmtreport> Cmtreports { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<Commentnotification> Commentnotifications { get; set; }
         public virtual DbSet<Correctcmt> Correctcmts { get; set; }
         public virtual DbSet<Correctmsg> Correctmsgs { get; set; }
         public virtual DbSet<FlywaySchemaHistory> FlywaySchemaHistories { get; set; }
+        public virtual DbSet<Friendnotification> Friendnotifications { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<Groupmember> Groupmembers { get; set; }
         public virtual DbSet<Groupopreq> Groupopreqs { get; set; }
@@ -48,9 +50,9 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Language> Languages { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Notibox> Notiboxes { get; set; }
-        public virtual DbSet<Notification> Notifications { get; set; }
-        public virtual DbSet<Notitype> Notitypes { get; set; }
+        public virtual DbSet<Notiboxsharing> Notiboxsharings { get; set; }
         public virtual DbSet<Post> Posts { get; set; }
+        public virtual DbSet<Postnotification> Postnotifications { get; set; }
         public virtual DbSet<Postpunish> Postpunishes { get; set; }
         public virtual DbSet<Postreport> Postreports { get; set; }
         public virtual DbSet<Posttopic> Posttopics { get; set; }
@@ -60,7 +62,9 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Restrictpunish> Restrictpunishes { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Roompost> Roomposts { get; set; }
+        public virtual DbSet<Setting> Settings { get; set; }
         public virtual DbSet<Sharepost> Shareposts { get; set; }
+        public virtual DbSet<Sharingnotification> Sharingnotifications { get; set; }
         public virtual DbSet<Targetlang> Targetlangs { get; set; }
         public virtual DbSet<Topic> Topics { get; set; }
         public virtual DbSet<Tutorreq> Tutorreqs { get; set; }
@@ -74,6 +78,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Videopost> Videoposts { get; set; }
         public virtual DbSet<Vocabgoal> Vocabgoals { get; set; }
         public virtual DbSet<Vocabpackage> Vocabpackages { get; set; }
+        public virtual DbSet<Vocabpackagenotification> Vocabpackagenotifications { get; set; }
         public virtual DbSet<Vocabulary> Vocabularies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -430,6 +435,40 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasConstraintName("comment_userid_fkey");
             });
 
+            modelBuilder.Entity<Commentnotification>(entity =>
+            {
+                entity.HasKey(e => e.Notiid)
+                    .HasName("commentnotifications_pkey");
+
+                entity.ToTable("commentnotifications");
+
+                entity.Property(e => e.Notiid)
+                    .HasColumnName("notiid")
+                    .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Boxid).HasColumnName("boxid");
+
+                entity.Property(e => e.Commentid).HasColumnName("commentid");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.NotifiKey).HasColumnName("notifi_key");
+
+                entity.Property(e => e.NotifyData).HasColumnName("notify_data");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.HasOne(d => d.Box)
+                    .WithMany(p => p.Commentnotifications)
+                    .HasForeignKey(d => d.Boxid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("commentnotifications_boxid_fkey");
+            });
+
             modelBuilder.Entity<Correctcmt>(entity =>
             {
                 entity.ToTable("correctcmt");
@@ -519,6 +558,38 @@ namespace LE.UserService.Infrastructure.Infrastructure
                 entity.Property(e => e.Version)
                     .HasMaxLength(50)
                     .HasColumnName("version");
+            });
+
+            modelBuilder.Entity<Friendnotification>(entity =>
+            {
+                entity.HasKey(e => e.Notiid)
+                    .HasName("friendnotifications_pkey");
+
+                entity.ToTable("friendnotifications");
+
+                entity.Property(e => e.Notiid)
+                    .HasColumnName("notiid")
+                    .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Boxid).HasColumnName("boxid");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.NotifiKey).HasColumnName("notifi_key");
+
+                entity.Property(e => e.NotifyData).HasColumnName("notify_data");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.HasOne(d => d.Box)
+                    .WithMany(p => p.Friendnotifications)
+                    .HasForeignKey(d => d.Boxid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("friendnotifications_boxid_fkey");
             });
 
             modelBuilder.Entity<Group>(entity =>
@@ -892,66 +963,37 @@ namespace LE.UserService.Infrastructure.Infrastructure
                 entity.Property(e => e.Boxid)
                     .HasColumnName("boxid")
                     .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Userid).HasColumnName("userid");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Notiboxes)
+                    .HasForeignKey(d => d.Userid)
+                    .HasConstraintName("fk_user_notibox");
             });
 
-            modelBuilder.Entity<Notification>(entity =>
+            modelBuilder.Entity<Notiboxsharing>(entity =>
             {
-                entity.HasKey(e => e.Notiid)
-                    .HasName("notifications_pkey");
+                entity.HasKey(e => new { e.Boxid, e.Notiid })
+                    .HasName("notiboxsharing_pkey");
 
-                entity.ToTable("notifications");
-
-                entity.Property(e => e.Notiid)
-                    .HasColumnName("notiid")
-                    .HasDefaultValueSql("uuid_generate_v4()");
+                entity.ToTable("notiboxsharing");
 
                 entity.Property(e => e.Boxid).HasColumnName("boxid");
 
-                entity.Property(e => e.Text)
-                    .IsRequired()
-                    .HasMaxLength(512)
-                    .HasColumnName("text");
-
-                entity.Property(e => e.Type).HasColumnName("type");
-
-                entity.Property(e => e.Url)
-                    .IsRequired()
-                    .HasMaxLength(256)
-                    .HasColumnName("url");
+                entity.Property(e => e.Notiid).HasColumnName("notiid");
 
                 entity.HasOne(d => d.Box)
-                    .WithMany(p => p.Notifications)
+                    .WithMany(p => p.Notiboxsharings)
                     .HasForeignKey(d => d.Boxid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("notifications_boxid_fkey");
+                    .HasConstraintName("notiboxsharing_boxid_fkey");
 
-                entity.HasOne(d => d.TypeNavigation)
-                    .WithMany(p => p.Notifications)
-                    .HasForeignKey(d => d.Type)
+                entity.HasOne(d => d.Noti)
+                    .WithMany(p => p.Notiboxsharings)
+                    .HasForeignKey(d => d.Notiid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("notifications_type_fkey");
-            });
-
-            modelBuilder.Entity<Notitype>(entity =>
-            {
-                entity.HasKey(e => e.Typeid)
-                    .HasName("notitype_pkey");
-
-                entity.ToTable("notitype");
-
-                entity.Property(e => e.Typeid)
-                    .HasColumnName("typeid")
-                    .HasDefaultValueSql("uuid_generate_v4()");
-
-                entity.Property(e => e.Sample)
-                    .IsRequired()
-                    .HasMaxLength(512)
-                    .HasColumnName("sample");
-
-                entity.Property(e => e.Typestring)
-                    .IsRequired()
-                    .HasMaxLength(32)
-                    .HasColumnName("typestring");
+                    .HasConstraintName("notiboxsharing_notiid_fkey");
             });
 
             modelBuilder.Entity<Post>(entity =>
@@ -1026,6 +1068,44 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .WithMany(p => p.Posts)
                     .HasForeignKey(d => d.Userid)
                     .HasConstraintName("post_userid_fkey");
+            });
+
+            modelBuilder.Entity<Postnotification>(entity =>
+            {
+                entity.HasKey(e => e.Notiid)
+                    .HasName("postnotifications_pkey");
+
+                entity.ToTable("postnotifications");
+
+                entity.Property(e => e.Notiid)
+                    .HasColumnName("notiid")
+                    .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Boxid).HasColumnName("boxid");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.NotifiKey).HasColumnName("notifi_key");
+
+                entity.Property(e => e.NotifyData).HasColumnName("notify_data");
+
+                entity.Property(e => e.Postid).HasColumnName("postid");
+
+                entity.Property(e => e.Type)
+                    .HasMaxLength(15)
+                    .HasColumnName("type");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.HasOne(d => d.Box)
+                    .WithMany(p => p.Postnotifications)
+                    .HasForeignKey(d => d.Boxid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("postnotifications_boxid_fkey");
             });
 
             modelBuilder.Entity<Postpunish>(entity =>
@@ -1245,6 +1325,29 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasConstraintName("roompost_roomid_fkey");
             });
 
+            modelBuilder.Entity<Setting>(entity =>
+            {
+                entity.ToTable("setting");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.ServiceName)
+                    .HasColumnName("service_name")
+                    .HasDefaultValueSql("'system'::text");
+
+                entity.Property(e => e.SettingKey).HasColumnName("setting_key");
+
+                entity.Property(e => e.SettingValue).HasColumnName("setting_value");
+
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+            });
+
             modelBuilder.Entity<Sharepost>(entity =>
             {
                 entity.HasKey(e => e.Postid)
@@ -1269,6 +1372,32 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasForeignKey(d => d.Sharedpst)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("sharepost_sharedpst_fkey");
+            });
+
+            modelBuilder.Entity<Sharingnotification>(entity =>
+            {
+                entity.HasKey(e => e.Notiid)
+                    .HasName("sharingnotifications_pkey");
+
+                entity.ToTable("sharingnotifications");
+
+                entity.Property(e => e.Notiid)
+                    .HasColumnName("notiid")
+                    .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.NotifiKey).HasColumnName("notifi_key");
+
+                entity.Property(e => e.NotifyData).HasColumnName("notify_data");
+
+                entity.Property(e => e.Postid).HasColumnName("postid");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
             });
 
             modelBuilder.Entity<Targetlang>(entity =>
@@ -1753,6 +1882,40 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasForeignKey(d => d.Userid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("vocabpackage_userid_fkey");
+            });
+
+            modelBuilder.Entity<Vocabpackagenotification>(entity =>
+            {
+                entity.HasKey(e => e.Notiid)
+                    .HasName("vocabpackagenotifications_pkey");
+
+                entity.ToTable("vocabpackagenotifications");
+
+                entity.Property(e => e.Notiid)
+                    .HasColumnName("notiid")
+                    .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.Boxid).HasColumnName("boxid");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.NotifiKey).HasColumnName("notifi_key");
+
+                entity.Property(e => e.NotifyData).HasColumnName("notify_data");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.VocabPackageId).HasColumnName("vocab_package_id");
+
+                entity.HasOne(d => d.Box)
+                    .WithMany(p => p.Vocabpackagenotifications)
+                    .HasForeignKey(d => d.Boxid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("vocabpackagenotifications_boxid_fkey");
             });
 
             modelBuilder.Entity<Vocabulary>(entity =>

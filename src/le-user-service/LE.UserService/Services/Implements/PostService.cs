@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using LE.Library.Kernel;
+using LE.Library.MessageBus;
+using LE.UserService.Application.Events;
 using LE.UserService.Dtos;
 using LE.UserService.Enums;
 using LE.UserService.Infrastructure.Infrastructure;
@@ -21,14 +24,19 @@ namespace LE.UserService.Services.Implements
         private IUserService _userService;
         private ILangService _langService;
         private readonly IMapper _mapper;
+        private readonly IMessageBus _messageBus;
+        private readonly IRequestHeader _requestHeader;
 
-        public PostService(LanggeneralDbContext context, IMapper mapper, IPostDAL postDAL, IUserService userService, ILangService langService)
+        public PostService(LanggeneralDbContext context, IMapper mapper, IPostDAL postDAL, IUserService userService, ILangService langService
+            , IMessageBus messageBus, IRequestHeader requestHeader)
         {
             _context = context;
             _mapper = mapper;
             _postDAL = postDAL;
             _userService = userService;
             _langService = langService;
+            _messageBus = messageBus;
+            _requestHeader = requestHeader;
         }
 
         public async Task<Guid> CreatePost(PostDto postDto, CancellationToken cancellationToken = default)
@@ -78,6 +86,28 @@ namespace LE.UserService.Services.Implements
             //crud neo4j db
             postDto.PostId = post.Postid;
             await _postDAL.CreateOrUpdatePost(postDto, cancellationToken);
+
+            //collect data to notifi
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == postDto.UserId);
+            var ids = new List<Guid>();
+            var toIds = await _context.Relationships
+                                        .Where(x => x.User1 == postDto.UserId && x.Action.Equals(Env.SendRequest) && x.Type == true)
+                                        .Select(x => x.User2).ToListAsync();
+            var fromIds = await _context.Relationships
+                                        .Where(x => x.User2 == postDto.UserId && x.Action.Equals(Env.SendRequest) && x.Type == true)
+                                        .Select(x => x.User1).ToListAsync();
+            ids.AddRange(toIds);
+            ids.AddRange(fromIds);
+
+            var @event = new PostCreatedEvent
+            {
+                PostId = post.Postid,
+                UserId = postDto.UserId,
+                UserName = user == null ? "": $"{user.FirstName} {user.LastName}",
+                NotifyIds = ids
+            };
+
+            await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
 
             return post.Postid;
         }
@@ -324,6 +354,24 @@ namespace LE.UserService.Services.Implements
                 _context.Userintposts.Update(userInteractPost);
             }
             await _context.SaveChangesAsync();
+            //publish event
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == userId);
+            var currentInteract = await _context.Userintposts.Where(x => x.Postid == postId).CountAsync();
+            var post = await _context.Posts.FirstOrDefaultAsync(x => x.Postid == postId);
+            var notifyIds = new List<Guid>();
+            notifyIds.Add(post.Userid.Value);
+
+            var @event = new InteractPostEvent
+            {
+                UserId = userId,
+                UserName = $"{user.FirstName} {user.LastName}",
+                CurrentInteract = currentInteract,
+                PostId = postId,
+                InteractType = mode,
+                NotifyIds = notifyIds
+            };
+            await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
         }
 
         private async Task InitInteraction()

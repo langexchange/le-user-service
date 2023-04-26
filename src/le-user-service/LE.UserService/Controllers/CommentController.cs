@@ -75,7 +75,7 @@ namespace LE.UserService.Controllers
         }
 
         [HttpPost("/api/users/{id}/interact/{mode}/comments/{commentId}")]
-        public async Task<IActionResult> InteractPost(Guid id, Guid commentId, int mode, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> InteractComment(Guid id, Guid commentId, int mode, CancellationToken cancellationToken = default)
         {
             var state = PostHelper.GetInteractMode(mode);
             await _commentService.InteractComment(commentId, id, state, cancellationToken);

@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using LE.Library.Kernel;
+using LE.Library.MessageBus;
+using LE.UserService.Application.Events;
 using LE.UserService.Dtos;
 using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
@@ -15,10 +18,14 @@ namespace LE.UserService.Services.Implements
     {
         private LanggeneralDbContext _context;
         private readonly IMapper _mapper;
-        public CommentService(LanggeneralDbContext context, IMapper mapper)
+        private readonly IMessageBus _messageBus;
+        private readonly IRequestHeader _requestHeader; 
+        public CommentService(LanggeneralDbContext context, IMapper mapper, IMessageBus messageBus, IRequestHeader requestHeader)
         {
             _context = context;
             _mapper = mapper;
+            _messageBus = messageBus;
+            _requestHeader = requestHeader;
         }
         public async Task<Guid> CreateComment(Guid postId, CommentDto commentDto, CancellationToken cancellationToken = default)
         {
@@ -52,6 +59,30 @@ namespace LE.UserService.Services.Implements
             }
 
             await _context.SaveChangesAsync();
+
+            //publish event
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == commentDto.UserId);
+            var currentComment = await _context.Comments.Where(x => x.Commentid == comment.Commentid).CountAsync();
+            var notifyIds = new List<Guid>();
+            var userCommented = await _context.Comments.Where(x => x.Postid == commentDto.PostId)
+                                                       .Select(x => x.Userid).ToListAsync();
+            var ownerOfPost = await _context.Posts.Where(x => x.Postid == commentDto.PostId).Select(x => x.Userid).FirstOrDefaultAsync();
+
+            notifyIds.Add(ownerOfPost.Value);
+            notifyIds.AddRange(userCommented);
+
+            var @event = new CommentPostEvent
+            {
+                UserId = commentDto.UserId,
+                UserName = $"{user.FirstName} {user.LastName}",
+                CurrentComment = currentComment,
+                PostId = commentDto.PostId,
+                CommentId = comment.Commentid,
+                NotifyIds = notifyIds.Distinct().ToList(),
+            };
+            await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
+
 
             return comment.Commentid;
         }
@@ -201,7 +232,26 @@ namespace LE.UserService.Services.Implements
                 cmtInteract.InteractType = interactTypeId.HasValue ? interactTypeId.Value : cmtInteract.InteractType;
                 _context.Cmtinteracts.Update(cmtInteract);
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            //publish event
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == userId);
+            var currentInteract = await _context.Cmtinteracts.Where(x => x.Commentid == commentId).CountAsync();
+            var comment = await _context.Comments.FirstOrDefaultAsync(x => x.Commentid == commentId);
+            var notifyIds = new List<Guid>();
+            notifyIds.Add(comment.Userid);
+
+            var @event = new InteractCommentEvent
+            {
+                UserId = userId,
+                UserName = $"{user.FirstName} {user.LastName}",
+                CurrentInteract = currentInteract,
+                PostId = comment.Postid,
+                CommentId = comment.Commentid,
+                NotifyIds = notifyIds
+            };
+            await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
         }
 
         private async Task InitInteraction()
