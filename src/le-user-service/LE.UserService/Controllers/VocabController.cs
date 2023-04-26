@@ -33,6 +33,13 @@ namespace LE.UserService.Controllers
             return Ok(vocabs);
         }
 
+        [HttpGet("/api/users/{id}/vocabularies")]
+        public async Task<IActionResult> GetVocabulariesAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var vocabs = await _vocabService.GetVocabularyPackagesAsync(id, cancellationToken);
+            return Ok(vocabs);
+        }
+
         [HttpGet("{vocabularyId}")]
         public async Task<IActionResult> GetVocabularyAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
         {
@@ -85,6 +92,20 @@ namespace LE.UserService.Controllers
             dto.TermLocale = dto.TermLocale?.ToUpper();
             dto.DefineLocale = dto.DefineLocale?.ToUpper();
             await _vocabService.CreateOrUpdateVocabularyPackageAsync(dto, cancellationToken);
+            return Ok();
+        }
+
+        [HttpDelete("{vocabularyId}")]
+        public async Task<IActionResult> DeleteVocabularyAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
+        {
+            var uuid = _requestHeader.GetOwnerId();
+            if (uuid == Guid.Empty)
+                return BadRequest("Require Access token");
+
+            if (!await _vocabService.IsBelongToUser(vocabularyId, uuid, cancellationToken))
+                return BadRequest("Vocab package is not belong to user");
+
+            await _vocabService.DeleteVocabularyPackageAsync(vocabularyId, cancellationToken);
             return Ok();
         }
 

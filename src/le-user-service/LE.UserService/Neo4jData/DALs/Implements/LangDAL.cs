@@ -33,6 +33,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                 .Set($"l{index} = $l1{index}")
                 .WithParam($"l1{index}", new
                 {
+                    id = lang.Id,
                     localeCode = lang.LocaleCode,
                     name = lang.Name,
                 })
@@ -40,6 +41,7 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                 .Set($"l{index} += $l2{index}")
                 .WithParam($"l2{index}", new
                 {
+                    id = lang.Id,
                     localeCode = lang.LocaleCode,
                     name = lang.Name,
                 });

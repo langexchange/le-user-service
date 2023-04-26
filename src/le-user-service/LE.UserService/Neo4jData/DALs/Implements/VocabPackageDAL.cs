@@ -103,6 +103,18 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             return vocabPackageSchema?.CreatedAt != null;
         }
 
+        public async Task<bool> DeleteVocabPackageAsync(Guid vocabPackageId, CancellationToken cancellationToken = default)
+        {
+            var cypher = _context.Cypher.Write.Match($"(vp:{VocabPackageSchema.VOCAB_PACKAGE_LABEL} {{ id: $id }})")
+                        .WithParam("id", vocabPackageId)
+                        .Set("vp.deletedAt = $dtAt")
+                        .WithParam("dtAt", DateTime.UtcNow);
+
+            var cypherResult = await cypher.Return<VocabPackageSchema>("vp").ResultsAsync;
+            var vocabPackageSchema = cypherResult.FirstOrDefault();
+            return vocabPackageSchema?.DeletedAt != null;
+        }
+
         public async Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default)
         {
             var cypher = _context.Cypher.Read.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_VOCAB_PACKAGE}]->(vp:{VocabPackageSchema.VOCAB_PACKAGE_LABEL})")
@@ -138,10 +150,10 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             {
                 var userCypher = _context.Cypher.Read.Match($"(u:{UserSchema.USER_LABEL} {{ id: $id}})")
                                 .WithParam("id", id);
-
+                var userSchema = (await userCypher.Return<UserSchema>("u").ResultsAsync).FirstOrDefault();
                 var targetLangsCypher = userCypher.Match($"(u)-[:{RelationValues.HAS_TARGET_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
-                                       .With($"collect(l.localeCode) as targetLangs");
-                                       
+                                   .With($"collect(l.localeCode) as targetLangs");
+
                 var nativeLangsCypher = userCypher.Match($"(u)-[:{RelationValues.HAS_NATIVE_LANGUAGE}]->(l:{LangSchema.LANGUAGE_LABEL})")
                                        .With($"collect(l.localeCode) as nativeLangs");
 
@@ -155,11 +167,11 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                        .Where("u.id <> $id")
                        .WithParam("id", id)
                        .AndWhere("vp.deletedAt is null")
-                       .AndWhere("vp.isPublic = true")
-                       .AndWhere($"vp.termLocale IN $tlangs")
-                       .WithParam("tlangs", userTargetLangs.ToArray())
-                       .AndWhere($"vp.defineLocale IN $nlangs")
-                       .WithParam("nlangs", userNativeLangs.ToArray())
+                       //.AndWhere("vp.isPublic = true")
+                       //.AndWhere($"(vp.termLocale IN $tlangs AND vp.defineLocale IN $nlangs)")
+                       //.WithParam("tlangs", userTargetLangs.ToArray())
+                       ////.AndWhere($"vp.defineLocale IN $nlangs")
+                       //.WithParam("nlangs", userNativeLangs.ToArray())
                        .With("u, COLLECT(vp) as vocabularyPackages")
                        .With("{userInfo: u, vocabularyPackages: vocabularyPackages} as result");
             }
@@ -169,11 +181,11 @@ namespace LE.UserService.Neo4jData.DALs.Implements
                        .Where("u.id <> $id")
                        .WithParam("id", id)
                        .AndWhere("vp.deletedAt is null")
-                       .AndWhere("vp.isPublic = true")
-                       .AndWhere($"vp.termLocale IN $tlangs")
-                       .WithParam("tlangs", termLocale)
-                       .AndWhere($"vp.defineLocale IN $nlangs")
-                       .WithParam("nlangs", defineLocale)
+                       //.AndWhere("vp.isPublic = true")
+                       //.AndWhere($"vp.termLocale IN $tlangs AND vp.defineLocale IN $nlangs")
+                       //.WithParam("tlangs", termLocale)
+                       ////.AndWhere($"vp.defineLocale IN $nlangs")
+                       //.WithParam("nlangs", defineLocale)
                        .With("u, COLLECT(vp) as vocabularyPackages")
                        .With("{userInfo: u, vocabularyPackages: vocabularyPackages} as result");
             }

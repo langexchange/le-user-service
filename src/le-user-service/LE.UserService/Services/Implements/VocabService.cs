@@ -95,6 +95,8 @@ namespace LE.UserService.Services.Implements
             //    return null;
             //return _mapper.Map<VocabularyPackageDto>(vocabPackage);
             var dto = await _vocabPackageDAL.GetVocabularyPackageAsync(packageId, cancellationToken);
+            if(dto == null)
+                return null;
             await CalculateProcessPracticeAsync(dto, cancellationToken);
             return dto;
         }
@@ -106,6 +108,8 @@ namespace LE.UserService.Services.Implements
             //    return null;
             //return _mapper.Map<List<UserVocabPackageDto>>(vocabPackages);
             var dto = await _vocabPackageDAL.GetVocabularyPackageByUserAsync(userId, cancellationToken);
+            if (dto == null)
+                return null;
             await CalculateProcessPracticeAsync(dto, cancellationToken);
             return dto;
         }
@@ -329,6 +333,7 @@ namespace LE.UserService.Services.Implements
 
             await _messageBus.PublishAsync(@event, _requestHeader);
         }
+        
         public async Task StatisticVocabLearningProcessAsync(CancellationToken cancellationToken = default)
         {
             var ids = await _context.Users.Select(x => x.Userid).ToListAsync();
@@ -337,6 +342,17 @@ namespace LE.UserService.Services.Implements
                 await WorkAroundNotifyProcess(id, cancellationToken);
                 await Task.Delay(1000);
             }
+        }
+
+        public async Task DeleteVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default)
+        {
+            var vocabPackage = await _context.Vocabpackages.FirstOrDefaultAsync(x => x.Packageid == packageId);
+            if (vocabPackage == null)
+                return;
+            _context.Vocabpackages.Remove(vocabPackage);
+            await _context.SaveChangesAsync();
+
+            await _vocabPackageDAL.DeleteVocabPackageAsync(packageId, cancellationToken);
         }
     }
 }

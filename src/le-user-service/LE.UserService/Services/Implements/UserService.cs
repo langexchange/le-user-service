@@ -39,7 +39,13 @@ namespace LE.UserService.Services.Implements
             }
             var targetLangs = await _context.Targetlangs.Where(x => x.Userid == user.Userid).ToListAsync();
             var targetLangDtos = _mapper.Map<List<LanguageDto>>(targetLangs);
-            targetLangDtos.ForEach(x => { x.Name = _context.Languages.FirstOrDefault(y => y.Langid == x.Id).Name; });
+            foreach(var targetLangDto in targetLangDtos)
+            {
+                var language = await _context.Languages.FirstOrDefaultAsync(y => y.Langid == targetLangDto.Id);
+                targetLangDto.Name = language.Name;
+                targetLangDto.LocaleCode = language.LocaleCode;
+            }
+
             dto.TargetLanguages = targetLangDtos;
 
             var hobbyIds = await _context.Userhobbies.Where(x => x.Userid == id).Select(x => x.Hobbyid).ToListAsync();
@@ -106,6 +112,8 @@ namespace LE.UserService.Services.Implements
 
             await _context.SaveChangesAsync();
 
+
+            var nativeLang = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == userDto.NativeLanguage.Id);
             //crud graph db
             await _userDAL.SetBasicInforAsync(id, userDto, cancellationToken);
 
@@ -150,6 +158,12 @@ namespace LE.UserService.Services.Implements
                 var dto = await GetUser(urequestId, id, cancellationToken);
                 dtos.Add(dto);
             }
+            return dtos;
+        }
+
+        public async Task<List<SuggestUserDto>> GetUsersNeo4jAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+        {
+            var dtos = await _userDAL.GetUsersAsync(ids, cancellationToken);
             return dtos;
         }
     }

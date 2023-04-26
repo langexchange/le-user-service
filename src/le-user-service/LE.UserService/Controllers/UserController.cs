@@ -29,6 +29,9 @@ namespace LE.UserService.Controllers
         [HttpPost("{id}/fill-basic-information")]
         public async Task<IActionResult> FillInfor(Guid id, BasicInfoRequest request, CancellationToken cancellationToken = default)
         {
+            if (!request.IsValid())
+                return BadRequest("Must have at least one navtive language and one target language");
+
             var userDto = _mapper.Map<UserDto>(request);
             userDto.FirstName = request.UserInfo?.FirstName;
             userDto.LastName = request.UserInfo?.LastName;
@@ -80,6 +83,15 @@ namespace LE.UserService.Controllers
         {
             var uuid = _requestHeader.GetOwnerId();
             var dto = await _userService.GetUser(uuid, id, cancellationToken);
+            return Ok(dto);
+        }
+
+        [HttpGet("{id}/neo4j")]
+        public async Task<IActionResult> GetUserNeo4j(Guid id, CancellationToken cancellationToken = default)
+        {
+            var ids = new List<Guid>();
+            ids.Add(id);
+            var dto = await _userService.GetUsersNeo4jAsync(ids, cancellationToken);
             return Ok(dto);
         }
     }
