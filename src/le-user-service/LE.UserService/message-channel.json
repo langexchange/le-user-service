@@ -23,6 +23,14 @@
     {
       "channel": "commented-post-event-channel",
       "topic": "commented-post-event-route"
+    },
+    {
+      "channel": "learning-process-calculated-event-channel",
+      "topic": "learning-process-calculated-event-route"
+    },
+    {
+      "channel": "statistical-signal-channel",
+      "topic": "statistical-signal-route"
     }
   ]
 }

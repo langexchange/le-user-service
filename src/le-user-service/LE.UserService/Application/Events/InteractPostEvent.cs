@@ -31,15 +31,4 @@ namespace LE.UserService.Application.Events
         {
         }
     }
-
-    public class InteractPostEventHandler : IAsyncHandler<InteractPostEvent>
-    {
-        public InteractPostEventHandler()
-        {
-        }
-
-        public async Task HandleAsync(IHandlerContext<InteractPostEvent> Context, CancellationToken Token = default)
-        {
-        }
-    }
 }

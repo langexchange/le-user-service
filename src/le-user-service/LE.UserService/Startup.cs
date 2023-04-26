@@ -90,7 +90,7 @@ namespace LE.UserService
             services.AddRequestHeader();
             services.AddMessageBus(Configuration, new Dictionary<Type, string>
             {
-                [typeof(InteractPostEvent)] = MessageValue.INTERACTED_POST_EVENT,
+                [typeof(StatisticalSignal)] = MessageValue.STATISTICAL_SIGNAL,
             }, GetMessageChannelProviderAssembly(), connectionConfig);
         }
 
