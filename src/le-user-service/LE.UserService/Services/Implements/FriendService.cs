@@ -2,6 +2,8 @@
 using LE.Library.Kernel;
 using LE.Library.MessageBus;
 using LE.UserService.Application.Events;
+using LE.UserService.Application.Events.ChatHelperEvent;
+using LE.UserService.Constants;
 using LE.UserService.Dtos;
 using LE.UserService.Enums;
 using LE.UserService.Infrastructure.Infrastructure;
@@ -121,7 +123,14 @@ namespace LE.UserService.Services.Implements
                 UserName = $"{user.FirstName} {user.LastName}",
                 NotifyIds = new List<Guid> { toId }
             };
+            var friendStateEvent = new FriendStateUpdatedEvent
+            {
+                Jid1 = $"{fromId}@{Env.CHAT_DOMAIN}",
+                Jid2 = $"{toId}@{Env.CHAT_DOMAIN}",
+                State = FriendState.FRIEND
+            };
             await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
+            await _messageBus.PublishAsync(friendStateEvent, _requestHeader, cancellationToken);
         }
 
         public async Task<IEnumerable<SuggestUserDto>> SuggestFriendsAsync(Guid id, string[] naviveLangs, string[] targetLangs, string[] countryCodes, CancellationToken cancellationToken)
@@ -145,6 +154,15 @@ namespace LE.UserService.Services.Implements
 
             //crud neo4j
             await _userDAL.CrudFriendRelationshipAsync(fromId, toId, RelationValues.HAS_FRIEND, ModifiedState.Delete, cancellationToken);
+
+            //publish event
+            var friendStateEvent = new FriendStateUpdatedEvent
+            {
+                Jid1 = $"{fromId}@{Env.CHAT_DOMAIN}",
+                Jid2 = $"{toId}@{Env.CHAT_DOMAIN}",
+                State = FriendState.UNFRIEND
+            };
+            await _messageBus.PublishAsync(friendStateEvent, _requestHeader, cancellationToken);
         }
 
         public async Task UnFollowAsync(Guid fromId, Guid toId, CancellationToken cancellationToken)
