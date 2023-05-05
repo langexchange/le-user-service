@@ -26,7 +26,7 @@ namespace LE.UserService.Services.Implements
 
         public AuthResponse Authenticate(AuthRequest model)
         {
-            var user = _context.Users.SingleOrDefault(x => x.Email.Equals(model.Email) && x.Password.Equals(model.Password));
+            var user = _context.Users.SingleOrDefault(x => x.Email.Equals(model.Email) && x.Password.Equals(model.Password) && x.IsRemoved != true);
 
             // validate
             if (user == null)

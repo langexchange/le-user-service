@@ -26,7 +26,7 @@ namespace LE.UserService.Services.Implements
         }
         public async Task<UserDto> GetUser(Guid urequestId, Guid id, CancellationToken cancellationToken = default)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == id && x.IsRemoved != true);
             if (user == null)
                 return null;
 
@@ -151,7 +151,7 @@ namespace LE.UserService.Services.Implements
 
         public async Task<List<UserDto>> GetUsers(Guid urequestId, CancellationToken cancellationToken = default)
         {
-            var userIds = await _context.Users.Select(x => x.Userid).ToListAsync();
+            var userIds = await _context.Users.Where(x => x.IsRemoved != true).Select(x => x.Userid).ToListAsync();
             var dtos = new List<UserDto>();
             foreach(var id in userIds)
             {
