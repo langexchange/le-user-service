@@ -5,6 +5,7 @@ using LE.UserService.Enums;
 using LE.UserService.Helpers;
 using LE.UserService.Models.Requests;
 using LE.UserService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,6 +16,7 @@ using System.Threading.Tasks;
 namespace LE.UserService.Controllers
 {
     [Route("api/users")]
+    [Authorize]
     [ApiController]
     public class PostController : ControllerBase
     {
@@ -78,8 +80,6 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetPost(Guid postId, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
             var dto = await _postService.GetPost(uuid, postId, cancellationToken);
             return Ok(dto);
         }
@@ -88,8 +88,6 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetPosts(Guid id, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
             var dtos = await _postService.GetPosts(uuid, id, Mode.Get, cancellationToken);
             return Ok(dtos);
         }
@@ -98,8 +96,6 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetPostsRecommend([FromQuery] string[] filterLangs, [FromQuery] bool isNewest, [FromQuery] bool isOnlyFriend = false, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
             var dtos = await _postService.SuggestPostsAsync(uuid, filterLangs, isOnlyFriend, isNewest, cancellationToken);
 
             if(isNewest)

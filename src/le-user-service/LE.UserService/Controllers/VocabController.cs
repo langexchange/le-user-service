@@ -3,6 +3,7 @@ using LE.Library.Kernel;
 using LE.UserService.Dtos;
 using LE.UserService.Models.Requests;
 using LE.UserService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace LE.UserService.Controllers
 {
     [Route("api/vocabularies")]
+    [Authorize]
     [ApiController]
     public class VocabController : ControllerBase
     {
@@ -63,11 +65,10 @@ namespace LE.UserService.Controllers
         {
             if (request == null)
                 return BadRequest();
+            if (!request.IsValid())
+                return BadRequest("Require at least one pair vocabulary");
 
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
-
             var dto = _mapper.Map<VocabularyPackageDto>(request);
             dto.UserId = uuid;
             dto.TermLocale = dto.TermLocale?.ToUpper();
@@ -81,10 +82,10 @@ namespace LE.UserService.Controllers
         {
             if (request == null)
                 return BadRequest();
+            if (!request.IsValid())
+                return BadRequest("Require at least one pair vocabulary");
 
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
 
             var dto = _mapper.Map<VocabularyPackageDto>(request);
             dto.UserId = uuid;
@@ -113,8 +114,6 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> CloneVocabularyAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
 
             var id = await _vocabService.CloneVocabularyPackageAsync(vocabularyId, uuid, cancellationToken);
             return Ok(id);
@@ -137,8 +136,6 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetPracticeAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
 
             var response = await _vocabService.GetPracticeVocabulariesAsync(vocabularyId, cancellationToken);
             return Ok(response);
@@ -148,8 +145,6 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> TrackingPracticeAsync(Guid vocabularyId, PracticeTrackingRequest request, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
             if (!request.IsValid())
                 return BadRequest("Quality must be in range 0-5");
 
@@ -161,8 +156,6 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> PutInPracticeAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
 
             await _vocabService.PutInPracticeListAsync(vocabularyId, uuid, cancellationToken);
             return Ok();
@@ -172,8 +165,6 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> PutOutPracticeAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
 
             await _vocabService.PutOutPracticeListAsync(vocabularyId, uuid, cancellationToken);
             return Ok();

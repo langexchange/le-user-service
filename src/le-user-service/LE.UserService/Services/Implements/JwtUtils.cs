@@ -1,4 +1,5 @@
-﻿using LE.UserService.Infrastructure.Infrastructure.Entities;
+﻿using LE.UserService.Constants;
+using LE.UserService.Infrastructure.Infrastructure.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -24,10 +25,10 @@ namespace LE.UserService.Services.Implements
             {
                 Subject = new ClaimsIdentity(new[] 
                 { 
-                    new Claim("id", user.Userid.ToString()), 
-                    new Claim("typ", "customer"), 
-                    new Claim("incid", user.IncreateId.ToString()), 
-                    new Claim("uname", user.UserName?? string.Empty)
+                    new Claim(ClaimConstant.ID, user.Userid.ToString()), 
+                    new Claim(ClaimConstant.TYPE, ClaimConstant.CUSTOMER), 
+                    new Claim(ClaimConstant.INCID, user.IncreateId.ToString()), 
+                    new Claim(ClaimConstant.UNAME, user.UserName?? string.Empty)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

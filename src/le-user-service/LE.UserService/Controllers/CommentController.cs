@@ -4,6 +4,7 @@ using LE.UserService.Dtos;
 using LE.UserService.Helpers;
 using LE.UserService.Models.Requests;
 using LE.UserService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace LE.UserService.Controllers
 {
     [Route("api/users/{id}/posts")]
+    [Authorize]
     [ApiController]
     public class CommentController : ControllerBase
     {
@@ -58,8 +60,6 @@ namespace LE.UserService.Controllers
         public async Task<IActionResult> GetComments(Guid postId, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
             var dtos = await _commentService.GetComments(uuid, postId, cancellationToken);
             return Ok(dtos);
         }
