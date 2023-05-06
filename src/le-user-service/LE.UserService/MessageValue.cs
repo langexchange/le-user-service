@@ -13,5 +13,6 @@
 
         //chat-helper event
         public const string CHATHELPER_FRIEND_STATE_UPDATED = "chathelper-friendstate";
+        public const string CHATHELPER_USER_INFO_UPDATED = "chathelper-userinfo";
     }
 }

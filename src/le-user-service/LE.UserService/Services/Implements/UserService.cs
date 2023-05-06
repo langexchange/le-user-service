@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using LE.Library.Kernel;
+using LE.Library.MessageBus;
+using LE.UserService.Application.Events.ChatHelperEvent;
 using LE.UserService.Dtos;
 using LE.UserService.Infrastructure.Infrastructure;
 using LE.UserService.Infrastructure.Infrastructure.Entities;
@@ -17,12 +20,16 @@ namespace LE.UserService.Services.Implements
         private LanggeneralDbContext _context;
         private IUserDAL _userDAL;
         private readonly IMapper _mapper;
+        private readonly IMessageBus _messageBus;
+        private readonly IRequestHeader _requestHeader;
 
-        public UserService(LanggeneralDbContext context, IMapper mapper, IUserDAL userDAL)
+        public UserService(LanggeneralDbContext context, IMapper mapper, IUserDAL userDAL, IMessageBus messageBus, IRequestHeader requestHeader)
         {
             _context = context;
             _mapper = mapper;
             _userDAL = userDAL;
+            _messageBus = messageBus;
+            _requestHeader = requestHeader;
         }
         public async Task<UserDto> GetUser(Guid urequestId, Guid id, CancellationToken cancellationToken = default)
         {
@@ -117,6 +124,14 @@ namespace LE.UserService.Services.Implements
             //crud graph db
             await _userDAL.SetBasicInforAsync(id, userDto, cancellationToken);
 
+            //publish event
+            var uName = string.IsNullOrWhiteSpace(user.UserName) ? user.Email.Substring(0, user.Email.LastIndexOf("@")) : user.UserName;
+            var userInfoUpdatedEvent = new UserInfoUpdatedEvent
+            {
+                Jid = $"{uName}@{Env.CHAT_DOMAIN}",
+                FullName = $"{user.FirstName} {user.MiddleName} {user.LastName}"
+            };
+            await _messageBus.PublishAsync(userInfoUpdatedEvent, _requestHeader);
             return true;
         }
 
@@ -146,6 +161,15 @@ namespace LE.UserService.Services.Implements
             await _context.SaveChangesAsync();
 
             await _userDAL.ChangeAvatarAsync(id, avatar, cancellationToken);
+
+            //publish event
+            var uName = string.IsNullOrWhiteSpace(user.UserName) ? user.Email.Substring(0, user.Email.LastIndexOf("@")) : user.UserName;
+            var userInfoUpdatedEvent = new UserInfoUpdatedEvent
+            {
+                Jid = $"{uName}@{Env.CHAT_DOMAIN}",
+                Avatar = user.Avartar
+            };
+            await _messageBus.PublishAsync(userInfoUpdatedEvent, _requestHeader);
             return true;
         }
 

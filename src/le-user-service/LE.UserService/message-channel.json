@@ -35,6 +35,10 @@
     {
       "channel": "chathelper-friendstate-channel",
       "topic": "chathelper-friendstate"
+    },
+    {
+      "channel": "chathelper-userinfo-channel",
+      "topic": "chathelper-userinfo"
     }
   ]
 }
