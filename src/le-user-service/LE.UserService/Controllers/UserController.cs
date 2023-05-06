@@ -4,6 +4,7 @@ using LE.UserService.Dtos;
 using LE.UserService.Models.Requests;
 using LE.UserService.Models.Responses;
 using LE.UserService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -45,12 +46,11 @@ namespace LE.UserService.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpGet("{id}/basic-information")]
         public async Task<IActionResult> GetBasicInfor(Guid id, CancellationToken cancellationToken = default)
         {
             var uuid = _requestHeader.GetOwnerId();
-            if (uuid == Guid.Empty)
-                return BadRequest("Require Access token");
             var response = await _userService.GetUser(uuid, id, cancellationToken);
             return Ok(response);
         }
@@ -70,6 +70,7 @@ namespace LE.UserService.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken = default)
         {
@@ -78,6 +79,7 @@ namespace LE.UserService.Controllers
             return Ok(dtos);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(Guid id, CancellationToken cancellationToken = default)
         {

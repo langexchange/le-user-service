@@ -12,6 +12,11 @@ namespace LE.UserService.Models.Requests
         public string ImageUrl { get; set; }
 
         public List<VocabularyPair> vocabularyPairs { get; set; }
+
+        public bool IsValid()
+        {
+            return vocabularyPairs != null && vocabularyPairs.Count > 0;
+        }
     }
 
     public class VocabularyPair
