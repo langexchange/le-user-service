@@ -31,6 +31,14 @@
     {
       "channel": "statistical-signal-channel",
       "topic": "statistical-signal-route"
+    },
+    {
+      "channel": "chathelper-friendstate-channel",
+      "topic": "chathelper-friendstate"
+    },
+    {
+      "channel": "chathelper-userinfo-channel",
+      "topic": "chathelper-userinfo"
     }
   ]
 }

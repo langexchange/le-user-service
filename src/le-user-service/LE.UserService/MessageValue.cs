@@ -10,5 +10,9 @@
         public const string FRIEND_REQUEST_ACCEPT_EVENT = "friend-request-accepted-event";
         public const string STATISTICAL_SIGNAL = "statistical-signal";
         public const string LEARNING_PROCESS_CALCULATED_EVENT = "learning-process-calculated-event";
+
+        //chat-helper event
+        public const string CHATHELPER_FRIEND_STATE_UPDATED = "chathelper-friendstate";
+        public const string CHATHELPER_USER_INFO_UPDATED = "chathelper-userinfo";
     }
 }
