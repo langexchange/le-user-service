@@ -63,6 +63,8 @@ namespace LE.UserService.Controllers
         {
             if (request == null)
                 return BadRequest();
+            if (!request.IsValid())
+                return BadRequest("Require at least one pair vocabulary");
 
             var uuid = _requestHeader.GetOwnerId();
             if (uuid == Guid.Empty)
@@ -81,6 +83,8 @@ namespace LE.UserService.Controllers
         {
             if (request == null)
                 return BadRequest();
+            if (!request.IsValid())
+                return BadRequest("Require at least one pair vocabulary");
 
             var uuid = _requestHeader.GetOwnerId();
             if (uuid == Guid.Empty)
