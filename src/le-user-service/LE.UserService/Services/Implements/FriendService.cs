@@ -114,9 +114,9 @@ namespace LE.UserService.Services.Implements
 
             //publish event
             var fromUser = await _context.Users.FirstOrDefaultAsync(x => x.Userid == fromId);
-            var toUser = await _context.Users.FirstOrDefaultAsync(x => x.Userid == toId);
-            var fromUname = string.IsNullOrWhiteSpace(fromUser.UserName) ? fromUser.Email.Substring(0, fromUser.Email.LastIndexOf("@")): fromUser.UserName;
-            var toUname = string.IsNullOrWhiteSpace(toUser.UserName) ? toUser.Email.Substring(0, toUser.Email.LastIndexOf("@")): toUser.UserName;
+            //var toUser = await _context.Users.FirstOrDefaultAsync(x => x.Userid == toId);
+            //var fromUname = string.IsNullOrWhiteSpace(fromUser.UserName) ? fromUser.Email.Substring(0, fromUser.Email.LastIndexOf("@")): fromUser.UserName;
+            //var toUname = string.IsNullOrWhiteSpace(toUser.UserName) ? toUser.Email.Substring(0, toUser.Email.LastIndexOf("@")): toUser.UserName;
 
             if (fromUser == null)
                 return;
@@ -129,8 +129,8 @@ namespace LE.UserService.Services.Implements
             };
             var friendStateEvent = new FriendStateUpdatedEvent
             {
-                Jid1 = $"{fromUname}@{Env.CHAT_DOMAIN}",
-                Jid2 = $"{toUname}@{Env.CHAT_DOMAIN}",
+                Jid1 = $"{fromId}@{Env.CHAT_DOMAIN}",
+                Jid2 = $"{toId}@{Env.CHAT_DOMAIN}",
                 State = FriendState.FRIEND
             };
             await _messageBus.PublishAsync(@event, _requestHeader, cancellationToken);
@@ -160,15 +160,15 @@ namespace LE.UserService.Services.Implements
             await _userDAL.CrudFriendRelationshipAsync(fromId, toId, RelationValues.HAS_FRIEND, ModifiedState.Delete, cancellationToken);
 
             //publish event
-            var fromUser = await _context.Users.FirstOrDefaultAsync(x => x.Userid == fromId);
-            var toUser = await _context.Users.FirstOrDefaultAsync(x => x.Userid == toId);
-            var fromUname = string.IsNullOrWhiteSpace(fromUser.UserName) ? fromUser.Email.Substring(0, fromUser.Email.LastIndexOf("@")) : fromUser.UserName;
-            var toUname = string.IsNullOrWhiteSpace(toUser.UserName) ? toUser.Email.Substring(0, toUser.Email.LastIndexOf("@")) : toUser.UserName;
+            //var fromUser = await _context.Users.FirstOrDefaultAsync(x => x.Userid == fromId);
+            //var toUser = await _context.Users.FirstOrDefaultAsync(x => x.Userid == toId);
+            //var fromUname = string.IsNullOrWhiteSpace(fromUser.UserName) ? fromUser.Email.Substring(0, fromUser.Email.LastIndexOf("@")) : fromUser.UserName;
+            //var toUname = string.IsNullOrWhiteSpace(toUser.UserName) ? toUser.Email.Substring(0, toUser.Email.LastIndexOf("@")) : toUser.UserName;
 
             var friendStateEvent = new FriendStateUpdatedEvent
             {
-                Jid1 = $"{fromUname}@{Env.CHAT_DOMAIN}",
-                Jid2 = $"{toUname}@{Env.CHAT_DOMAIN}",
+                Jid1 = $"{fromId}@{Env.CHAT_DOMAIN}",
+                Jid2 = $"{toId}@{Env.CHAT_DOMAIN}",
                 State = FriendState.UNFRIEND
             };
             await _messageBus.PublishAsync(friendStateEvent, _requestHeader, cancellationToken);

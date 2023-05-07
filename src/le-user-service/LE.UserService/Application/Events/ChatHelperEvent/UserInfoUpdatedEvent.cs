@@ -5,8 +5,13 @@ namespace LE.UserService.Application.Events.ChatHelperEvent
 {
     public class UserInfoUpdatedEvent : BaseMessage
     {
+        [JsonProperty("jid")]
         public string Jid { get; set; }
+
+        [JsonProperty("fullname")]
         public string FullName { get; set; }
+
+        [JsonProperty("nickname")]
         public string NickName { get; set; }
 
         [JsonProperty("avatar_url")]

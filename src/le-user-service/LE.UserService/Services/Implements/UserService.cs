@@ -125,10 +125,10 @@ namespace LE.UserService.Services.Implements
             await _userDAL.SetBasicInforAsync(id, userDto, cancellationToken);
 
             //publish event
-            var uName = string.IsNullOrWhiteSpace(user.UserName) ? user.Email.Substring(0, user.Email.LastIndexOf("@")) : user.UserName;
+            //var uName = string.IsNullOrWhiteSpace(user.UserName) ? user.Email.Substring(0, user.Email.LastIndexOf("@")) : user.UserName;
             var userInfoUpdatedEvent = new UserInfoUpdatedEvent
             {
-                Jid = $"{uName}@{Env.CHAT_DOMAIN}",
+                Jid = $"{id}@{Env.CHAT_DOMAIN}",
                 FullName = $"{user.FirstName} {user.MiddleName} {user.LastName}"
             };
             await _messageBus.PublishAsync(userInfoUpdatedEvent, _requestHeader);
@@ -163,10 +163,10 @@ namespace LE.UserService.Services.Implements
             await _userDAL.ChangeAvatarAsync(id, avatar, cancellationToken);
 
             //publish event
-            var uName = string.IsNullOrWhiteSpace(user.UserName) ? user.Email.Substring(0, user.Email.LastIndexOf("@")) : user.UserName;
+            //var uName = string.IsNullOrWhiteSpace(user.UserName) ? user.Email.Substring(0, user.Email.LastIndexOf("@")) : user.UserName;
             var userInfoUpdatedEvent = new UserInfoUpdatedEvent
             {
-                Jid = $"{uName}@{Env.CHAT_DOMAIN}",
+                Jid = $"{id}@{Env.CHAT_DOMAIN}",
                 Avatar = user.Avartar
             };
             await _messageBus.PublishAsync(userInfoUpdatedEvent, _requestHeader);
