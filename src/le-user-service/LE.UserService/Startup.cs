@@ -86,6 +86,7 @@ namespace LE.UserService
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IVocabService, VocabService>();
+            services.AddScoped<IStatisticLearningService, StatisticLearningService>();
             services.AddConsul();
             services.AddRequestHeader();
             services.AddMessageBus(Configuration, new Dictionary<Type, string>
