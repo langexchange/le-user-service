@@ -13,5 +13,6 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public string SettingValue { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string Locale { get; set; }
     }
 }

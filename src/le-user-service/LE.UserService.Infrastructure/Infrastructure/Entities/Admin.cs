@@ -23,6 +23,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public bool? IsSupperAdmin { get; set; }
 
         public virtual ICollection<Cmtpunish> Cmtpunishes { get; set; }
         public virtual ICollection<Grouppunish> Grouppunishes { get; set; }

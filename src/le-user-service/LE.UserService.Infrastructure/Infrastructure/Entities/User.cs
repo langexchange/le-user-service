@@ -23,6 +23,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
             Posts = new HashSet<Post>();
             RelationshipUser1Navigations = new HashSet<Relationship>();
             RelationshipUser2Navigations = new HashSet<Relationship>();
+            Statisticallearningprocesses = new HashSet<Statisticallearningprocess>();
             Targetlangs = new HashSet<Targetlang>();
             Topics = new HashSet<Topic>();
             Tutorreqs = new HashSet<Tutorreq>();
@@ -76,6 +77,7 @@ namespace LE.UserService.Infrastructure.Infrastructure.Entities
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<Relationship> RelationshipUser1Navigations { get; set; }
         public virtual ICollection<Relationship> RelationshipUser2Navigations { get; set; }
+        public virtual ICollection<Statisticallearningprocess> Statisticallearningprocesses { get; set; }
         public virtual ICollection<Targetlang> Targetlangs { get; set; }
         public virtual ICollection<Topic> Topics { get; set; }
         public virtual ICollection<Tutorreq> Tutorreqs { get; set; }
