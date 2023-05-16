@@ -65,6 +65,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
         public virtual DbSet<Setting> Settings { get; set; }
         public virtual DbSet<Sharepost> Shareposts { get; set; }
         public virtual DbSet<Sharingnotification> Sharingnotifications { get; set; }
+        public virtual DbSet<Statisticallearningprocess> Statisticallearningprocesses { get; set; }
         public virtual DbSet<Targetlang> Targetlangs { get; set; }
         public virtual DbSet<Topic> Topics { get; set; }
         public virtual DbSet<Tutorreq> Tutorreqs { get; set; }
@@ -106,9 +107,12 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("email");
 
                 entity.Property(e => e.FirstName)
-                    .IsRequired()
                     .HasMaxLength(64)
                     .HasColumnName("first_name");
+
+                entity.Property(e => e.IsSupperAdmin)
+                    .HasColumnName("is_supper_admin")
+                    .HasDefaultValueSql("false");
 
                 entity.Property(e => e.Password)
                     .IsRequired()
@@ -116,7 +120,6 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("password");
 
                 entity.Property(e => e.RemainName)
-                    .IsRequired()
                     .HasMaxLength(64)
                     .HasColumnName("remain_name");
 
@@ -1337,6 +1340,8 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("created_at")
                     .HasDefaultValueSql("timezone('utc'::text, now())");
 
+                entity.Property(e => e.Locale).HasColumnName("locale");
+
                 entity.Property(e => e.ServiceName)
                     .HasColumnName("service_name")
                     .HasDefaultValueSql("'system'::text");
@@ -1398,6 +1403,45 @@ namespace LE.UserService.Infrastructure.Infrastructure
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnName("updated_at")
                     .HasDefaultValueSql("timezone('utc'::text, now())");
+            });
+
+            modelBuilder.Entity<Statisticallearningprocess>(entity =>
+            {
+                entity.ToTable("statisticallearningprocess");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasDefaultValueSql("uuid_generate_v4()");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.Currentvocabs)
+                    .HasColumnName("currentvocabs")
+                    .HasDefaultValueSql("0");
+
+                entity.Property(e => e.Packageids).HasColumnName("packageids");
+
+                entity.Property(e => e.Percent)
+                    .HasColumnName("percent")
+                    .HasDefaultValueSql("0");
+
+                entity.Property(e => e.Totalvocabs)
+                    .HasColumnName("totalvocabs")
+                    .HasDefaultValueSql("0");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updated_at")
+                    .HasDefaultValueSql("timezone('utc'::text, now())");
+
+                entity.Property(e => e.Userid).HasColumnName("userid");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Statisticallearningprocesses)
+                    .HasForeignKey(d => d.Userid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("statisticallearningprocess_userid_fkey");
             });
 
             modelBuilder.Entity<Targetlang>(entity =>
