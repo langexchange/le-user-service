@@ -82,6 +82,7 @@ namespace LE.UserService.Services.Implements
         public async Task<bool> SetBasicInfor(Guid id, UserDto userDto, CancellationToken cancellationToken = default)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Userid == id);
+            var isCreated = user.UpdatedAt != null ? false : true;
 
             if (user == null)
                 return false;
@@ -94,6 +95,7 @@ namespace LE.UserService.Services.Implements
             user.Introduction = userDto.Introduction ?? user.Introduction;
             user.NativeLang = userDto.NativeLanguage.Id == Guid.Empty ? user.NativeLang : userDto.NativeLanguage.Id;
             user.NativeLevel = userDto.NativeLanguage.Level == 0 ? user.NativeLevel : userDto.NativeLanguage.Level;
+            user.UpdatedAt = DateTime.UtcNow;
             _context.Update(user);
 
             var oldTargetLangs = await _context.Targetlangs.Where(x => x.Userid == id).ToListAsync();
@@ -120,16 +122,23 @@ namespace LE.UserService.Services.Implements
             await _context.SaveChangesAsync();
 
 
-            var nativeLang = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == userDto.NativeLanguage.Id);
             //crud graph db
             await _userDAL.SetBasicInforAsync(id, userDto, cancellationToken);
 
             //publish event
             //var uName = string.IsNullOrWhiteSpace(user.UserName) ? user.Email.Substring(0, user.Email.LastIndexOf("@")) : user.UserName;
+
+            var nativeLang = await _context.Languages.FirstOrDefaultAsync(x => x.Langid == userDto.NativeLanguage.Id);
+            var langIds = await _context.Targetlangs.Where(x => x.Userid == id).Select(x => x.Langid).ToListAsync();
+            var userTargetLangs = await _context.Languages.Where(x => langIds.Contains(x.Langid)).ToListAsync();
+
             var userInfoUpdatedEvent = new UserInfoUpdatedEvent
             {
                 Jid = $"{id}@{Env.CHAT_DOMAIN}",
-                FullName = $"{user.FirstName} {user.MiddleName} {user.LastName}"
+                FullName = $"{user.FirstName} {user.MiddleName} {user.LastName}",
+                IsCreated = isCreated,
+                NativeLanguage = nativeLang.LocaleCode,
+                TargetLanguage = userTargetLangs.Select(x => x.LocaleCode).ToList()
             };
             await _messageBus.PublishAsync(userInfoUpdatedEvent, _requestHeader);
             return true;

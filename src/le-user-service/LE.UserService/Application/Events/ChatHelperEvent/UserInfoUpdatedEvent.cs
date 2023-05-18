@@ -1,5 +1,6 @@
 ﻿using LE.Library.Kernel;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace LE.UserService.Application.Events.ChatHelperEvent
 {
@@ -17,9 +18,20 @@ namespace LE.UserService.Application.Events.ChatHelperEvent
         [JsonProperty("avatar_url")]
         public string Avatar { get; set; }
 
+        [JsonProperty("is_created")]
+        public bool IsCreated { get; set; } = false;
+
+        [JsonProperty("target_langs")]
+        public List<string> TargetLanguage { get; set; }
+
+        [JsonProperty("native_lang")]
+        public string NativeLanguage { get; set; }
+
+        
+
         public UserInfoUpdatedEvent() : base(MessageValue.CHATHELPER_USER_INFO_UPDATED)
         {
-
+            TargetLanguage = new List<string>();
         }
     }
 }
