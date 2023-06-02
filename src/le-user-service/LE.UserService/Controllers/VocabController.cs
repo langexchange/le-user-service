@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace LE.UserService.Controllers
 {
     [Route("api/vocabularies")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class VocabController : ControllerBase
     {
@@ -45,7 +45,8 @@ namespace LE.UserService.Controllers
         [HttpGet("{vocabularyId}")]
         public async Task<IActionResult> GetVocabularyAsync(Guid vocabularyId, CancellationToken cancellationToken = default)
         {
-            var vocab = await _vocabService.GetVocabularyPackageAsync(vocabularyId, cancellationToken);
+            var uuid = _requestHeader.GetOwnerId();
+            var vocab = await _vocabService.GetVocabularyPackageAsync(uuid, vocabularyId, cancellationToken);
             return Ok(vocab);
         }
 

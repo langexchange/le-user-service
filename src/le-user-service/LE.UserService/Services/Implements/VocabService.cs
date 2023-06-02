@@ -101,6 +101,19 @@ namespace LE.UserService.Services.Implements
             return dto;
         }
 
+        public async Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid uId, Guid packageId, CancellationToken cancellationToken = default)
+        {
+            //var vocabPackage = await _context.Vocabpackages.FirstOrDefaultAsync(x => x.Packageid == packageId && x.IsRemoved == false);
+            //if(vocabPackage == null)
+            //    return null;
+            //return _mapper.Map<VocabularyPackageDto>(vocabPackage);
+            var dto = await _vocabPackageDAL.GetVocabularyPackageAsync(uId, packageId, cancellationToken);
+            if (dto == null)
+                return null;
+            await CalculateProcessPracticeAsync(dto, cancellationToken);
+            return dto;
+        }
+
         public async Task<UserVocabPackageDto> GetVocabularyPackagesAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             //var vocabPackages = await _context.Vocabpackages.Where(x => x.Userid == userId && x.IsRemoved == false).ToListAsync();

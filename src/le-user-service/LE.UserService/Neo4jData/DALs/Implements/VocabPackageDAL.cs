@@ -120,8 +120,26 @@ namespace LE.UserService.Neo4jData.DALs.Implements
             var cypher = _context.Cypher.Read.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_VOCAB_PACKAGE}]->(vp:{VocabPackageSchema.VOCAB_PACKAGE_LABEL})")
                         .Where("vp.id = $id")
                         .AndWhere("vp.deletedAt is null")
-                        .AndWhere("vp.isPublic = true")
+                         //.AndWhere("vp.isPublic = true")
+                         //.OrWhere("u.id = $uId")
+                        .AndWhere("((vp.isPublic = true) OR (u.id = $uId))")
                         .WithParam("id", packageId)
+                        .WithParam("uId", new Guid("7cee005f-831f-4230-94a1-9aa33f2aff46"))
+                        .With("u, COLLECT(vp) as vocabularyPackages")
+                        .With("{userInfo: u, vocabularyPackages: vocabularyPackages} as result");
+
+            var value = (await cypher.ReturnAsync<VocabPackagesCypherResult>("result", cancellationToken));
+            return value.Select(x => _mapper.ToVocabPackageDto(x)).FirstOrDefault();
+        }
+
+        public async Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid uId, Guid packageId, CancellationToken cancellationToken = default)
+        {
+            var cypher = _context.Cypher.Read.Match($"(u:{UserSchema.USER_LABEL})-[:{RelationValues.HAS_VOCAB_PACKAGE}]->(vp:{VocabPackageSchema.VOCAB_PACKAGE_LABEL})")
+                        .Where("vp.id = $id")
+                        .AndWhere("vp.deletedAt is null")
+                        .AndWhere("((vp.isPublic = true) OR (u.id = $uId))")
+                        .WithParam("id", packageId)
+                        .WithParam("uId", uId)
                         .With("u, COLLECT(vp) as vocabularyPackages")
                         .With("{userInfo: u, vocabularyPackages: vocabularyPackages} as result");
 

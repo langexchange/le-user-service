@@ -16,6 +16,7 @@ namespace LE.UserService.Services
         Task<bool> IsBelongToUser(Guid packageId, Guid userId, CancellationToken cancellationToken = default);
         Task<Guid> CloneVocabularyPackageAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default);
         Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid packageId, CancellationToken cancellationToken = default);
+        Task<UserVocabPackageDto> GetVocabularyPackageAsync(Guid uId, Guid packageId, CancellationToken cancellationToken = default);
         Task<UserVocabPackageDto> GetVocabularyPackagesAsync(Guid userId, CancellationToken cancellationToken = default);
         Task<List<UserVocabPackageDto>> SuggestVocabularyPackagesAsync(Guid userId, string[] termLocale, string[] defineLocale, CancellationToken cancellationToken = default);
         Task PutInPracticeListAsync(Guid packageId, Guid userId, CancellationToken cancellationToken = default);
