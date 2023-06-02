@@ -147,7 +147,7 @@ namespace LE.UserService.Controllers
         {
             var uuid = _requestHeader.GetOwnerId();
             if (!request.IsValid())
-                return BadRequest("Quality must be in range 0-5");
+                return BadRequest("Quality must be in range 0-2");
 
             await _vocabService.TrackingPracticeAsync(vocabularyId, request.VocabTrackings, cancellationToken);
             return Ok();

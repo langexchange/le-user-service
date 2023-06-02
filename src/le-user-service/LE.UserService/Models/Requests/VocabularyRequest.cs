@@ -6,7 +6,7 @@ namespace LE.UserService.Models.Requests
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        public bool IsPublic { get; set; }
+        public bool IsPublic { get; set; } = true;
         public string TermLocale { get; set; }
         public string DefineLocale { get; set; }
         public string ImageUrl { get; set; }

@@ -239,10 +239,17 @@ namespace LE.UserService.Services.Implements
 
         private async Task EstimateVocabPracticeAsync(Guid packageId, Guid vocabId, int quality, CancellationToken cancellationToken)
         {
-            var vocab = await _context.Vocabularies.FirstOrDefaultAsync(x => x.Vocabid == vocabId && x.Packageid == packageId);
+            //var vocab = await _context.Vocabularies.FirstOrDefaultAsync(x => x.Vocabid == vocabId && x.Packageid == packageId);
+            //fix for by pass
+            var vocab = await _context.Vocabularies.FirstOrDefaultAsync(x => x.Vocabid == packageId && x.Packageid == vocabId);
             if (vocab == null)
                 return;
 
+            if (quality == 0)
+                quality = 1;
+            else if (quality == 1)
+                quality = 3;
+            else quality = 5;
             //super memo 2
             if(quality >= 3)
             {
