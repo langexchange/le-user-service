@@ -1,6 +1,8 @@
-﻿using LE.UserService.Helpers;
+﻿using LE.Library.Kernel;
+using LE.UserService.Helpers;
 using LE.UserService.Models.Requests;
 using LE.UserService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,12 +18,14 @@ namespace LE.UserService.Controllers
         private readonly ILogger<AuthController> _logger;
         private IAuthService _authService;
         private readonly IMailService _mailService;
+        private readonly IRequestHeader _requestHeader;
 
-        public AuthController(ILogger<AuthController> logger, IAuthService authService, IMailService mailService)
+        public AuthController(ILogger<AuthController> logger, IAuthService authService, IMailService mailService, IRequestHeader requestHeader)
         {
             _logger = logger;
             _authService = authService;
             _mailService = mailService;
+            _requestHeader = requestHeader;
         }
 
         [HttpPost("register")]
@@ -73,6 +77,17 @@ namespace LE.UserService.Controllers
                 throw;
             }
 
+        }
+
+        [Authorize]
+        [HttpGet("/api/user/credentials")]
+        public IActionResult GetCredential()
+        {
+            var id = _requestHeader.GetOwnerId();
+            if(id == Guid.Empty)
+                return NoContent();
+
+            return Ok(new { id = id, token = _requestHeader.ToDictionary()["Authorization"].Split(" ")[1] });
         }
     }
 }
