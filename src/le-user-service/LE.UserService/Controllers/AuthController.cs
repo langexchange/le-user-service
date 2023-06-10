@@ -3,6 +3,7 @@ using LE.UserService.Helpers;
 using LE.UserService.Models.Requests;
 using LE.UserService.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -39,6 +40,20 @@ namespace LE.UserService.Controllers
         public IActionResult Login(AuthRequest model)
         {
             var response = _authService.Authenticate(model);
+            var cookieOptions = new CookieOptions
+            {
+                // Set the cookie expiration date or other attributes if needed
+                Expires = DateTime.UtcNow.AddDays(7),
+                // Set the secure flag if the cookie should only be sent over HTTPS
+                Secure = true,
+                HttpOnly = true,
+                // Set the path attribute if the cookie should only be sent for specific endpoints
+                Path = "/",
+            };
+
+            Response.Cookies.Append("accessToken", response.Token, cookieOptions);
+            Response.Cookies.Append("id", response.Id.ToString(), cookieOptions);
+
             return Ok(response);
         }
         
