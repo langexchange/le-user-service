@@ -28,7 +28,7 @@ namespace LE.UserService.Controllers
                 return NoContent();
             }
             // Use the cookie value as needed
-            return Ok(new {jid = $"{uuid}@{Env.CHAT_DOMAIN}", accessToken = accessToken});
+            return Ok(new {jid = $"{uuid}@{Env.CHAT_DOMAIN}", password = accessToken});
         }
 
         [HttpDelete]
