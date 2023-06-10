@@ -94,15 +94,15 @@ namespace LE.UserService.Controllers
 
         }
 
-        [Authorize]
-        [HttpGet("/api/user/credentials")]
-        public IActionResult GetCredential()
-        {
-            var id = _requestHeader.GetOwnerId();
-            if(id == Guid.Empty)
-                return NoContent();
+        //[Authorize]
+        //[HttpGet("/api/user/credentials")]
+        //public IActionResult GetCredential()
+        //{
+        //    var id = _requestHeader.GetOwnerId();
+        //    if(id == Guid.Empty)
+        //        return NoContent();
 
-            return Ok(new { id = id, token = _requestHeader.ToDictionary()["Authorization"].Split(" ")[1] });
-        }
+        //    return Ok(new { id = id, token = _requestHeader.ToDictionary()["Authorization"].Split(" ")[1] });
+        //}
     }
 }
