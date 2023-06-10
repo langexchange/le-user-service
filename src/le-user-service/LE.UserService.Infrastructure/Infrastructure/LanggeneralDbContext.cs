@@ -1973,9 +1973,7 @@ namespace LE.UserService.Infrastructure.Infrastructure
 
                 entity.Property(e => e.Vocabid).HasColumnName("vocabid");
 
-                entity.Property(e => e.Back)
-                    .HasMaxLength(128)
-                    .HasColumnName("back");
+                entity.Property(e => e.Back).HasColumnName("back");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnName("created_at")
@@ -1986,13 +1984,9 @@ namespace LE.UserService.Infrastructure.Infrastructure
                     .HasColumnName("easiness")
                     .HasDefaultValueSql("2.5");
 
-                entity.Property(e => e.Front)
-                    .HasMaxLength(128)
-                    .HasColumnName("front");
+                entity.Property(e => e.Front).HasColumnName("front");
 
-                entity.Property(e => e.Imageurl)
-                    .HasMaxLength(256)
-                    .HasColumnName("imageurl");
+                entity.Property(e => e.Imageurl).HasColumnName("imageurl");
 
                 entity.Property(e => e.Interval)
                     .HasColumnName("interval")
