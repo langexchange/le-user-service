@@ -44,11 +44,14 @@ namespace LE.UserService.Controllers
             {
                 // Set the cookie expiration date or other attributes if needed
                 Expires = DateTime.UtcNow.AddDays(7),
+                //Allow ...
+                //Domain = Env.ALLOW_COOKIE_DOMAIN,
                 // Set the secure flag if the cookie should only be sent over HTTPS
                 Secure = true,
                 HttpOnly = true,
                 // Set the path attribute if the cookie should only be sent for specific endpoints
                 Path = "/",
+                SameSite = SameSiteMode.None
             };
 
             Response.Cookies.Append("accessToken", response.Token, cookieOptions);
